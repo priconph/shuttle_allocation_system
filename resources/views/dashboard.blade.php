@@ -29,6 +29,10 @@
             echo view('errors.unauthorized'); // ✅ Directly render the unauthorized error page
             exit; // ✅ Stop further execution
     }
+    if($rapidx_user_id == 216){
+            $layout = "layouts.subcon_coor_layout"; // ✅ Special case for Subcon Coordinator
+    }
+
 @endphp
 
 @extends($layout) {{-- ✅ Will only be executed if a valid layout exists --}}

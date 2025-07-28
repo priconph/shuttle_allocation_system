@@ -158,7 +158,7 @@ function getMasterlistById(id){
         beforeSend: function(){
             $('select#selectEmployeeType').prop('disabled', true);
             $('select#selectEmployeeName').prop('disabled', true);
-            $('select#selectFactory').prop('disabled', true);
+            $('select#selectRoutes').prop('disabled', true);
         },
         success: function(response){
             let masterlistData = response['masterlistData'];
@@ -182,8 +182,8 @@ function getMasterlistById(id){
                     });
 
                     getRoutes($('#selectRoutes')).then((response) => {
-                        console.log('getRoutes response ', response);
-                        $('select#selectRoutes').prop('disabled', false);
+                        // console.log('getRoutes response ', response);
+                        // $('select#selectRoutes').prop('disabled', false);
                         $("#selectRoutes").val(masterlistData[0].routes_id).trigger('change');
                     }).catch((error) => {
                         console.log('error ', error);
@@ -219,6 +219,7 @@ function getMasterlistById(id){
                     $("input[name='masterlist_id']", $('#formAddMasterlist')).val(masterlistData[0].id);
 
                 }
+                $('select#selectFactory').prop('disabled', false);
                 if( masterlistData[0].masterlist_factory != null && masterlistData[0].masterlist_factory != ''){
                     $("#selectFactory").val(masterlistData[0].masterlist_factory).trigger('change');
                 }

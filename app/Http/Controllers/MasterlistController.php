@@ -327,6 +327,7 @@ class MasterlistController extends Controller
                     'masterlist_incoming' => $request->masterlist_incoming,
                     'masterlist_outgoing' => $request->masterlist_outgoing,
                     'routes_id' => $request->routes_id,
+                    'factory' => 'required',
                     'created_by' => $_SESSION['rapidx_user_id'],
                     'created_at' => date('Y-m-d H:i:s'),
                     'is_deleted' => 0
@@ -355,9 +356,9 @@ class MasterlistController extends Controller
             $validator = Validator::make($data, [
                 'masterlist_id' => 'required',
                 'systemone_id' => 'required',
-                'routes_id' => 'required',
-                'masterlist_incoming' => 'required',
-                'masterlist_outgoing' => 'required',
+                'factory' => 'required',
+                // 'masterlist_incoming' => 'required',
+                // 'masterlist_outgoing' => 'required',
                 // 'employee_type' => 'required',
                 // 'employee_number' => 'required',
             ]);
@@ -369,7 +370,6 @@ class MasterlistController extends Controller
                     'masterlist_factory' => $request->factory,
                     'masterlist_incoming' => $request->masterlist_incoming,
                     'masterlist_outgoing' => $request->masterlist_outgoing,
-                    'routes_id' => $request->routes_id,
                     'last_updated_by' => $_SESSION['rapidx_user_id'],
                     'updated_at' => date('Y-m-d H:i:s'),
                 ];
