@@ -171,6 +171,21 @@ class MasterlistController extends Controller
                 }
                 return $result;
             })
+            ->addColumn('masterlist_factory', function($row){
+                $result = "";
+                switch ($row->masterlist_factory) {
+                    case 'F1':
+                        $result = 'Factory 1';
+                        break;
+                    case 'F3':
+                        $result = 'Factory 3';
+                        break;
+                    default:
+                        $result = '---';
+                        break;
+                }
+                return $result;
+            })
             ->addColumn('masterlist_employee_gender', function($row){
                 $result = "";
                 if($row->hris_info != null){ // For Pricon
@@ -286,6 +301,7 @@ class MasterlistController extends Controller
             'masterlist_employee_division',
             'masterlist_employee_department',
             'masterlist_employee_section',
+            'masterlist_factory',
             ])
         ->make(true);
     }

@@ -52,6 +52,7 @@
                                                 <th>Action</th>
                                                 <th>Status</th>
                                                 <th>Employee #</th>
+                                                <th>Factory</th>
                                                 <th>Employee name</th>
                                                 <th>Incoming</th>
                                                 <th>Outgoing</th>
@@ -367,6 +368,7 @@
                     { "data" : "action", orderable:false, searchable:false},
                     { "data" : "masterlist_status"},
                     { "data" : "masterlist_employee_number"},
+                    { "data" : "masterlist_factory"},
                     { "data" : "masterlist_employee_name"},
                     { "data" : "masterlist_incoming"},
                     { "data" : "masterlist_outgoing"},
