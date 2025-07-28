@@ -47,6 +47,7 @@ class MasterlistController extends Controller
 
         return $masterlistData;
     }
+
     public function viewMasterlist(Request $request){
         $userData = User::where('rapidx_user_id', $request->rapidXUserId)->value('user_role_id');
         if($userData == 1){ // 1-Admin, 2-PIC, 3-Superior
@@ -58,7 +59,7 @@ class MasterlistController extends Controller
                 'hris_info' => function($q){
                     $q->where('EmpStatus', 1);
                 },
-    
+
                 'subcon_info.position_info',
                 'subcon_info.division_info',
                 'subcon_info.department_info',
@@ -80,7 +81,7 @@ class MasterlistController extends Controller
                 'hris_info' => function($q){
                     $q->where('EmpStatus', 1);
                 },
-    
+
                 'subcon_info.position_info',
                 'subcon_info.division_info',
                 'subcon_info.department_info',
@@ -95,7 +96,7 @@ class MasterlistController extends Controller
             ->where('created_by', $request->rapidXUserId)
             ->get();
         }
-        
+
         return DataTables::of($masterlistData)
             ->addColumn('masterlist_status', function($row){
                 $result = "";
@@ -126,7 +127,7 @@ class MasterlistController extends Controller
                  */
                 $disabled = '';
                 $cutoffTimeData = CutoffTime::value('cutoff_time_status');
-                
+
                 if($row->masterlist_status == 1){
                     $result =   '<center>';
                     // $result =   'dates '.$parsedTime . ' & ' . $dateNow;
@@ -178,7 +179,7 @@ class MasterlistController extends Controller
                     }else{
                         $result .= '<center><span>Female</span></center>';
                     }
-                    
+
                 }
                 else if($row->subcon_info != null){ // For Subcon
                     if($row->subcon_info->Gender == 1){
@@ -277,9 +278,9 @@ class MasterlistController extends Controller
                 return $result;
             })
         ->rawColumns([
-            'masterlist_status', 
-            'action', 
-            'masterlist_employee_name', 
+            'masterlist_status',
+            'action',
+            'masterlist_employee_name',
             'masterlist_employee_gender',
             'masterlist_employee_position',
             'masterlist_employee_division',
@@ -292,7 +293,7 @@ class MasterlistController extends Controller
     public function addMasterlist(Request $request){
         date_default_timezone_set('Asia/Manila');
         session_start();
-        $data = $request->all();
+       $data = $request->all();
 
         /* For Insert */
         if(!isset($request->masterlist_id)){
@@ -304,7 +305,7 @@ class MasterlistController extends Controller
                 'masterlist_outgoing' => 'required',
                 'routes_id' => 'required',
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
             } else {
@@ -320,6 +321,7 @@ class MasterlistController extends Controller
                 }
 
                 $insertData = [
+                    'masterlist_factory' => $request->factory,
                     'masterlist_employee_type' => $request->employee_type,
                     'masterlist_employee_number' => $request->employee_number,
                     'masterlist_incoming' => $request->masterlist_incoming,
@@ -364,6 +366,7 @@ class MasterlistController extends Controller
                 return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
             } else {
                 $updateData = [
+                    'masterlist_factory' => $request->factory,
                     'masterlist_incoming' => $request->masterlist_incoming,
                     'masterlist_outgoing' => $request->masterlist_outgoing,
                     'routes_id' => $request->routes_id,
@@ -373,10 +376,9 @@ class MasterlistController extends Controller
 
                 DB::beginTransaction();
                 try {
-                    Masterlist::where('id', $request->masterlist_id)->update(
+                   return Masterlist::where('id', $request->masterlist_id)->update(
                         $updateData
                     );
-
                     DB::commit();
                     return response()->json(['hasError' => 0]);
                 } catch (\Exception $e) {
@@ -392,10 +394,10 @@ class MasterlistController extends Controller
         return response()->json(['masterlistData' => $masterlistData]);
     }
 
-    public function editMasterlistStatus(Request $request){        
+    public function editMasterlistStatus(Request $request){
         date_default_timezone_set('Asia/Manila');
         session_start();
-        
+
         $data = $request->all(); // collect all input fields
         $validator = Validator::make($data, [
             'masterlist_id' => 'required',
@@ -429,11 +431,11 @@ class MasterlistController extends Controller
             return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
         }
     }
-    
-    public function deleteMasterlist(Request $request){        
+
+    public function deleteMasterlist(Request $request){
         date_default_timezone_set('Asia/Manila');
         session_start();
-        
+
         $data = $request->all(); // collect all input fields
         $validator = Validator::make($data, [
             'masterlist_id' => 'required',
@@ -456,5 +458,180 @@ class MasterlistController extends Controller
         else{
             return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
         }
+    }
+
+    public function viewMasterlistForAllocation(Request $request){
+        $userData = User::where('rapidx_user_id', $request->rapidXUserId)->value('user_role_id');
+        if($userData == 1){ // 1-Admin, 2-PIC, 3-Superior
+            $masterlistData = Masterlist::with([
+                'hris_info.position_info',
+                'hris_info.division_info',
+                'hris_info.department_info',
+                'hris_info.section_info',
+                'hris_info' => function($q){
+                    $q->where('EmpStatus', 1);
+                },
+
+                'subcon_info.position_info',
+                'subcon_info.division_info',
+                'subcon_info.department_info',
+                'subcon_info.section_info',
+                'subcon_info' => function($q){
+                    $q->where('EmpStatus', 1);
+                },
+                'routes_info',
+                'rapidx_user_info',
+            ])
+            ->where('is_deleted', 0)
+            ->get();
+        }else{
+            $masterlistData = Masterlist::with([
+                'hris_info.position_info',
+                'hris_info.division_info',
+                'hris_info.department_info',
+                'hris_info.section_info',
+                'hris_info' => function($q){
+                    $q->where('EmpStatus', 1);
+                },
+
+                'subcon_info.position_info',
+                'subcon_info.division_info',
+                'subcon_info.department_info',
+                'subcon_info.section_info',
+                'subcon_info' => function($q){
+                    $q->where('EmpStatus', 1);
+                },
+                'routes_info',
+                'rapidx_user_info',
+            ])
+            ->where('is_deleted', 0)
+            ->where('created_by', $request->rapidXUserId)
+            ->get();
+        }
+
+        return DataTables::of($masterlistData)
+            ->addColumn('masterlist_status', function($row){
+                $result = "";
+                if($row->masterlist_status == 1){
+                    $result .= '<center><span class="badge badge-pill badge-success">Active</span></center>';
+                }
+                else{
+                    $result .= '<center><span class="badge badge-pill text-secondary" style="background-color: #E6E6E6">Inactive</span></center>';
+                }
+                return $result;
+            })
+            ->addColumn('action', function($row){
+                date_default_timezone_set('Asia/Manila');
+                /**
+                 * Cutoff Time
+                 */
+                // $cutoffTimeData = CutoffTime::value('cutoff_time');
+                // $parsedTime = Carbon::parse($cutoffTimeData)->format('h:i');
+                // $dateNow = Carbon::now()->format('h:i');
+                // $disabled = 'disabled';
+                // if($parsedTime != $dateNow){
+                //     $disabled = '';
+                // }
+
+                /**
+                 * Lock/Unlock Masterlist
+                 * to disable editing in Masterlist Module
+                 */
+                $disabled = '';
+                // $cutoffTimeData = CutoffTime::value('cutoff_time_status');
+
+                if($row->masterlist_status == 1){
+                    $result =   '<center>';
+                    // $result =   'dates '.$parsedTime . ' & ' . $dateNow;
+
+                    // if($cutoffTimeData == 0){
+                    //     $disabled = 'disabled';
+                    // }
+                    // $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" '.$disabled.' masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
+                    // $result .=          '<i class="fa fa-xl fa-edit"></i> ';
+                    // $result .=      '</button>';
+                    // $result .=      '<button type="button" class="btn btn-warning text-white btn-xs text-center actionEditMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-status="' . $row->masterlist_status . '" data-bs-toggle="modal" data-bs-target="#modalEditMasterlistStatus" title="Deactivate Masterlist">';
+                    // $result .=          '<i class="fa-solid fa-xl fa-ban"></i>';
+                    // $result .=      '</button>';
+                    // $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionDeleteMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-is-deleted="' . $row->is_deleted . '" data-bs-toggle="modal" data-bs-target="#modalDeleteMasterlistStatus" title="Delete Masterlist">';
+                    // $result .=          '<i class="fa-solid fa-xl fa-trash"></i>';
+                    // $result .=      '</button>';
+                    $result .=  '</center>';
+                }
+                else{
+                    $result =   '<center>';
+                    // $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
+                    // $result .=          '<i class="fa fa-xl fa-edit"></i>';
+                    // $result .=      '</button>';
+                    // $result .=      '<button type="button" class="btn btn-warning btn-xs text-center actionEditMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-status="' . $row->masterlist_status . '" data-bs-toggle="modal" data-bs-target="#modalEditMasterlistStatus" title="Activate Masterlist">';
+                    // $result .=          '<i class="fa-solid fa-xl fa-arrow-rotate-right"></i>';
+                    // $result .=      '</button>';
+                    $result .=  '</center>';
+                }
+                return $result;
+            })
+            ->addColumn('masterlist_employee_name', function($row){
+                $result = "";
+                if($row->hris_info != null){ // For Pricon
+                    $result .= '<center><span>'.$row->hris_info->FirstName .' '. $row->hris_info->LastName.'</span></center>';
+                }
+                else if($row->subcon_info != null){ // For Subcon
+                    $result .= '<center><span>'.$row->subcon_info->FirstName .' '. $row->subcon_info->LastName.'</span></center>';
+                }
+                else{
+                    $result .= '<center><span>Resigned</span></center>';
+                }
+                return $result;
+            })
+            ->addColumn('masterlist_employee_department', function($row){
+                $result = "";
+                if($row->hris_info != null){ // For Pricon
+                    if($row->hris_info->department_info != null){
+                        $result .= '<center><span>'.$row->hris_info->department_info->Department .'</span></center>';
+                    }else{
+                        $result .= '<center><span>-</span></center>';
+                    }
+                }
+                else if($row->subcon_info != null){ // For Subcon
+                    if($row->subcon_info->department_info != null){
+                        $result .= '<center><span>'.$row->subcon_info->department_info->Department .'</span></center>';
+                    }else{
+                        $result .= '<center><span>-</span></center>';
+                    }
+                }
+                else{
+                    $result .= '<center><span>Resigned</span></center>';
+                }
+                return $result;
+            })
+            ->addColumn('masterlist_employee_section', function($row){
+                $result = "";
+                if($row->hris_info != null){ // For Pricon
+                    if($row->hris_info->section_info != null){
+                        $result .= '<center><span>'.$row->hris_info->section_info->Section .'</span></center>';
+                    }else{
+                        $result .= '<center><span>-</span></center>';
+                    }
+                }
+                else if($row->subcon_info != null){ // For Subcon
+                    if($row->subcon_info->section_info != null){
+                        $result .= '<center><span>'.$row->subcon_info->section_info->Section .'</span></center>';
+                    }else{
+                        $result .= '<center><span>-</span></center>';
+                    }
+                }
+                else{
+                    $result .= '<center><span>Resigned</span></center>';
+                }
+                return $result;
+            })
+        ->rawColumns([
+            'masterlist_status',
+            'action',
+            'masterlist_employee_name',
+            'masterlist_employee_department',
+            'masterlist_employee_section',
+            ])
+        ->make(true);
     }
 }

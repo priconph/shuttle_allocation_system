@@ -77,6 +77,14 @@ Route::get('/cutoff_time_management', function () {
     return view('cutoff_time_management');
 })->name('cutoff_time_management');
 
+Route::get('/allocations', function () {
+    return view('allocations');
+})->name('allocations');
+
+Route::get('/subcon_attendance_management', function () {
+    return view('subcon_attendance_management');
+})->name('subcon_attendance_management');
+
 
 
 /**
@@ -153,3 +161,9 @@ Route::get('/get_employees', [SystemOneController::class, 'getEmployees'])->name
  */
 Route::get('/export_report',[ExportReportController::class, 'export_report'])->name('export_report');
 Route::get('/export_report_test',[ExportReportController::class, 'export_report_test'])->name('export_report_test');
+
+/**
+ * ALLOCATION CONTROLLER
+ */
+Route::get('/view_masterlist_for_allocation', [MasterlistController::class, 'viewMasterlistForAllocation'])->name('view_masterlist_for_allocation');
+
