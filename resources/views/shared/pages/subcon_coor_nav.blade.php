@@ -34,7 +34,7 @@
                         <p>Masterlist</p></p>
                     </a>
                 </li>
-                 <li class="nav-item has-treeview">
+                <li class="nav-item has-treeview">
                     <a href="{{ route('subcon_attendance_management') }}" class="nav-link">
                         <i class="nav-icon far fa-list-alt"></i>
                         <p>Subcon Attendance</p></p>

@@ -8,7 +8,7 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 // use Auth;
 
-class ImportSubconAttendance implements ToModel, WithStartRow
+class ImportSubconAttendance implements ToModel
 {
     /**
     * @param array $row
@@ -27,8 +27,8 @@ class ImportSubconAttendance implements ToModel, WithStartRow
         ]);
     }
 
-    public function startRow(): int
-    {
-        return 2;
-    }
+    // public function startRow(): int
+    // {
+    //     return 2;
+    // }
 }

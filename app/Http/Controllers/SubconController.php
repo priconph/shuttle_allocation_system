@@ -20,10 +20,22 @@ class SubconController extends Controller
         try{
             // Excel::import(new ImportSubconAttendance, $request->file('attendance_file'));
             $collections = Excel::toCollection(new ImportSubconAttendance, $request->file('attendance_file'));
+
+            $required = ["EmpNo", "Name", "Date In", "Time In", "Date Out", "Time Out"];
+            $collection = $collections[0][0];
+            $missing = collect($required)->diff($collection);
+            if ($missing->isNotEmpty()) {
+                return response()->json([
+                    'result' => false,
+                    'msg' => 'Import Failed!<br> Please use required template.'
+                ],409);
+            }
+
+            unset($collections[0][0]);
             $filtered = collect($collections[0])->filter(function ($row) {
                 return !is_null($row[1]);
             })->values();
-
+  
             foreach($filtered AS $key => $value){
                 if(!is_null($value[4]) || !is_null($value[5])){
                     SubconAttendance::create([
@@ -36,6 +48,7 @@ class SubconController extends Controller
                         'created_by' => $_SESSION['rapidx_user_id']
                     ]);
                 }
+              
             }
             DB::commit();
 
