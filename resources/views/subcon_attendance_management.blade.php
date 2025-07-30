@@ -1,4 +1,12 @@
-@extends('layouts.subcon_coor_layout')
+@if (file_exists(resource_path('views/shared/includes/session.blade.php')))
+    @extends('shared.includes.session')
+@else
+    @php
+        echo '<script type="text/javascript">
+                window.location = "/";
+            </script>';
+    @endphp
+@endif
 
 @section('title', 'Dashboard')
 @section('content_page')
