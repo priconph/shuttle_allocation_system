@@ -13,6 +13,7 @@ use App\Models\SystemOneSubcon;
 use App\Models\SystemOneDepartment;
 use App\Models\SystemOneSection;
 use App\Models\SystemOnePosition;
+use App\Models\Allocations;
 use App\Models\Routes;
 use App\Models\RapidXUser;
 
@@ -27,10 +28,14 @@ class Masterlist extends Model
     }
 
     public function routes_info(){
-        return $this->hasOne(Routes::class, 'id', 'routes_id');
+        return $this->hasOne(Routes::class, 'id', 'routes_id')->where('status', 1);
     }
 
     public function rapidx_user_info(){
         return $this->hasOne(RapidXUser::class, 'id', 'created_by');
+    }
+
+    public function allocation_info(){
+        return $this->hasOne(Allocations::class, 'id', 'requestee_ml_id');
     }
 }

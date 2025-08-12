@@ -9,13 +9,13 @@ function addRoutes(){
         success: function(response){
             if(response['validationHasError'] == 1){
                 toastr.error('Saving failed!');
-                if(response['error']['routes_name'] === undefined){
+                if(response['error']['routes_destination'] === undefined){
                     $("#textRoutesName").removeClass('is-invalid');
                     $("#textRoutesName").attr('title', '');
                 }
                 else{
                     $("#textRoutesName").addClass('is-invalid');
-                    $("#textRoutesName").attr('title', response['error']['routes_name']);
+                    $("#textRoutesName").attr('title', response['error']['routes_destination']);
                 }
 
                 if(response['error']['routes_description'] === undefined){
@@ -26,7 +26,7 @@ function addRoutes(){
                     $("#textRoutesDescription").addClass('is-invalid');
                     $("#textRoutesDescription").attr('title', response['error']['routes_description']);
                 }
-            
+
                 if(response['error']['pickup_time_id'] === undefined){
                     $("#selectPickupTime").removeClass('is-invalid');
                     $("#selectPickupTime").attr('title', '');
@@ -78,7 +78,7 @@ function getRoutesById(id){
             let routesData = response['routesData'];
             if(routesData.length > 0){
                 console.table(routesData);
-                $("#textRoutesName").val(routesData[0].routes_name);
+                $("#textRoutesName").val(routesData[0].routes_destination);
                 $("#textRoutesDescription").val(routesData[0].routes_description);
                 $("#selectPickupTime").val(routesData[0].pickup_time_id).trigger('change');
                 $("#selectShuttleProvider").val(routesData[0].shuttle_provider_id).trigger('change');
@@ -129,6 +129,7 @@ function editRoutesStatus(){
 }
 
 function getRoutes(cboElement, routesId){
+
     return new Promise((resolve, reject) => {
         let result = '<option value="0" disabled selected>Select One</option>';
         $.ajax({
@@ -141,10 +142,13 @@ function getRoutes(cboElement, routesId){
             },
             success: function(response){
                 resolve(response)
+
                 let disabled = '';
                 if(response['routesData'].length > 0){
                     result = '<option value="0" disabled selected>Select One</option>';
                     for(let index = 0; index < response['routesData'].length; index++){
+                        //Wag baguhin to ginagamit to sa Masterlist ! Aray ko !
+                        console.log('asdasd',response['routesData'][index].routes_name );
                         result += '<option value="' + response['routesData'][index].id + '">' + response['routesData'][index].routes_name + '</option>';
                     }
                     console.log('routesId ', routesId);
@@ -163,5 +167,5 @@ function getRoutes(cboElement, routesId){
             }
         });
     });
-	
+
 }

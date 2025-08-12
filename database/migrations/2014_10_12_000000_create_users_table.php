@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('username');
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->string('department');
             $table->string('status')->nullable()->default(1)->comment = '0-Not Active, 1-Active';
             $table->string('rapidx_user_id')->nullable()->comment = 'RapidX User(table) id';

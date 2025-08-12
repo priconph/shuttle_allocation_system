@@ -62,12 +62,12 @@
         "iconClass":  "toast-custom"
     };
 </script>
-
-<script src="{{ asset('public/js/main/Common.js') }}"></script>
-<script src="{{ asset('public/js/main/User.js') }}"></script>
-<script src="{{ asset('public/js/main/Routes.js') }}"></script>
-<script src="{{ asset('public/js/main/ShuttleProvider.js') }}"></script>
-<script src="{{ asset('public/js/main/PickupTime.js') }}"></script>
-<script src="{{ asset('public/js/main/SystemOneHRIS.js') }}"></script>
-<script src="{{ asset('public/js/main/Masterlist.js') }}"></script>
-<script src="{{ asset('public/js/main/CutoffTime.js') }}"></script>
+<script src="{{ asset('public/js/main/Common.js') }}?<?=time()?>"></script>
+<script src="{{ asset('public/js/main/User.js') }}?<?=time()?>"></script>
+<script src="{{ asset('public/js/main/Routes.js') }}?<?=time()?>"></script>
+<script src="{{ asset('public/js/main/ShuttleProvider.js') }}?<?=time()?>"></script>
+<script src="{{ asset('public/js/main/PickupTime.js') }}?<?=time()?>"></script>
+<script src="{{ asset('public/js/main/SystemOneHRIS.js') }}?<?=time()?>"></script>
+<script src="{{ asset('public/js/main/Masterlist.js') }}?<?=time()?>"></script>
+<script src="{{ asset('public/js/main/CutoffTime.js') }}?<?=time()?>"></script>
+<script src="@php echo asset("public/js/main/Allocation.js?".date("YmdHis")) @endphp"></script>

@@ -77,7 +77,7 @@ class RoutesController extends Controller
         /* For Insert */
         if(!isset($request->routes_id)){
             $validator = Validator::make($data, [
-                'routes_name' => 'required',
+                'routes_destination' => 'required',
                 'pickup_time_id' => 'required',
                 'shuttle_provider_id' => 'required',
             ]);
@@ -88,7 +88,7 @@ class RoutesController extends Controller
                 DB::beginTransaction();
                 try {
                     $routesId = Routes::insertGetId([
-                        'routes_name' => $request->routes_name,
+                        'routes_destination' => $request->routes_destination,
                         'routes_description' => $request->routes_description,
                         'pickup_time_id' => $request->pickup_time_id,
                         'shuttle_provider_id' => $request->shuttle_provider_id,
@@ -108,7 +108,7 @@ class RoutesController extends Controller
         else{ /* For Update */
             $validator = Validator::make($data, [
                 'routes_id' => 'required',
-                'routes_name' => 'required',
+                'routes_destination' => 'required',
                 'pickup_time_id' => 'required',
                 'shuttle_provider_id' => 'required',
             ]);
@@ -125,7 +125,7 @@ class RoutesController extends Controller
                 DB::beginTransaction();
                 try {
                     Routes::where('id', $request->routes_id)->update([
-                        'routes_name' => $request->routes_name,
+                        'routes_destination' => $request->routes_destination,
                         'routes_description' => $request->routes_description,
                         'pickup_time_id' => $request->pickup_time_id,
                         'shuttle_provider_id' => $request->shuttle_provider_id,
