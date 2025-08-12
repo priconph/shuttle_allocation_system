@@ -35,6 +35,15 @@
         <section class="content">
             <div class="container-fluid">
                 <div class="row">
+                    <div class="col-sm-6 mb-5">
+                        <label for="selectLoadFactory" class="form-label">Select Factory to Load Masterlist<span class="text-danger" title="Required">*</span></label>
+                        <select class="form-select" id="selectLoadFactory" name="selectLoadFactory">
+                            <option value="" selected disabled >Select Factory</option>
+                            <option value="All">Select All</option>
+                            <option value="F1">Factory 1</option>
+                            <option value="F3">Factory 3</option>
+                        </select>
+                    </div>
                     <div class="col-md-12">
                         <div class="card" style="margin-bottom: 80px">
                             <div class="card-header">
@@ -108,7 +117,7 @@
                                     <div class="mb-3">
                                         <label for="selectFactory" class="form-label">Factory<span class="text-danger" title="Required">*</span></label>
                                         <select class="form-select" id="selectFactory" name="factory" disabled>
-                                            <option value="0" selected disabled >Select Factory</option>
+                                            <option value="" selected disabled >Select Factory</option>
                                             <option value="F1">Factory 1</option>
                                             <option value="F3">Factory 3</option>
                                         </select>
@@ -387,7 +396,12 @@
                     // console.log('index ', index);
                 },
             });
-
+            //Select Load Factory
+            $('#selectLoadFactory').change(function (e) {
+                e.preventDefault();
+                let selectedFactory = $(this).val();
+                dataTablesMasterlist.ajax.url('view_masterlist?selectedFactory='+selectedFactory).draw();
+            });
             $("#formAddMasterlist").submit(function(event){
                 event.preventDefault();
                 addMasterlist();

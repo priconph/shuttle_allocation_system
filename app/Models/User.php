@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 use App\Models\UserLevel;
 use App\Models\UserRole;
+use App\Models\RapidXUser;
+use App\Models\Masterlist;
 
 class User extends Authenticatable // Authenticatable this will allow the use of Auth::user()
 {
@@ -23,5 +25,13 @@ class User extends Authenticatable // Authenticatable this will allow the use of
 
     public function user_roles(){
         return $this->hasOne(UserRole::class, 'id', 'user_role_id');
+    }
+
+    public function rapidx_user_info(){
+        return $this->hasOne(RapidXUser::class, 'id', 'rapidx_user_id');
+    }
+
+    public function master_list_info(){
+        return $this->hasOne(Masterlist::class, 'masterlist_employee_number', 'employee_number');
     }
 }

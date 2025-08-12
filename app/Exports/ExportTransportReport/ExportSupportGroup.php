@@ -250,7 +250,7 @@ class ExportSupportGroup implements  FromView, WithTitle, WithEvents{
                             ->applyFromArray($fontStyleArialBold12);
 
                         // C4 to Up
-                        $event->sheet->setCellValue($alphabet[$counterStartWithColumnC].'4', $this->routesData[$i]->routes_name);
+                        $event->sheet->setCellValue($alphabet[$counterStartWithColumnC].'4', $this->routesData[$i]->routes_destination);
                         $event->sheet->getColumnDimension($alphabet[$counterStartWithColumnC])->setWidth(18);
                         $counterForRoutesDataStartWithZero++;
                         $counterStartWithColumnC++;
@@ -583,7 +583,7 @@ class ExportSupportGroup implements  FromView, WithTitle, WithEvents{
                 $totalCountForAllRoutesArray = [];
                 $counterOfAllDivisionStartWithColumnC = 2;
                 for ($i = 0; $i < count($this->routesData); $i++) {
-                    $temporaryTotalForEveryRoutesArray = ['section'=>'','department'=>'','division'=>'','routes_id'=>'','routes_name'=>'','incoming'=>'','outgoing'=>''];
+                    $temporaryTotalForEveryRoutesArray = ['section'=>'','department'=>'','division'=>'','routes_id'=>'','routes_destination'=>'','incoming'=>'','outgoing'=>''];
                     for ($j = 0; $j < count($this->masterlistData); $j++) {
                             /**
                              * Check if routes(table) id is equal to masterlists(table) routes_id to collect all masterlistData
@@ -598,17 +598,19 @@ class ExportSupportGroup implements  FromView, WithTitle, WithEvents{
                                     $temporaryTotalForEveryRoutesArray['department']      = $this->masterlistData[$j]->hris_info->department_info->Department; // For Finance & PPC purpose
                                     $temporaryTotalForEveryRoutesArray['division']      = $this->masterlistData[$j]->hris_info->division_info->Division; // For QAD purpose
                                 }else{ // 2-Subcon
-                                    // dd($this->masterlistData[$j]->subcon_info); // Check subcon employee section
-                                    if($this->masterlistData[$j]->subcon_info->section_info != null){ // Check if fkSection(in db_hris table) is not 0
-                                        // $temporaryTotalForEveryRoutesArray['section']      = $this->masterlistData[$j]->subcon_info->section_info->Section;
-                                        $temporaryTotalForEveryRoutesArray['section']      = 'Subcon';
-                                    }else{
-                                        $temporaryTotalForEveryRoutesArray['section']      = 'null';
+                                    if($this->masterlistData[$j]->subcon_info != null){
+                                        // dd($this->masterlistData[$j]->subcon_info); // Check subcon employee section
+                                        if($this->masterlistData[$j]->subcon_info->section_info != null){ // Check if fkSection(in db_hris table) is not 0
+                                            // $temporaryTotalForEveryRoutesArray['section']      = $this->masterlistData[$j]->subcon_info->section_info->Section;
+                                            $temporaryTotalForEveryRoutesArray['section']      = 'Subcon';
+                                        }else{
+                                            $temporaryTotalForEveryRoutesArray['section']      = 'null';
+                                        }
                                     }
                                 }
                                 
                                 $temporaryTotalForEveryRoutesArray['routes_id']     = $this->routesData[$i]->id;
-                                $temporaryTotalForEveryRoutesArray['routes_name']   = $this->routesData[$i]->routes_description;
+                                $temporaryTotalForEveryRoutesArray['routes_destination']   = $this->routesData[$i]->routes_description;
                                 $temporaryTotalForEveryRoutesArray['incoming']      = $this->masterlistData[$j]->masterlist_incoming;
                                 $temporaryTotalForEveryRoutesArray['outgoing']      = $this->masterlistData[$j]->masterlist_outgoing;
                                 $totalCountForAllRoutesArray[] = $temporaryTotalForEveryRoutesArray;

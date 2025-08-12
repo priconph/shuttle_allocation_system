@@ -158,7 +158,7 @@ function getMasterlistById(id){
         beforeSend: function(){
             $('select#selectEmployeeType').prop('disabled', true);
             $('select#selectEmployeeName').prop('disabled', true);
-            $('select#selectRoutes').prop('disabled', true);
+            // $('select#selectRoutes').prop('disabled', true);
         },
         success: function(response){
             let masterlistData = response['masterlistData'];
@@ -219,7 +219,12 @@ function getMasterlistById(id){
                     $("input[name='masterlist_id']", $('#formAddMasterlist')).val(masterlistData[0].id);
 
                 }
-                $('select#selectFactory').prop('disabled', false);
+                // if(response['user_level_id']  === 27 ){
+                    //TODO: ESS Access Only
+                    $('select#selectRoutes').prop('disabled', false);
+                    $('select#selectFactory').prop('disabled', false);
+                // }
+
                 if( masterlistData[0].masterlist_factory != null && masterlistData[0].masterlist_factory != ''){
                     $("#selectFactory").val(masterlistData[0].masterlist_factory).trigger('change');
                 }

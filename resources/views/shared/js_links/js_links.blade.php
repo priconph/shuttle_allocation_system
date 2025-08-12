@@ -71,3 +71,4 @@
 <script src="{{ asset('public/js/main/SystemOneHRIS.js') }}"></script>
 <script src="{{ asset('public/js/main/Masterlist.js') }}"></script>
 <script src="{{ asset('public/js/main/CutoffTime.js') }}"></script>
+<script src="@php echo asset("public/js/main/Allocation.js?".date("YmdHis")) @endphp"></script>

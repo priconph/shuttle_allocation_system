@@ -9,13 +9,13 @@ function addRoutes(){
         success: function(response){
             if(response['validationHasError'] == 1){
                 toastr.error('Saving failed!');
-                if(response['error']['routes_name'] === undefined){
+                if(response['error']['routes_destination'] === undefined){
                     $("#textRoutesName").removeClass('is-invalid');
                     $("#textRoutesName").attr('title', '');
                 }
                 else{
                     $("#textRoutesName").addClass('is-invalid');
-                    $("#textRoutesName").attr('title', response['error']['routes_name']);
+                    $("#textRoutesName").attr('title', response['error']['routes_destination']);
                 }
 
                 if(response['error']['routes_description'] === undefined){
@@ -26,7 +26,7 @@ function addRoutes(){
                     $("#textRoutesDescription").addClass('is-invalid');
                     $("#textRoutesDescription").attr('title', response['error']['routes_description']);
                 }
-            
+
                 if(response['error']['pickup_time_id'] === undefined){
                     $("#selectPickupTime").removeClass('is-invalid');
                     $("#selectPickupTime").attr('title', '');
@@ -145,7 +145,7 @@ function getRoutes(cboElement, routesId){
                 if(response['routesData'].length > 0){
                     result = '<option value="0" disabled selected>Select One</option>';
                     for(let index = 0; index < response['routesData'].length; index++){
-                        result += '<option value="' + response['routesData'][index].id + '">' + response['routesData'][index].routes_name + '</option>';
+                        result += '<option value="' + response['routesData'][index].id + '">' + response['routesData'][index].routes_destination + '</option>';
                     }
                     console.log('routesId ', routesId);
                     $("#selectRoutes").val(routesId).trigger('change');
@@ -163,5 +163,5 @@ function getRoutes(cboElement, routesId){
             }
         });
     });
-	
+
 }

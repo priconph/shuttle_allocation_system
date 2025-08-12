@@ -276,7 +276,7 @@ class ExportAllocation implements  FromView, WithTitle, WithEvents{
                 $alphabet = range("A","Z");
 
                 for ($i = 0; $i < count($this->routesData); $i++) {
-                    $temporaryTotalForEveryTimeSchedArray = ['routes_id'=>'','routes_name'=>'','incoming'=>'','outgoing'=>''];
+                    $temporaryTotalForEveryTimeSchedArray = ['routes_id'=>'','routes_destination'=>'','incoming'=>'','outgoing'=>''];
                     // Alphabet(Column A)
                     $event->sheet->setCellValue('A'.$counterForIncomingMorningStartWithRow3, $alphabet[$counterForIncomingMorningStartWithZero]);
                     // $event->sheet->getDelegate()->getStyle('A3:A3'.$counterForIncomingMorningStartWithRow3)->getAlignment()->setWrapText(true);
@@ -284,7 +284,7 @@ class ExportAllocation implements  FromView, WithTitle, WithEvents{
                     $event->sheet->getDelegate()->getStyle('A'.$counterForIncomingMorningStartWithRow3.':A'.$counterForIncomingMorningStartWithRow3)->applyFromArray($fontStyleArial12);
 
                     // Routes(Column B)
-                    $event->sheet->setCellValue('B'.$counterForIncomingMorningStartWithRow3, $this->routesData[$i]->routes_name);
+                    $event->sheet->setCellValue('B'.$counterForIncomingMorningStartWithRow3, $this->routesData[$i]->routes_destination);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForIncomingMorningStartWithRow3.':B'.$counterForIncomingMorningStartWithRow3)->getAlignment()->setWrapText(true);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForIncomingMorningStartWithRow3.':B'.$counterForIncomingMorningStartWithRow3)->applyFromArray($fontStyleArial12);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForIncomingMorningStartWithRow3.':B'.$counterForIncomingMorningStartWithRow3)->applyFromArray($alignmentAllCenter);
@@ -304,7 +304,7 @@ class ExportAllocation implements  FromView, WithTitle, WithEvents{
                          */
                         if($this->routesData[$i]->id == $this->masterlistData[$j]->routes_id){
                             $temporaryTotalForEveryTimeSchedArray['routes_id']     = $this->routesData[$i]->id;
-                            $temporaryTotalForEveryTimeSchedArray['routes_name']   = $this->routesData[$i]->routes_description;
+                            $temporaryTotalForEveryTimeSchedArray['routes_destination']   = $this->routesData[$i]->routes_description;
                             $temporaryTotalForEveryTimeSchedArray['incoming']      = $this->masterlistData[$j]->masterlist_incoming;
                             $temporaryTotalForEveryTimeSchedArray['outgoing']      = $this->masterlistData[$j]->masterlist_outgoing;
                             $totalCountForIncomingMorningArray[] = $temporaryTotalForEveryTimeSchedArray;
@@ -450,14 +450,14 @@ class ExportAllocation implements  FromView, WithTitle, WithEvents{
                 
                 $alphabet = range("A","Z");
                 for ($i = 0; $i < count($this->routesData); $i++) {
-                    $temporaryTotalForEveryTimeSchedArray = ['routes_id'=>'','routes_name'=>'','incoming'=>'','outgoing'=>''];
+                    $temporaryTotalForEveryTimeSchedArray = ['routes_id'=>'','routes_destination'=>'','incoming'=>'','outgoing'=>''];
                     // Alphabet(Column A)
                     $event->sheet->setCellValue('A'.$counterForIncomingEveningStartWithRow, $alphabet[$counterForIncomingEveningStartWithZero]);
                     $event->sheet->getDelegate()->getStyle('A'.$counterForIncomingEveningStartWithRow.':A'.$counterForIncomingEveningStartWithRow)->applyFromArray($alignmentAllCenter);
                     $event->sheet->getDelegate()->getStyle('A'.$counterForIncomingEveningStartWithRow.':A'.$counterForIncomingEveningStartWithRow)->applyFromArray($fontStyleArial12);
 
                     // Routes(Column B)
-                    $event->sheet->setCellValue('B'.$counterForIncomingEveningStartWithRow, $this->routesData[$i]->routes_name);
+                    $event->sheet->setCellValue('B'.$counterForIncomingEveningStartWithRow, $this->routesData[$i]->routes_destination);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForIncomingEveningStartWithRow.':B'.$counterForIncomingEveningStartWithRow)->getAlignment()->setWrapText(true);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForIncomingEveningStartWithRow.':B'.$counterForIncomingEveningStartWithRow)->applyFromArray($fontStyleArial12);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForIncomingEveningStartWithRow.':B'.$counterForIncomingEveningStartWithRow)->applyFromArray($alignmentAllCenter);
@@ -477,7 +477,7 @@ class ExportAllocation implements  FromView, WithTitle, WithEvents{
                          */
                         if($this->routesData[$i]->id == $this->masterlistData[$j]->routes_id){
                             $temporaryTotalForEveryTimeSchedArray['routes_id']     = $this->routesData[$i]->id;
-                            $temporaryTotalForEveryTimeSchedArray['routes_name']   = $this->routesData[$i]->routes_description;
+                            $temporaryTotalForEveryTimeSchedArray['routes_destination']   = $this->routesData[$i]->routes_description;
                             $temporaryTotalForEveryTimeSchedArray['incoming']      = $this->masterlistData[$j]->masterlist_incoming;
                             $temporaryTotalForEveryTimeSchedArray['outgoing']      = $this->masterlistData[$j]->masterlist_outgoing;
                             $totalCountForIncomingEveningArray[] = $temporaryTotalForEveryTimeSchedArray;
@@ -615,14 +615,14 @@ class ExportAllocation implements  FromView, WithTitle, WithEvents{
                 $counterForOutgoingAfternoonStartWithRow = $countForOutgoingActiveRoutes+$countForOutgoingStaticRows+3;
                 $alphabet = range("A","Z");
                 for ($i = 0; $i < count($this->routesData); $i++) {
-                    $temporaryTotalForEveryTimeSchedArray = ['routes_id'=>'','routes_name'=>'','incoming'=>'','outgoing'=>''];
+                    $temporaryTotalForEveryTimeSchedArray = ['routes_id'=>'','routes_destination'=>'','incoming'=>'','outgoing'=>''];
                     // Alphabet(Column A)
                     $event->sheet->setCellValue('A'.$counterForOutgoingAfternoonStartWithRow, $alphabet[$counterForOutgoingAfternoonStartWithZero]);
                     $event->sheet->getDelegate()->getStyle('A'.$counterForOutgoingAfternoonStartWithRow.':A'.$counterForOutgoingAfternoonStartWithRow)->applyFromArray($alignmentAllCenter);
                     $event->sheet->getDelegate()->getStyle('A'.$counterForOutgoingAfternoonStartWithRow.':A'.$counterForOutgoingAfternoonStartWithRow)->applyFromArray($fontStyleArial12);
 
                     // Routes(Column B)
-                    $event->sheet->setCellValue('B'.$counterForOutgoingAfternoonStartWithRow, $this->routesData[$i]->routes_name);
+                    $event->sheet->setCellValue('B'.$counterForOutgoingAfternoonStartWithRow, $this->routesData[$i]->routes_destination);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForOutgoingAfternoonStartWithRow.':B'.$counterForOutgoingAfternoonStartWithRow)->getAlignment()->setWrapText(true);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForOutgoingAfternoonStartWithRow.':B'.$counterForOutgoingAfternoonStartWithRow)->applyFromArray($fontStyleArial12);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForOutgoingAfternoonStartWithRow.':B'.$counterForOutgoingAfternoonStartWithRow)->applyFromArray($alignmentAllCenter);
@@ -642,7 +642,7 @@ class ExportAllocation implements  FromView, WithTitle, WithEvents{
                          */
                         if($this->routesData[$i]->id == $this->masterlistData[$j]->routes_id){
                             $temporaryTotalForEveryTimeSchedArray['routes_id']     = $this->routesData[$i]->id;
-                            $temporaryTotalForEveryTimeSchedArray['routes_name']   = $this->routesData[$i]->routes_description;
+                            $temporaryTotalForEveryTimeSchedArray['routes_destination']   = $this->routesData[$i]->routes_description;
                             $temporaryTotalForEveryTimeSchedArray['incoming']      = $this->masterlistData[$j]->masterlist_incoming;
                             $temporaryTotalForEveryTimeSchedArray['outgoing']      = $this->masterlistData[$j]->masterlist_outgoing;
                             $totalCountForOutgoingAfternoonArray[] = $temporaryTotalForEveryTimeSchedArray;
@@ -780,14 +780,14 @@ class ExportAllocation implements  FromView, WithTitle, WithEvents{
                 $counterForOutgoingEveningStartWithRow = $countForOutgoingEveningActiveRoutes+$countForOutgoingEveningStaticRows+3;
                 $alphabet = range("A","Z");
                 for ($i = 0; $i < count($this->routesData); $i++) {
-                    $temporaryTotalForEveryTimeSchedArray = ['routes_id'=>'','routes_name'=>'','incoming'=>'','outgoing'=>''];
+                    $temporaryTotalForEveryTimeSchedArray = ['routes_id'=>'','routes_destination'=>'','incoming'=>'','outgoing'=>''];
                     // Alphabet(Column A)
                     $event->sheet->setCellValue('A'.$counterForOutgoingEveningStartWithRow, $alphabet[$counterForOutgoingEveningStartWithZero]);
                     $event->sheet->getDelegate()->getStyle('A'.$counterForOutgoingEveningStartWithRow.':A'.$counterForOutgoingEveningStartWithRow)->applyFromArray($alignmentAllCenter);
                     $event->sheet->getDelegate()->getStyle('A'.$counterForOutgoingEveningStartWithRow.':A'.$counterForOutgoingEveningStartWithRow)->applyFromArray($fontStyleArial12);
 
                     // Routes(Column B)
-                    $event->sheet->setCellValue('B'.$counterForOutgoingEveningStartWithRow, $this->routesData[$i]->routes_name);
+                    $event->sheet->setCellValue('B'.$counterForOutgoingEveningStartWithRow, $this->routesData[$i]->routes_destination);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForOutgoingEveningStartWithRow.':B'.$counterForOutgoingEveningStartWithRow)->getAlignment()->setWrapText(true);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForOutgoingEveningStartWithRow.':B'.$counterForOutgoingEveningStartWithRow)->applyFromArray($fontStyleArial12);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForOutgoingEveningStartWithRow.':B'.$counterForOutgoingEveningStartWithRow)->applyFromArray($alignmentAllCenter);
@@ -807,7 +807,7 @@ class ExportAllocation implements  FromView, WithTitle, WithEvents{
                          */
                         if($this->routesData[$i]->id == $this->masterlistData[$j]->routes_id){
                             $temporaryTotalForEveryTimeSchedArray['routes_id']     = $this->routesData[$i]->id;
-                            $temporaryTotalForEveryTimeSchedArray['routes_name']   = $this->routesData[$i]->routes_description;
+                            $temporaryTotalForEveryTimeSchedArray['routes_destination']   = $this->routesData[$i]->routes_description;
                             $temporaryTotalForEveryTimeSchedArray['incoming']      = $this->masterlistData[$j]->masterlist_incoming;
                             $temporaryTotalForEveryTimeSchedArray['outgoing']      = $this->masterlistData[$j]->masterlist_outgoing;
                             $totalCountForOutgoingEveningArray[] = $temporaryTotalForEveryTimeSchedArray;
@@ -945,14 +945,14 @@ class ExportAllocation implements  FromView, WithTitle, WithEvents{
                 $counterForOutgoingMorningStartWithRow = $countForOutgoingMorningActiveRoutes+$countForOutgoingMorningStaticRows+3;
                 $alphabet = range("A","Z");
                 for ($i = 0; $i < count($this->routesData); $i++) {
-                    $temporaryTotalForEveryTimeSchedArray = ['routes_id'=>'','routes_name'=>'','incoming'=>'','outgoing'=>''];
+                    $temporaryTotalForEveryTimeSchedArray = ['routes_id'=>'','routes_destination'=>'','incoming'=>'','outgoing'=>''];
                     // Alphabet(Column A)
                     $event->sheet->setCellValue('A'.$counterForOutgoingMorningStartWithRow, $alphabet[$counterForOutgoingMorningStartWithZero]);
                     $event->sheet->getDelegate()->getStyle('A'.$counterForOutgoingMorningStartWithRow.':A'.$counterForOutgoingMorningStartWithRow)->applyFromArray($alignmentAllCenter);
                     $event->sheet->getDelegate()->getStyle('A'.$counterForOutgoingMorningStartWithRow.':A'.$counterForOutgoingMorningStartWithRow)->applyFromArray($fontStyleArial12);
 
                     // Routes(Column B)
-                    $event->sheet->setCellValue('B'.$counterForOutgoingMorningStartWithRow, $this->routesData[$i]->routes_name);
+                    $event->sheet->setCellValue('B'.$counterForOutgoingMorningStartWithRow, $this->routesData[$i]->routes_destination);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForOutgoingMorningStartWithRow.':B'.$counterForOutgoingMorningStartWithRow)->getAlignment()->setWrapText(true);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForOutgoingMorningStartWithRow.':B'.$counterForOutgoingMorningStartWithRow)->applyFromArray($fontStyleArial12);
                     $event->sheet->getDelegate()->getStyle('B'.$counterForOutgoingMorningStartWithRow.':B'.$counterForOutgoingMorningStartWithRow)->applyFromArray($alignmentAllCenter);
@@ -972,7 +972,7 @@ class ExportAllocation implements  FromView, WithTitle, WithEvents{
                          */
                         if($this->routesData[$i]->id == $this->masterlistData[$j]->routes_id){
                             $temporaryTotalForEveryTimeSchedArray['routes_id']     = $this->routesData[$i]->id;
-                            $temporaryTotalForEveryTimeSchedArray['routes_name']   = $this->routesData[$i]->routes_description;
+                            $temporaryTotalForEveryTimeSchedArray['routes_destination']   = $this->routesData[$i]->routes_description;
                             $temporaryTotalForEveryTimeSchedArray['incoming']      = $this->masterlistData[$j]->masterlist_incoming;
                             $temporaryTotalForEveryTimeSchedArray['outgoing']      = $this->masterlistData[$j]->masterlist_outgoing;
                             $totalCountForOutgoingMorningArray[] = $temporaryTotalForEveryTimeSchedArray;

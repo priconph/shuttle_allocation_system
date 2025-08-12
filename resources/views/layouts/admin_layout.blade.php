@@ -31,6 +31,12 @@
                     width: 95% !important;
                     min-width: 90% !important;
                 }
+
+                .modal-lg-custom{
+                    width: 75% !important;
+                    min-width: 70% !important;
+                }
+
                 table.dataTable.display tbody tr.odd>.sorting_1, table.dataTable.order-column.stripe tbody tr.odd>.sorting_1 {
                     background-color: none !important;
                 }
@@ -44,7 +50,7 @@
                     border: 1px solid #aaa;
                     border-radius: 4px;
                 }
-                
+
                 select[readonly].select2+.select2-container {
                     pointer-events: none;
                     touch-action: none;
@@ -109,11 +115,11 @@
                             UserLogout();
                             console.log("Logging out...")
                         }, 300);
-                        
+
                     });
                 });
-        
-                
+
+
             </script>
         </body>
     </html>
