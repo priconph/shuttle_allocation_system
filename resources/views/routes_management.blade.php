@@ -30,7 +30,7 @@
                                 {{-- <button class="btn float-right reload"><i class="fas fa-sync-alt"></i></button> --}}
                             </div>
                             <div class="card-body">
-                                <div class="text-right mt-4">                   
+                                <div class="text-right mt-4">
                                     <button type="button" class="btn btn-primary mb-3" id="buttonAddRoutes" data-bs-toggle="modal" data-bs-target="#modalAddRoutes"><i class="fa fa-plus fa-md"></i> New Route</button>
                                 </div>
                                 <div class="table-responsive">
@@ -55,7 +55,7 @@
             </div>
         </section>
     </div>
-    
+
     <!-- Add Routes Modal Start -->
     <div class="modal fade" id="modalAddRoutes" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg">
@@ -72,10 +72,10 @@
                                 <div class="card-body">
                                     <!-- For Routes Id -->
                                     <input type="text" class="form-control" style="display: none" name="routes_id" id="routesId">
-                                    
+
                                     <div class="mb-3">
                                         <label for="username" class="form-label">Route Name</label>
-                                        <input type="text" class="form-control" name="routes_name" id="textRoutesName" placeholder="Route Name">
+                                        <input type="text" class="form-control" name="routes_destination" id="textRoutesName" placeholder="Route Name">
                                     </div>
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Route Description</label>
@@ -97,7 +97,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="btnAddRoutes" class="btn btn-primary"><i id="iBtnAddRoutesIcon" class="fa fa-check"></i> Save</button>
@@ -106,7 +106,7 @@
             </div>
         </div>
     </div><!-- Add Routes Modal End -->
-    
+
     <!-- Edit Routes Status Modal Start -->
     <div class="modal fade" id="modalEditRoutesStatus" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-md">
@@ -122,7 +122,7 @@
                         <input type="hidden" name="routes_id" placeholder="Routes Id" id="textEditRoutesStatusRoutesId">
                         <input type="hidden" name="status" placeholder="Status" id="textEditRoutesStatus">
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="buttonEditRoutesStatus" class="btn btn-primary"><i id="iBtnAddRoutesIcon" class="fa fa-check"></i> Save</button>
@@ -178,12 +178,19 @@
                     // console.log('data ', data);
                     // console.log('index ', index);
                 },
+                // "columnDefs": [
+                //     {
+                //         "targets": [2],
+                //         "data": null,
+                //         "defaultContent": ""
+                //     },
+                // ],
             });
 
             $("#formAddRoutes").submit(function(event){
                 event.preventDefault();
                 addRoutes();
-            }); 
+            });
 
             $(document).on('click', '.actionEditRoutes', function(){
                 let id = $(this).attr('routes-id');
@@ -197,7 +204,7 @@
                 let routesStatus = $(this).attr('routes-status');
                 console.log('routesId', routesId);
                 console.log('routesStatus', routesStatus);
-                
+
                 $("#textEditRoutesStatusRoutesId").val(routesId);
                 $("#textEditRoutesStatus").val(routesStatus);
 

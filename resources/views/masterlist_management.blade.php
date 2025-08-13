@@ -35,6 +35,15 @@
         <section class="content">
             <div class="container-fluid">
                 <div class="row">
+                    <div class="col-sm-6 mb-5">
+                        <label for="selectLoadFactory" class="form-label">Select Factory to Load Masterlist<span class="text-danger" title="Required">*</span></label>
+                        <select class="form-select" id="selectLoadFactory" name="selectLoadFactory">
+                            <option value="" selected disabled >Select Factory</option>
+                            <option value="All">Select All</option>
+                            <option value="F1">Factory 1</option>
+                            <option value="F3">Factory 3</option>
+                        </select>
+                    </div>
                     <div class="col-md-12">
                         <div class="card" style="margin-bottom: 80px">
                             <div class="card-header">
@@ -42,7 +51,7 @@
                                 {{-- <button class="btn float-right reload"><i class="fas fa-sync-alt"></i></button> --}}
                             </div>
                             <div class="card-body">
-                                <div class="text-right mt-4">                   
+                                <div class="text-right mt-4">
                                     <button type="button" class="btn btn-primary mb-3" id="buttonAddMasterlist" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist"><i class="fa fa-plus fa-md"></i> Add New</button>
                                 </div>
                                 {{-- <div class="table-responsive"> --}}
@@ -52,8 +61,9 @@
                                                 <th>Action</th>
                                                 <th>Status</th>
                                                 <th>Employee #</th>
+                                                <th>Factory</th>
                                                 <th>Employee name</th>
-                                                <th>Incoming</th>   
+                                                <th>Incoming</th>
                                                 <th>Outgoing</th>
                                                 <th style="min-width: 300px; width: 300px;">Routes</th>
                                                 <th>Gender</th>
@@ -62,7 +72,7 @@
                                                 <th>Department</th>
                                                 <th>Section</th>
                                                 <th>Added by</th>
-                                                
+
                                             </tr>
                                         </thead>
                                     </table>
@@ -74,7 +84,7 @@
             </div>
         </section>
     </div>
-    
+
     <!-- Add Masterlist Modal Start -->
     <div class="modal fade" id="modalAddMasterlist" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg">
@@ -94,7 +104,7 @@
 
                                     <!-- HRIS / Subcon Id-->
                                     <input type="text" class="form-control" style="display: none" name="systemone_id" id="systemoneId">
-                                    
+
                                     <div class="mb-3">
                                         <label for="selectEmployeeType" class="form-label">Select Type<span class="text-danger" title="Required">*</span></label>
                                         <select class="form-select" id="selectEmployeeType" name="employee_type">
@@ -105,13 +115,21 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="selectEmployeeNumber" class="form-label">Select Employee<span class="text-danger" title="Required">*</span></label>
+                                        <label for="selectFactory" class="form-label">Factory<span class="text-danger" title="Required">*</span></label>
+                                        <select class="form-select" id="selectFactory" name="factory" disabled>
+                                            <option value="" selected disabled >Select Factory</option>
+                                            <option value="F1">Factory 1</option>
+                                            <option value="F3">Factory 3</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="selectEmployeeName" class="form-label">Select Employee<span class="text-danger" title="Required">*</span></label>
                                         <select class="form-select select2" id="selectEmployeeName" disabled name="employee_name">
-                                            <!-- Auto Generated -->
                                             <option value="0" disabled selected>Select One</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="mb-3">
                                         <label for="username" class="form-label">Employee #</label>
                                         <input type="text" class="form-control" readonly name="employee_number" id="textEmployeeNumber" placeholder="Employee #">
@@ -143,7 +161,7 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="selectEmployeeNumber" class="form-label">Select Routes<span class="text-danger" title="Required">*</span></label>
+                                        <label for="selectRoutes" class="form-label">Select Routes<span class="text-danger" title="Required">*</span></label>
                                         <select class="form-select select2" id="selectRoutes" disabled name="routes_id">
                                             <!-- Auto Generated -->
                                             <option value="0" disabled selected>Select One</option>
@@ -161,14 +179,14 @@
                                                 <input type="text" class="form-control datetimepicker" name="masterlist_outgoing" id="textMasterlistOutgoing" placeholder="Masterlist Capacity">
                                             </div>
                                         </div>
-                                        
-                                        
+
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="btnAddMasterlist" class="btn btn-primary"><i id="iBtnAddMasterlistIcon" class="fa fa-check"></i> Save</button>
@@ -177,7 +195,7 @@
             </div>
         </div>
     </div><!-- Add Masterlist Modal End -->
-    
+
     <!-- Edit Masterlist Status Modal Start -->
     <div class="modal fade" id="modalEditMasterlistStatus" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-md">
@@ -193,7 +211,7 @@
                         <input type="hidden" name="masterlist_id" placeholder="Masterlist Id" id="textEditMasterlistStatusMasterlistId">
                         <input type="hidden" name="masterlist_status" placeholder="Masterlist Status" id="textEditMasterlistStatus">
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="buttonEditMasterlistStatus" class="btn btn-primary"><i id="iBtnAddMasterlistIcon" class="fa fa-check"></i> Save</button>
@@ -218,7 +236,7 @@
                         <input type="hidden" name="masterlist_id" placeholder="Masterlist Id" id="textDeleteMasterlistStatusMasterlistId">
                         <input type="hidden" name="masterlist_is_deleted" placeholder="Masterlist Status" id="textDeleteMasterlistStatus">
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="buttonDeleteMasterlistStatus" class="btn btn-primary"><i id="iBtnAddMasterlistIcon" class="fa fa-check"></i> Save</button>
@@ -235,7 +253,7 @@
         $(document).ready(function () {
             let txtGlobalUserId = $('#txtGlobalUserId').val();
             console.log('txtGlobalUserId', txtGlobalUserId);
-            
+
             /**
              * Initialize Select2 Elements
             */
@@ -295,6 +313,7 @@
 
                 if(selectedEmployeeType != 0){
                     $('select#selectEmployeeName').prop('disabled', false);
+                    $('select#selectFactory').prop('disabled', false);
 
                     getEmployees($('#selectEmployeeName'), selectedEmployeeType).then((response) => {
                         console.log('response ', response);
@@ -357,6 +376,7 @@
                     { "data" : "action", orderable:false, searchable:false},
                     { "data" : "masterlist_status"},
                     { "data" : "masterlist_employee_number"},
+                    { "data" : "masterlist_factory"},
                     { "data" : "masterlist_employee_name"},
                     { "data" : "masterlist_incoming"},
                     { "data" : "masterlist_outgoing"},
@@ -375,7 +395,12 @@
                     // console.log('index ', index);
                 },
             });
-
+            //Select Load Factory
+            $('#selectLoadFactory').change(function (e) {
+                e.preventDefault();
+                let selectedFactory = $(this).val();
+                dataTablesMasterlist.ajax.url('view_masterlist?selectedFactory='+selectedFactory).draw();
+            });
             $("#formAddMasterlist").submit(function(event){
                 event.preventDefault();
                 addMasterlist();
@@ -393,7 +418,7 @@
                 let masterlistStatus = $(this).attr('masterlist-status');
                 console.log('masterlistId', masterlistId);
                 console.log('masterlistStatus', masterlistStatus);
-                
+
                 $("#textEditMasterlistStatusMasterlistId").val(masterlistId);
                 $("#textEditMasterlistStatus").val(masterlistStatus);
 
@@ -415,7 +440,7 @@
                 let masterlistIsDeleted = $(this).attr('masterlist-is-deleted');
                 console.log('masterlistId', masterlistId);
                 console.log('masterlistIsDeleted', masterlistIsDeleted);
-                
+
                 $("#textDeleteMasterlistStatusMasterlistId").val(masterlistId);
                 $("#textDeleteMasterlistStatus").val(masterlistIsDeleted);
 

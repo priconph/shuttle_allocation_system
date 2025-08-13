@@ -9,6 +9,14 @@ function addMasterlist(){
         success: function(response){
             if(response['validationHasError'] == 1){
                 toastr.error('Saving failed!');
+                if(response['error']['factory'] === undefined){
+                    $("#selectEmployeeType").removeClass('is-invalid');
+                    $("#selectEmployeeType").attr('title', '');
+                }
+                else{
+                    $("#selectEmployeeType").addClass('is-invalid');
+                    $("#selectEmployeeType").attr('title', response['error']['factory']);
+                }
                 if(response['error']['employee_type'] === undefined){
                     $("#selectEmployeeType").removeClass('is-invalid');
                     $("#selectEmployeeType").attr('title', '');
@@ -26,7 +34,7 @@ function addMasterlist(){
                     $("#selectEmployeeName").addClass('is-invalid');
                     $("#selectEmployeeName").attr('title', response['error']['employee_number']);
                 }
-                
+
                 if(response['error']['masterlist_incoming'] === undefined){
                     $("#textMasterlistIncoming").removeClass('is-invalid');
                     $("#textMasterlistIncoming").attr('title', '');
@@ -35,7 +43,7 @@ function addMasterlist(){
                     $("#textMasterlistIncoming").addClass('is-invalid');
                     $("#textMasterlistIncoming").attr('title', response['error']['masterlist_incoming']);
                 }
-                
+
                 if(response['error']['masterlist_outgoing'] === undefined){
                     $("#textMasterlistOutgoing").removeClass('is-invalid');
                     $("#textMasterlistOutgoing").attr('title', '');
@@ -118,14 +126,14 @@ function addMasterlist(){
 //                     $("input[name='systemone_id']", $('#formAddMasterlist')).val(masterlistData[0].systemone_subcon_id);
 //                     $("input[name='masterlist_id']", $('#formAddMasterlist')).val(masterlistData[0].id);
 //                 }
-                
-                
+
+
 //                 $('select#selectEmployeeType').prop('disabled', true);
 //                 $('select#selectEmployeeName').prop('disabled', true);
 //                 $("#textEmployeeNumber").val(masterlistData[0].masterlist_employee_number);
 //                 $("#textMasterlistIncoming").val(masterlistData[0].masterlist_incoming);
 //                 $("#textMasterlistOutgoing").val(masterlistData[0].masterlist_outgoing);
-                
+
 //             }
 //             else{
 //                 toastr.warning('No records found!');
@@ -138,7 +146,6 @@ function addMasterlist(){
 //         },
 //     });
 // }
-
 function getMasterlistById(id){
     $.ajax({
         url: "get_masterlist_by_id",
@@ -150,6 +157,7 @@ function getMasterlistById(id){
         beforeSend: function(){
             $('select#selectEmployeeType').prop('disabled', true);
             $('select#selectEmployeeName').prop('disabled', true);
+            // $('select#selectRoutes').prop('disabled', true);
         },
         success: function(response){
             let masterlistData = response['masterlistData'];
@@ -174,7 +182,7 @@ function getMasterlistById(id){
 
                     getRoutes($('#selectRoutes')).then((response) => {
                         console.log('getRoutes response ', response);
-                        $('select#selectRoutes').prop('disabled', false);
+                        // $('select#selectRoutes').prop('disabled', false);
                         $("#selectRoutes").val(masterlistData[0].routes_id).trigger('change');
                     }).catch((error) => {
                         console.log('error ', error);
@@ -208,6 +216,16 @@ function getMasterlistById(id){
 
                     $("input[name='systemone_id']", $('#formAddMasterlist')).val(masterlistData[0].systemone_subcon_id);
                     $("input[name='masterlist_id']", $('#formAddMasterlist')).val(masterlistData[0].id);
+
+                }
+                // if(response['user_level_id']  === 27 ){
+                    //TODO: ESS Access Only
+                    $('select#selectRoutes').prop('disabled', false);
+                    $('select#selectFactory').prop('disabled', false);
+                // }
+
+                if( masterlistData[0].masterlist_factory != null && masterlistData[0].masterlist_factory != ''){
+                    $("#selectFactory").val(masterlistData[0].masterlist_factory).trigger('change');
                 }
             }
             else{

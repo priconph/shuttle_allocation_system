@@ -31,12 +31,6 @@
                     width: 95% !important;
                     min-width: 90% !important;
                 }
-
-                .modal-lg-custom{
-                    width: 75% !important;
-                    min-width: 70% !important;
-                }
-
                 table.dataTable.display tbody tr.odd>.sorting_1, table.dataTable.order-column.stripe tbody tr.odd>.sorting_1 {
                     background-color: none !important;
                 }
@@ -50,7 +44,7 @@
                     border: 1px solid #aaa;
                     border-radius: 4px;
                 }
-
+                
                 select[readonly].select2+.select2-container {
                     pointer-events: none;
                     touch-action: none;
@@ -68,7 +62,7 @@
         <body class="hold-transition sidebar-mini">
             <div class="wrapper">
                     @include('shared.pages.admin_header')
-                    @include('shared.pages.admin_nav')
+                    @include('shared.pages.subcon_coor_nav')
                     @include('shared.pages.admin_footer')
 
                 <!-- Global Spinner -->
@@ -115,11 +109,11 @@
                             UserLogout();
                             console.log("Logging out...")
                         }, 300);
-
+                        
                     });
                 });
-
-
+        
+                
             </script>
         </body>
     </html>

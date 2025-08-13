@@ -7,13 +7,15 @@ use Illuminate\Support\Facades\Route;
  */
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoutesController;
-use App\Http\Controllers\ShuttleProviderController;
-use App\Http\Controllers\PickupTimeController;
+use App\Http\Controllers\SubconController;
 use App\Http\Controllers\SystemOneController;
-use App\Http\Controllers\MasterlistController;
-use App\Http\Controllers\ExportReportController;
+use App\Http\Controllers\AllocationController;
 use App\Http\Controllers\CutoffTimeController;
-
+use App\Http\Controllers\MasterlistController;
+use App\Http\Controllers\PickupTimeController;
+use App\Http\Controllers\ExportReportController;
+use App\Http\Controllers\ShuttleProviderController;
+use App\Http\Controllers\ExportReportV2Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,9 +75,21 @@ Route::get('/export_report', function () {
     return view('export_report');
 })->name('export_report');
 
+Route::get('/export_report_v2', function () {
+    return view('export_report_v2');
+})->name('export_report_v2');
+
 Route::get('/cutoff_time_management', function () {
     return view('cutoff_time_management');
 })->name('cutoff_time_management');
+
+Route::get('/allocations', function () {
+    return view('allocations');
+})->name('allocations');
+
+Route::get('/subcon_attendance_management', function () {
+    return view('subcon_attendance_management');
+})->name('subcon_attendance_management');
 
 
 
@@ -153,3 +167,25 @@ Route::get('/get_employees', [SystemOneController::class, 'getEmployees'])->name
  */
 Route::get('/export_report',[ExportReportController::class, 'export_report'])->name('export_report');
 Route::get('/export_report_test',[ExportReportController::class, 'export_report_test'])->name('export_report_test');
+
+/**
+ * ALLOCATION CONTROLLER
+ */
+Route::get('/view_allocations', [AllocationController::class, 'viewAllocations'])->name('view_allocations');
+Route::get('/view_master_list_for_allocation', [AllocationController::class, 'viewMasterListForAllocation'])->name('view_master_list_for_allocation');
+Route::get('/get_user_info', [AllocationController::class, 'getUserInfo'])->name('get_user_info');
+Route::get('/get_masterlist_info_for_filter', [AllocationController::class, 'getMasterlistInfoForFilter'])->name('get_masterlist_info_for_filter');
+Route::post('/add_allocation_data', [AllocationController::class, 'addAllocationData'])->name('add_allocation_data');
+Route::get('/get_allocation_data', [AllocationController::class, 'getAllocationData'])->name('get_allocation_data');
+Route::post('/change_status_allocation', [AllocationController::class, 'changeAllocationStatus'])->name('change_status_allocation');
+
+/**
+ * SUBCON ATTENDANCE MANAGEMENT CONTROLLER
+ */
+Route::controller(SubconController::class)->group(function(){
+    Route::post('import_subcon_attendance', 'importAttendance')->name('import_subcon_attendance');
+    Route::get('dt_get_subcon_attendance', 'dtGetSubconAttendance')->name('dt_get_subcon_attendance');
+});
+
+// EXPORT DATA
+Route::get('/export_v2/{factory}/{url_route}/{incoming}/{outgoing}/{from}/{to}', [ExportReportV2Controller::class, 'export_v2']);

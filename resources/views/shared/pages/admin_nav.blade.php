@@ -35,11 +35,16 @@
                         <p>Masterlist</p></p>
                     </a>
                 </li>
-
                 <li class="nav-item has-treeview">
                     <a href="{{ route('user_management') }}" class="nav-link">
                         <i class="nav-icon far fa-list-alt"></i>
                         <p>User</p></p>
+                    </a>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="{{ route('subcon_attendance_management') }}" class="nav-link">
+                        <i class="nav-icon far fa-list-alt"></i>
+                        <p>Subcon Attendance</p></p>
                     </a>
                 </li>
 
@@ -72,18 +77,18 @@
                     </a>
                 </li>
 
-                <li class="nav-header font-weight-bold">&nbsp;REPORT</li>
                 <li class="nav-item has-treeview">
-                    <a href="{{ route('export_report')}}" class="nav-link">
+                    <a href="{{ route('allocations')}}" class="nav-link">
                         <i class="nav-icon far fa-list-alt"></i>
-                        <p>Reports</p></p>
+                        <p>Allocations</p></p>
                     </a>
                 </li>
 
-                <li class="nav-item has-treeview" style="display: none">
-                    <a href="{{ route('export_report_test')}}" class="nav-link">
+                <li class="nav-header font-weight-bold">&nbsp;REPORT</li>
+                <li class="nav-item has-treeview">
+                    <a href="{{ route('export_report_v2')}}" class="nav-link">
                         <i class="nav-icon far fa-list-alt"></i>
-                        <p>Reports for testing</p></p>
+                        <p>Reports</p></p>
                     </a>
                 </li>
 
