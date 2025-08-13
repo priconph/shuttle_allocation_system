@@ -72,7 +72,6 @@ class MasterlistController extends Controller
                 'rapidx_user_info',
             ])
             ->where('is_deleted', 0);
-
         }else{
             $masterlistData = Masterlist::with([
                 'hris_info.position_info',
@@ -95,8 +94,24 @@ class MasterlistController extends Controller
             ])
             ->where('is_deleted', 0)
             ->where('created_by', $request->rapidXUserId);
-
         }
+        $selectedFactory = $request->selectedFactory;
+        switch ($selectedFactory) {
+            case 'F1':
+                $masterlistData->where('masterlist_factory', $selectedFactory);
+                break;
+            case 'F3':
+                $masterlistData->where('masterlist_factory', $selectedFactory);
+                break;
+            case 'All':
+                $masterlistData;
+                break;
+            default:
+                $masterlistData->where('masterlist_factory', 'ALL');
+                //no filter factory
+                break;
+        }
+        $masterlistData->get();
 
         $selectedFactory = $request->selectedFactory;
         switch ($selectedFactory) {

@@ -27,14 +27,14 @@
                                         <option value="" selected disabled>--- Select Factory ---</option>
                                         <option value="F1">Factory 1 & 2 - Cabuyao</option>
                                         <option value="F3">Factory 3 - Malvar</option>
-                                    </select>    
+                                    </select>
                                 </div>
 
                                 {{-- <div class="input-group mb-3">
                                     <div class="input-group-prepend w-50">
                                         <span class="input-group-text w-100">Route:</span>
                                     </div>
-                                    <select class="form-control select2bs5 get-equipment-model" id="slctRoute" name="route"></select>    
+                                    <select class="form-control select2bs5 get-equipment-model" id="slctRoute" name="route"></select>
                                 </div> --}}
 
                                 <div class="input-group mb-3">
@@ -55,14 +55,15 @@
                                     <div class="input-group-prepend w-50">
                                         <span class="input-group-text w-100">From:</span>
                                     </div>
-                                    <input type="date" class="form-control" id="dateFrom"  name="from" max="<?= date('Y-m-d'); ?>">
+                                    {{-- <input type="date" class="form-control" id="dateFrom"  name="from" max="<?= date('Y-m-d'); ?>"> --}}
+                                    <input type="date" class="form-control" id="dateFrom"  name="from">
                                 </div>
 
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend w-50">
                                         <span class="input-group-text w-100">To:</span>
                                     </div>
-                                    <input type="date" class="form-control" id="dateTo" name="to" max="<?= date('Y-m-d'); ?>">
+                                    <input type="date" class="form-control" id="dateTo" name="to">
                                 </div>
                             </div>
                             <div class="card-footer">
@@ -82,7 +83,7 @@
         $(document).ready(function () {
             $('.select2bs5').select2({
                 theme: 'bootstrap-5'
-            })          
+            })
 
             // GetEquipment($('.get-equipment'))
 

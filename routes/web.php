@@ -176,6 +176,8 @@ Route::get('/view_master_list_for_allocation', [AllocationController::class, 'vi
 Route::get('/get_user_info', [AllocationController::class, 'getUserInfo'])->name('get_user_info');
 Route::get('/get_masterlist_info_for_filter', [AllocationController::class, 'getMasterlistInfoForFilter'])->name('get_masterlist_info_for_filter');
 Route::post('/add_allocation_data', [AllocationController::class, 'addAllocationData'])->name('add_allocation_data');
+Route::get('/get_allocation_data', [AllocationController::class, 'getAllocationData'])->name('get_allocation_data');
+Route::post('/change_status_allocation', [AllocationController::class, 'changeAllocationStatus'])->name('change_status_allocation');
 
 /**
  * SUBCON ATTENDANCE MANAGEMENT CONTROLLER

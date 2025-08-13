@@ -15,6 +15,7 @@ class CreateAllocationsTable extends Migration
     {
         Schema::create('allocations', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('control_number')->nullable();
             $table->string('request_status')->default(0)->comment = '0 - Active, 1 - Expired';
             $table->string('request_type')->default(0)->comment = '1 - Change Schedule, 2 - Shutdown, 3 - Undertime';
             $table->date('alloc_date_start')->nullable();
