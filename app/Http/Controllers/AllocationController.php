@@ -130,8 +130,10 @@ class AllocationController extends Controller
                 $result = "";
                 if($row->request_type == 1){
                     $result .= '<center><span class="badge badge-pill badge-primary">Change Schedule</span></center>';
-                }else{
+                }else if($row->request_type == 2){
                     $result .= '<center><span class="badge badge-pill badge-secondary">Not Riding Shuttle</span></center>';
+                }else{
+                    $result .= '<center><span class="badge badge-pill badge-danger">N/A</span></center>';
                 }
                 return $result;
             })

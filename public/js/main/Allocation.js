@@ -476,6 +476,10 @@ $(document).ready(function(){
         $('#tblMasterListToAlloc #actionTextTheadDiv').removeClass('d-none');
         $('#tblMasterListToAlloc #actionCheckAllTheadDiv').addClass('d-none');
 
+        $('.selectAllocFactory').val('').trigger('change');
+        $('.selectAllocDepartment').val('').trigger('change');
+        $('.selectAllocSection').val('').trigger('change');
+
         $('.selectAllocFactory').prop('disabled', true);
         $('.selectAllocDepartment').prop('disabled', true);
         $('.selectAllocSection').prop('disabled', true);
