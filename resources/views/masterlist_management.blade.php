@@ -129,6 +129,13 @@
                                             <option value="0" disabled selected>Select One</option>
                                         </select>
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="selectRoutes" class="form-label">Select Routes<span class="text-danger" title="Required">*</span></label>
+                                        <select class="form-select select2" id="selectRoutes" disabled name="routes_id">
+                                            <!-- Auto Generated -->
+                                            <option value="0" disabled selected>Select One</option>
+                                        </select>
+                                    </div>
 
                                     <div class="mb-3">
                                         <label for="username" class="form-label">Employee #</label>
@@ -160,13 +167,7 @@
                                         <input type="text" class="form-control" readonly name="employee_section" id="textSection" placeholder="Section">
                                     </div>
 
-                                    <div class="mb-3">
-                                        <label for="selectRoutes" class="form-label">Select Routes<span class="text-danger" title="Required">*</span></label>
-                                        <select class="form-select select2" id="selectRoutes" disabled name="routes_id">
-                                            <!-- Auto Generated -->
-                                            <option value="0" disabled selected>Select One</option>
-                                        </select>
-                                    </div>
+
 
                                     <div class="mb-3">
                                         <div class="row">

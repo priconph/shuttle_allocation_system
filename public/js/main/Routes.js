@@ -9,13 +9,13 @@ function addRoutes(){
         success: function(response){
             if(response['validationHasError'] == 1){
                 toastr.error('Saving failed!');
-                if(response['error']['routes_destination'] === undefined){
+                if(response['error']['routes_name'] === undefined){
                     $("#textRoutesName").removeClass('is-invalid');
                     $("#textRoutesName").attr('title', '');
                 }
                 else{
                     $("#textRoutesName").addClass('is-invalid');
-                    $("#textRoutesName").attr('title', response['error']['routes_destination']);
+                    $("#textRoutesName").attr('title', response['error']['routes_name']);
                 }
 
                 if(response['error']['routes_description'] === undefined){
@@ -78,7 +78,7 @@ function getRoutesById(id){
             let routesData = response['routesData'];
             if(routesData.length > 0){
                 console.table(routesData);
-                $("#textRoutesName").val(routesData[0].routes_destination);
+                $("#textRoutesName").val(routesData[0].routes_name);
                 $("#textRoutesDescription").val(routesData[0].routes_description);
                 $("#selectPickupTime").val(routesData[0].pickup_time_id).trigger('change');
                 $("#selectShuttleProvider").val(routesData[0].shuttle_provider_id).trigger('change');

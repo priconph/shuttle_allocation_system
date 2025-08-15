@@ -15,7 +15,7 @@ class RouteCode extends Model
     protected $connection = 'mysql';
 
     public function routes_details(){
-        return $this->hasMany(Routes::class, 'routes_description', 'routes_destination');
+        return $this->hasMany(Routes::class, 'routes_description', 'routes_destination')->where('status', 1)->where('is_deleted', 0);
     }
 
 }

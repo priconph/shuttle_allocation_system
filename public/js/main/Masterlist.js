@@ -1,4 +1,6 @@
 function addMasterlist(){
+    $('#selectRoutes').prop('disabled', false)
+
 	$.ajax({
         url: "add_masterlist",
         method: "post",
@@ -184,6 +186,8 @@ function getMasterlistById(id){
                         console.log('getRoutes response ', response);
                         // $('select#selectRoutes').prop('disabled', false);
                         $("#selectRoutes").val(masterlistData[0].routes_id).trigger('change');
+                        // $('#selectRoutes').prop('disabled', true) // 8/15/2025 mdr 
+                        $('#selectRoutes').prop('disabled', false)
                     }).catch((error) => {
                         console.log('error ', error);
                     });

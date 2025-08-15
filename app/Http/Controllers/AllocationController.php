@@ -81,12 +81,20 @@ class AllocationController extends Controller
         }
 
         return DataTables::of($allocationData)
-            ->addColumn('action', function($row){
+            ->addColumn('action', function($row) use ($userData) {
                 date_default_timezone_set('Asia/Manila');
                 $disabled = '';
+
+                $currentHour = date('H'); // 24-hour format
+                // Disable after 2 PM
+                if ($currentHour >= 14 && $userData != 1) {
+                    $disabled = 'disabled';
+                }
+                // clark comment 08/14/2025
+
                 if($row->request_status == 0){
                     $result =   '<center>';
-                        $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 editRequest" '.$disabled.' data-control_no="'.$row->control_number.'">';
+                        $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 editRequest" data-control_no="'.$row->control_number.'">';
                         $result .=          '<i class="fa-solid fa-pen-to-square fa-lg"></i> ';
                         $result .=      '</button>';
 
@@ -96,7 +104,7 @@ class AllocationController extends Controller
                     $result .=  '</center>';
                 }else if($row->request_status == 1){
                     $result =   '<center>';
-                        $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 viewRequest" '.$disabled.' data-control_no="'.$row->control_number.'">';
+                        $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 viewRequest" data-control_no="'.$row->control_number.'">';
                         $result .=          '<i class="fa-solid fa-eye fa-lg"></i> ';
                         $result .=      '</button>';
 
@@ -106,7 +114,7 @@ class AllocationController extends Controller
                     $result .=  '</center>';
                 }else{
                     $result =   '<center>';
-                        $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 viewRequest" '.$disabled.' data-control_no="'.$row->control_number.'">';
+                        $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 viewRequest" data-control_no="'.$row->control_number.'">';
                         $result .=          '<i class="fa-solid fa-eye fa-lg"></i> ';
                         $result .=      '</button>';
                     $result .=  '</center>';
@@ -212,7 +220,7 @@ class AllocationController extends Controller
                 'routes_info',
                 'rapidx_user_info',
             ])
-            ->when($isViewMode != 1, function ($query) {
+            ->when($isViewMode != 1, function ($query){
                 $query->where('is_deleted', 0);
             })
             ->when($request->requestControlNo, function ($query) use ($requestMlIds) {
@@ -329,7 +337,7 @@ class AllocationController extends Controller
                         $result .= '<center><span>-</span></center>';
                     }
                 }else{
-                    $result .= '<center><span>Resigned</span></center>';
+                    $result .= '<center><span>-</span></center>';
                 }
                 return $result;
             })
@@ -371,30 +379,61 @@ class AllocationController extends Controller
         $departmentDetails = Masterlist::where('is_deleted', 0)
                     ->with(['hris_info.department_info' => function ($q) use ($request) {
                         $q->select('pkid', 'Department'); // Adjust fields based on your table
-                    }])
+                        },'subcon_info.department_info' => function ($q) {
+                            $q->select('pkid', 'Department');
+                        }
+                    ])
                     // ->when($request->param_factory != 'ALL', function ($query) use ($request) {
                     //     $query->where('masterlist_factory', $request->param_factory); // param_factory
                     // })
                     ->where('masterlist_factory', $request->param_factory) // param_factory
                     ->get()
-                    ->pluck('hris_info.department_info') // Get all related departments
-                    ->filter() // Remove nulls in case of missing relationships
-                    ->unique('Department') // Or use 'Department' if that's what you want
-                    ->values(); // Re-index the array
+                    ->flatMap(function ($item) {
+                        // Combine both into one array and remove nulls
+                        return collect([
+                            $item->hris_info->department_info ?? null,
+                            $item->subcon_info->department_info ?? null
+                        ])->filter();
+                    })
+                    ->unique('Department') // Avoid duplicates by department name
+                    ->values();
+                    // ->map(function ($item) {
+                    //     // Merge both possible department_info sources into one collection
+                    //     return collect([$item->hris_info->department_info, $item->subcon_info->department_info])
+                    //         ->filter(); // Remove nulls
+                    // })
+                    // ->flatten(1) // Flatten one level so we have a flat list of departments
+                    // ->pluck('hris_info.department_info') // Get all related departments
+                    // ->filter() // Remove nulls in case of missing relationships
+                    // ->unique('Department') // Or use 'Department' if that's what you want
+                    // ->values(); // Re-index the array
 
         $sectionDetails = Masterlist::where('is_deleted', 0)
-                        ->with(['hris_info.section_info' => function ($q) use ($request) {
-                            $q->select('pkid', 'Section')
-                            ->when($request->param_department != 'ALL', function ($query) use ($request) {
-                                $query->where('fkDepartment', $request->param_department); // Adjust fields based on your table
-                            });
-                        }])
-                        ->where('masterlist_factory', $request->param_factory) // param_factory
-                        ->get()
-                        ->pluck('hris_info.section_info') // Get all related departments
-                        ->filter() // Remove nulls in case of missing relationships
-                        ->unique('Section') // Or use 'Department' if that's what you
-                        ->values(); // Re-index the array
+                    ->with(['hris_info.section_info' => function ($q) use ($request) {
+                                $q->select('pkid', 'Section')
+                                ->when($request->param_department != 'ALL', function ($query) use ($request) {
+                                    $query->where('fkDepartment', $request->param_department); // Adjust fields based on your table
+                                });
+                            },'subcon_info.section_info' => function ($q) use ($request) {
+                                $q->select('pkid', 'Section')
+                                ->when($request->param_department != 'ALL', function ($query) use ($request) {
+                                    $query->where('fkDepartment', $request->param_department); // Adjust fields based on your table
+                                });
+                            }
+                    ])
+                    ->where('masterlist_factory', $request->param_factory) // param_factory
+                    ->get()
+                    ->flatMap(function ($item) {
+                        // Combine both into one array and remove nulls
+                        return collect([
+                            $item->hris_info->section_info ?? null,
+                            $item->subcon_info->section_info ?? null
+                        ])->filter();
+                    })
+                    // ->pluck('hris_info.section_info') // Get all related departments
+                    // ->filter() // Remove nulls in case of missing relationships
+                    ->unique('Section') // Or use 'Department' if that's what you
+                    ->values(); // Re-index the array
 
         return response()->json(['departmentDetails' => $departmentDetails, 'sectionDetails' => $sectionDetails]);
     }
@@ -403,7 +442,13 @@ class AllocationController extends Controller
         date_default_timezone_set('Asia/Manila');
         session_start();
         $data = $request->all();
-        // return  $data;
+        $currentHour = date('H'); // 24-hour format
+        $userData = User::where('rapidx_user_id', $request->requestor_id)->value('user_role_id');
+
+        if ($currentHour >= 14 && $userData != 1 && $request->start_date == date('Y-m-d')){
+            return response()->json(['hasError' => 1, 'result' => 0, 'message' => 'Allocation for TODAY is already closed.']);
+        }
+
         $validate_array = [
             'type_of_request' => 'required',
             'start_date'      => 'required',
@@ -431,17 +476,55 @@ class AllocationController extends Controller
 
             if($request->selectedIds[0] != 0){ //default value of selectIds, meaning empty array
                 foreach ($request->selectedIds as $key => $value){
-                    $checkExistingAllocation = Allocations::where('requestee_ml_id', $request->selectedIds[$key])
-                                                            ->whereDate('alloc_date_start', '>=', $request->start_date)
-                                                            ->whereDate('alloc_date_end', '<=', $request->end_date)
-                                                            ->where('is_deleted', 0)
-                                                            ->get();
+                    $conflictingAllocations = Allocations::with(['request_ml_info.hris_info', 'request_ml_info.subcon_info', 'requestor_user_info'])
+                                                ->whereIn('requestee_ml_id', $request->selectedIds)
+                                                ->where('is_deleted', 0)
+                                                ->where('request_status', 0)
+                                                ->whereDate('alloc_date_start', '<=', $request->end_date) // starts before new ends
+                                                ->whereDate('alloc_date_end', '>=', $request->start_date) // ends after new starts
+                                                ->get(['control_number', 'requestee_ml_id', 'alloc_date_start', 'alloc_date_end', 'requested_by']);
 
+                    if ($conflictingAllocations->isNotEmpty() && $conflictingAllocations[0]->control_number != $request->request_control_no) {
+                        return response()->json([
+                            'hasExisted' => count($conflictingAllocations),
+                            'error' => 'Some people already have allocations in the selected date range.',
+                            'conflicts' => $conflictingAllocations->map(function($item) {
+                                if($item->request_ml_info->hris_info != null){
+                                    $requested_emp = $item->request_ml_info->hris_info->FirstName.' '.$item->request_ml_info->hris_info->LastName;
+                                }else{
+                                    $requested_emp = $item->request_ml_info->subcon_info->FirstName.' '.$item->request_ml_info->subcon_info->LastName;
+                                }
+
+                                return [
+                                    'requestee_ml_id' => $item->requestee_ml_id,
+                                    'start' => $item->alloc_date_start,
+                                    'end' => $item->alloc_date_end,
+                                    'requested_by' => $item->requestor_user_info->name,
+                                    'requested_emp' => $requested_emp
+                                ];
+                            })
+                        ]);
+                    }
+
+                    // $checkExistingAllocation = Allocations::where('requestee_ml_id', $request->selectedIds[$key])
+                    //                                     ->where('is_deleted', 0)
+                    //                                     ->whereDate('alloc_date_start', '<=', $request->end_date) // existing starts before new ends
+                    //                                     ->whereDate('alloc_date_end', '>=', $request->start_date) // existing ends after new starts
+                    //                                     ->first();
+
+                    // $checkExistingAllocation = Allocations::where('requestee_ml_id', $request->selectedIds[$key])
+                    //                                         ->whereDate('alloc_date_start', '>=', $request->start_date)
+                    //                                         ->whereDate('alloc_date_end', '<=', $request->end_date)
+                    //                                         ->where('is_deleted', 0)
+                    //                                         ->first();
+
+                    // return $checkExistingAllocation != null;
                     // $checkExistingAllocation = Allocations::where('requestee_ml_id', $request->selectedIds[$key])->get();
                     // return $checkExistingAllocation;
-                    if(count($checkExistingAllocation) > 0){
-                        return response()->json(['hasError' => 1, 'hasExisted' => count($checkExistingAllocation)]);
-                    }
+
+                    // if($checkExistingAllocation != null && $checkExistingAllocation->control_number != $request->request_control_no){
+                    //     return response()->json(['hasError' => 1, 'hasExisted' => count($checkExistingAllocation)]);
+                    // }
                 }
             }
 
@@ -455,7 +538,8 @@ class AllocationController extends Controller
 
                 //Control No. Generation
                 $lastest_control_no = Allocations::where('is_deleted', 0)->latest('id')->first();
-                if($lastest_control_no->control_number == null){
+
+                if(is_null($lastest_control_no)){
                     $control_no_counter = 1;
                 }else{
                     $control_no = $lastest_control_no->control_number;
@@ -482,7 +566,7 @@ class AllocationController extends Controller
 
                     foreach ($request->selectedIds as $key => $value) {
                         Allocations::insert([
-                            'control_number'     => $control_no_concat_value,
+                            'control_number'   => $control_no_concat_value,
                             'request_type'     => $request->type_of_request,
                             'date_requested'   => $request->date_requested,
                             'alloc_date_start' => $request->start_date,
@@ -542,7 +626,7 @@ class AllocationController extends Controller
                 $change_status_to = 2;
             }
 
-            Allocations::where('control_number', $request->delete_control_no)->update(['request_status' => $change_status_to]);
+            Allocations::where('control_number', $request->delete_control_no)->update(['request_status' => $change_status_to, 'updated_at' => date('Y-m-d H:i:s')]);
             DB::commit();
             return response()->json(['hasError' => 0]);
         } catch (\Exception $e) {

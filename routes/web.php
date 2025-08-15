@@ -107,6 +107,7 @@ Route::get('/check_session', [UserController::class, 'checkSession'])->name('che
 Route::get('/get_user_levels', [UserController::class, 'getUserLevels'])->name('get_user_levels');
 Route::get('/get_data_for_dashboard', [UserController::class, 'getDataForDashboard'])->name('get_data_for_dashboard');
 Route::get('/get_shuttle_allocation_user', [UserController::class, 'getShuttleAllocationUser'])->name('get_shuttle_allocation_user');
+Route::get('/get_user_by_rapidx_id', [UserController::class, 'getUserByRapidxId'])->name('get_user_by_rapidx_id');
 
 /**
  * ROUTES MANAGEMEMENT CONTROLLER
