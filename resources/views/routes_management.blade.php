@@ -75,7 +75,7 @@
 
                                     <div class="mb-3">
                                         <label for="username" class="form-label">Route Name</label>
-                                        <input type="text" class="form-control" name="routes_destination" id="textRoutesName" placeholder="Route Name">
+                                        <input type="text" class="form-control" name="routes_name" id="textRoutesName" placeholder="Route Name">
                                     </div>
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Route Description</label>

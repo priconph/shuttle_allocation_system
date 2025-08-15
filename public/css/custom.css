@@ -31,3 +31,8 @@ body {
     width: 95% !important;
     min-width: 90% !important;
 }
+
+.modal-lg-custom{
+    width: 75% !important;
+    min-width: 70% !important;
+}

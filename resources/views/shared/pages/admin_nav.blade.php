@@ -21,73 +21,90 @@
                         <p>Return to RapidX</p>
                     </a>
                 </li>
-                <li class="nav-item has-treeview">
+                <li class="nav-item has-treeview mb-3">
                     <a href="{{ route('dashboard') }}" class="nav-link">
                     {{-- <a href="" data-toggle="modal" data-target="" class="nav-link"> --}}
                         <i class="nav-icon fa-solid fa-gauge-high"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
+
+                <li class="nav-header font-weight-bold">&nbsp;MOBILE APPLICATION</li>
+                <li class="nav-item has-treeview mb-3">
+                    <a href="http://192.168.3.188/shuttle_manifest/F1shuttleManifest.apk" class="nav-link">
+                        <i class="fa fa-download"></i>
+                        <p>F1 Application Download</p></p>
+                    </a>
+                </li>
+
+                <li class="nav-item has-treeview mb-3">
+                    <a href="http://192.168.3.188/shuttle_manifest/F3shuttleManifest.apk" class="nav-link">
+                        <i class="fa fa-download"></i>
+                        <p>F3 Application Download</p></p>
+                    </a>
+                </li>
+
                 <li class="nav-header font-weight-bold">&nbsp;MAIN</li>
                 <li class="nav-item has-treeview">
                     <a href="{{ route('masterlist_management') }}" class="nav-link">
-                        <i class="nav-icon far fa-list-alt"></i>
+                        <i class="nav-icon fa-solid fa-user-lock"></i>
                         <p>Masterlist</p></p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
-                    <a href="{{ route('user_management') }}" class="nav-link">
-                        <i class="nav-icon far fa-list-alt"></i>
-                        <p>User</p></p>
+                    <a href="{{ route('allocations')}}" class="nav-link">
+                        <i class="nav-icon fa-solid fa-user-clock"></i>
+                        <p>Allocations</p></p>
                     </a>
                 </li>
-                <li class="nav-item has-treeview">
+
+                <li class="nav-item has-treeview mb-3">
                     <a href="{{ route('subcon_attendance_management') }}" class="nav-link">
-                        <i class="nav-icon far fa-list-alt"></i>
+                        <i class="nav-icon fa-solid fa-user-shield"></i>                        
                         <p>Subcon Attendance</p></p>
                     </a>
                 </li>
 
                 <li class="nav-header font-weight-bold">&nbsp;CONFIGURATION</li>
                 <li class="nav-item has-treeview">
+                    <a href="{{ route('user_management') }}" class="nav-link">
+                        <i class="nav-icon fa-solid fa-user-gear"></i>
+                        <p>User</p></p>
+                    </a>
+                </li>
+
+                <li class="nav-item has-treeview">
                     <a href="{{ route('routes_management') }}" class="nav-link">
-                        <i class="nav-icon far fa-list-alt"></i>
+                        <i class="nav-icon fa-solid fa-map-location-dot"></i>
                         <p>Routes</p></p>
                     </a>
                 </li>
 
                 <li class="nav-item has-treeview">
                     <a href="{{ route('pickup_time_management') }}" class="nav-link">
-                        <i class="nav-icon far fa-list-alt"></i>
+                        <i class="nav-icon fa-solid fa-clock"></i>
                         <p>Pickup Time</p></p>
                     </a>
                 </li>
 
                 <li class="nav-item has-treeview">
                     <a href="{{ route('shuttle_provider_management') }}" class="nav-link">
-                        <i class="nav-icon far fa-list-alt"></i>
+                        <i class="nav-icon fa-solid fa-van-shuttle"></i>
                         <p>Shuttle Provider</p></p>
                     </a>
                 </li>
 
-                <li class="nav-item has-treeview">
+                <li class="nav-item has-treeview mb-3">
                     <a href="{{ route('cutoff_time_management')}}" class="nav-link">
-                        <i class="nav-icon far fa-list-alt"></i>
+                        <i class="nav-icon fa-solid fa-bell-slash"></i>
                         <p>Cut-off Time</p></p>
-                    </a>
-                </li>
-
-                <li class="nav-item has-treeview">
-                    <a href="{{ route('allocations')}}" class="nav-link">
-                        <i class="nav-icon far fa-list-alt"></i>
-                        <p>Allocations</p></p>
                     </a>
                 </li>
 
                 <li class="nav-header font-weight-bold">&nbsp;REPORT</li>
                 <li class="nav-item has-treeview">
                     <a href="{{ route('export_report_v2')}}" class="nav-link">
-                        <i class="nav-icon far fa-list-alt"></i>
+                        <i class="nav-icon fa-solid fa-file-excel"></i>
                         <p>Reports</p></p>
                     </a>
                 </li>

@@ -28,7 +28,7 @@ class Masterlist extends Model
     }
 
     public function routes_info(){
-        return $this->hasOne(Routes::class, 'id', 'routes_id')->where('status', 1);
+        return $this->hasOne(Routes::class, 'id', 'routes_id')->where('status', 1)->where('is_deleted', 0);
     }
 
     public function rapidx_user_info(){

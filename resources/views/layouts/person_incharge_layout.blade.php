@@ -27,10 +27,12 @@
             <!-- CSS LINKS -->
             @include('shared.css_links.css_links')
             <style>
-                .modal-xl-custom{
+                /* .modal-xl-custom{
                     width: 95% !important;
                     min-width: 90% !important;
-                }
+                } */
+
+                
                 table.dataTable.display tbody tr.odd>.sorting_1, table.dataTable.order-column.stripe tbody tr.odd>.sorting_1 {
                     background-color: none !important;
                 }

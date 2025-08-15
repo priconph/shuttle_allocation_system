@@ -1,9 +1,72 @@
 $(document).ready(function(){
     let txtGlobalUserId = $('#txtGlobalUserId').val();
-    GetDetailsForFiltering();
+    // Run check every minute
+    // let currentSessionUserRole;
+    // checkButtonStatus(currentSessionUserRole);
+    getDetailsForFiltering();
+    // getUsersAllowedAfterCutoff(txtGlobalUserId);
+
+    function getUsersAllowedAfterCutoff(txtGlobalUserId){
+        $.ajax({
+            url: "get_user_by_rapidx_id",
+            method: "get",
+            data: {
+                userId : txtGlobalUserId,
+            },
+            dataType: "json",
+            beforeSend: function(){
+
+            },
+            success: function(response){
+                let userDetails = response['userDetails'];
+                if(userDetails != null){
+                    if(userDetails.user_roles == 1){
+                        console.log('admin');
+                        currentSessionUserRole = 'admin';
+                    }else{
+                        console.log('not admin');
+                        currentSessionUserRole = 'user';
+                    }
+                }else{
+                    console.log('no data userDetails');
+                }
+            },
+            error: function(data, xhr, status){
+                toastr.error('An error occured!\n' + 'Data: ' + data + "\n" + "XHR: " + xhr + "\n" + "Status: " + status);
+            },
+        });
+    }
+
+    function checkButtonStatus(currentSessionUserRole){
+        const now = new Date();
+        const currentHour = now.getHours(); // 0–23
+        const currentMinute = now.getMinutes(); // 0–59
+
+        const targetHour = 14; // 2 PM
+        // const targetMinute = 00;
+        const addButton = $('#btnAddAllocation');
+
+        // Disable if current time is later than 2:00 PM
+        if(currentHour > targetHour) {
+            console.log('disabled');
+            if(currentSessionUserRole == 'admin'){
+                // addButton.prop('disabled', true); //clark comment
+                addButton.prop('disabled', false);
+            }
+        }else{
+            console.log('enabled');
+            addButton.prop('disabled', false);
+        }
+    }
 
     $('#filterRequestType').change(function (e) {
         e.preventDefault();
+        if($(this).val() == 1){
+            $('#filterFactory').prop('disabled', false);
+        }else{
+            $('#filterFactory').val(0).trigger('change');
+            $('#filterFactory').prop('disabled', true);
+        }
         dtAllocation.draw();
     });
 
@@ -94,25 +157,36 @@ $(document).ready(function(){
                 param.requestControlNo = $('#formAddAllocation #txtRequestControlNo').val();
                 param.isViewMode = $('#formAddAllocation #txtIsViewMode').val();
             },
-            beforeSend: function (jqXHR, settings) {
+            beforeSend: function (jqXHR, settings){
                 // $("#divForTblMasterListToAllocThead").addClass('d-none');
                 $("#divForTblMasterListToAllocTbody").addClass('d-none');
+                $('#tblMasterListToAlloc').find('#actionTextTheadDiv').addClass('d-none');
+                $('#tblMasterListToAlloc').find('#actionCheckAllTheadDiv').addClass('d-none');
             },
-            complete: function () {
+            complete: function (){
                 // $("#divForTblMasterListToAllocThead").removeClass('d-none');
                 $("#divForTblMasterListToAllocTbody").removeClass('d-none');
+                if($('#formAddAllocation #txtIsViewMode').val() != 0){
+                    $('#tblMasterListToAlloc').find('#actionTextTheadDiv').removeClass('d-none');
+                    console.log('txtIsViewMode', 'true');
+                }else{
+                    $('#tblMasterListToAlloc').find('#actionCheckAllTheadDiv').removeClass('d-none');
+                    console.log('txtIsViewMode', 'false');
+                }
             }
         },
         "columns":[
             { "data" : "action", width: '5%', orderable:false, searchable:false},
-            { "data" : "masterlist_employee_number", width: '5%',},
-            { "data" : "name", width: '15%',},
-            { "data" : "department", width: '10%',},
-            { "data" : "section", width: '10%',},
-            { "data" : "routes_info.routes_name", width: '30%', orderable:false, searchable:false},
+            { "data" : "masterlist_employee_number", width: '5%'},
+            { "data" : "name", width: '15%'},
+            { "data" : "department", width: '10%'},
+            { "data" : "section", width: '10%'},
+            { "data" : "routes_info.routes_name", width: '30%'},
             { "data" : "factory"},
-            { "data" : "masterlist_incoming", orderable:false, searchable:false},
-            { "data" : "masterlist_outgoing", orderable:false, searchable:false},
+            { "data" : "masterlist_incoming"},
+            { "data" : "masterlist_outgoing"},
+            { "data": "rapidx_user_info.name"},
+
             // { "data" : "ml_route", orderable:false, searchable:false},
         ],
         "createdRow": function(row, data, index) {
@@ -122,12 +196,17 @@ $(document).ready(function(){
 
     $('#btnAddAllocation').click(function (e) {
         e.preventDefault();
+        const today = new Date();
+        let yyyy = today.getFullYear();
+        let mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0
+        let dd = String(today.getDate()).padStart(2, '0');
+        let formattedDate = `${yyyy}-${mm}-${dd}`;
+        console.log(formattedDate);
+
         $('#formAddAllocation #txtRequestControlNo').val('');
-
         $('#allocationRequestChangeTitle').html('<i class="fas fa-info-circle"></i>&nbsp; Add Employee/s Allocation Request');
-        $('#tblMasterListToAlloc #actionTextTheadDiv').addClass('d-none');
-        $('#tblMasterListToAlloc #actionCheckAllTheadDiv').removeClass('d-none');
 
+        $('#tblMasterListToAlloc').find('#chkAllItems').prop('disabled', false);
         $('.selectAllocFactory').prop('disabled', false);
         $('.selectAllocDepartment, .selectAllocSection').prop('disabled', true);
 
@@ -135,10 +214,13 @@ $(document).ready(function(){
         $('.selectAllocDepartment').val('').trigger('change');
         $('.selectAllocSection').val('').trigger('change');
 
+        $('#formAddAllocation #txtStartDate').attr('min', formattedDate); // start date cannot be after end date
+        $('#formAddAllocation #txtEndDate').attr('min', formattedDate); // start date cannot be after end date
+
         $.ajax({
             url: "get_user_info",
             method: "get",
-            data: {
+            data:{
                 userId : txtGlobalUserId,
             },
             dataType: "json",
@@ -160,6 +242,8 @@ $(document).ready(function(){
                 toastr.error('An error occured!\n' + 'Data: ' + data + "\n" + "XHR: " + xhr + "\n" + "Status: " + status);
             },
         });
+
+        // filterDataTable(false, false); //this will draw the table;
     });
 
     let selectedIds = new Set();
@@ -230,80 +314,129 @@ $(document).ready(function(){
             selectedIds.forEach(id => {
                 formDataAddAllocation.append('selectedIds[]', id);
             });
-
-            $.ajax({
-                type:"POST",
-                url: "add_allocation_data",
-                data: formDataAddAllocation,
-                processData: false,
-                contentType: false,
-                success: function(response){
-                    if(response['validationHasError'] == 1){
-                        toastr.error('Saving failed!, Please complete all required fields');
-                        if (response['error']['type_of_request'] === undefined) {
-                            $("#txtTypeOfRequest").removeClass('is-invalid');
-                            $("#txtTypeOfRequest").attr('title', '');
-                        } else {
-                            $("#txtTypeOfRequest").addClass('is-invalid');
-                            $("#txtTypeOfRequest").attr('title', response['error']['type_of_request']);
-                        }
-
-                        if (response['error']['alloc_factory'] === undefined) {
-                            $("#txtAllocFactory").removeClass('is-invalid');
-                            $("#txtAllocFactory").attr('title', '');
-                        } else {
-                            $("#txtAllocFactory").addClass('is-invalid');
-                            $("#txtAllocFactory").attr('title', response['error']['alloc_factory']);
-                        }
-
-                        if (response['error']['alloc_incoming'] === undefined) {
-                            $("#txtAllocIncoming").removeClass('is-invalid');
-                            $("#txtAllocIncoming").attr('title', '');
-                        } else {
-                            $("#txtAllocIncoming").addClass('is-invalid');
-                            $("#txtAllocIncoming").attr('title', response['error']['alloc_incoming']);
-                        }
-
-                        if (response['error']['alloc_outgoing'] === undefined) {
-                            $("#txtAllocOutgoing").removeClass('is-invalid');
-                            $("#txtAllocOutgoing").attr('title', '');
-                        } else {
-                            $("#txtAllocOutgoing").addClass('is-invalid');
-                            $("#txtAllocOutgoing").attr('title', response['error']['alloc_outgoing']);
-                        }
-
-                        if (response['error']['start_date'] === undefined) {
-                            $("#txtStartDate").removeClass('is-invalid');
-                            $("#txtStartDate").attr('title', '');
-                        } else {
-                            $("#txtStartDate").addClass('is-invalid');
-                            $("#txtStartDate").attr('title', response['error']['start_date']);
-                        }
-
-                        if (response['error']['end_date'] === undefined) {
-                            $("#txtEndDate").removeClass('is-invalid');
-                            $("#txtEndDate").attr('title', '');
-                        } else {
-                            $("#txtEndDate").addClass('is-invalid');
-                            $("#txtEndDate").attr('title', response['error']['end_date']);
-                        }
-                    }else if (response['hasError'] == 1 && response['result'] == 0 ) {
-                        toastr.error(response['message']);
-                    }else if (response['hasError'] == 1 && response['hasExisted'] > 0 ) {
-                        toastr.error('Selected Employee/s is already allocated, Please Re-evaluate');
-                    }else if (response['hasError'] == 0 ) {
-                        toastr.success('Successful!');
-                        $("#modalAddAllocation").modal('hide');
-                        dtAllocation.draw();
-                    }else{
-                        toastr.error('Error!, Please Contanct ISS Local 208');
-                    }
-                }
-            });
+        }else{
+            toastr.error('No Selected Employee to be Allocated, Please Select First');
         }
+
+        $.ajax({
+            type:"POST",
+            url: "add_allocation_data",
+            data: formDataAddAllocation,
+            processData: false,
+            contentType: false,
+            beforeSend: function(){
+                $('#formAddAllocation').find('#btnSaveNewAllocation').prop('disabled', true)
+            },
+            success: function(response){
+                setTimeout(() => {
+                    $('#formAddAllocation').find('#btnSaveNewAllocation').prop('disabled', false)
+                }, 3000);
+                if(response['validationHasError'] == 1){
+                    toastr.error('Saving failed!, Please complete all required fields');
+                    if (response['error']['type_of_request'] === undefined) {
+                        $("#txtTypeOfRequest").removeClass('is-invalid');
+                        $("#txtTypeOfRequest").attr('title', '');
+                    } else {
+                        $("#txtTypeOfRequest").addClass('is-invalid');
+                        $("#txtTypeOfRequest").attr('title', response['error']['type_of_request']);
+                    }
+
+                    if (response['error']['alloc_factory'] === undefined) {
+                        $("#txtAllocFactory").removeClass('is-invalid');
+                        $("#txtAllocFactory").attr('title', '');
+                    } else {
+                        $("#txtAllocFactory").addClass('is-invalid');
+                        $("#txtAllocFactory").attr('title', response['error']['alloc_factory']);
+                    }
+
+                    if (response['error']['alloc_incoming'] === undefined) {
+                        $("#txtAllocIncoming").removeClass('is-invalid');
+                        $("#txtAllocIncoming").attr('title', '');
+                    } else {
+                        $("#txtAllocIncoming").addClass('is-invalid');
+                        $("#txtAllocIncoming").attr('title', response['error']['alloc_incoming']);
+                    }
+
+                    if (response['error']['alloc_outgoing'] === undefined) {
+                        $("#txtAllocOutgoing").removeClass('is-invalid');
+                        $("#txtAllocOutgoing").attr('title', '');
+                    } else {
+                        $("#txtAllocOutgoing").addClass('is-invalid');
+                        $("#txtAllocOutgoing").attr('title', response['error']['alloc_outgoing']);
+                    }
+
+                    if (response['error']['start_date'] === undefined) {
+                        $("#txtStartDate").removeClass('is-invalid');
+                        $("#txtStartDate").attr('title', '');
+                    } else {
+                        $("#txtStartDate").addClass('is-invalid');
+                        $("#txtStartDate").attr('title', response['error']['start_date']);
+                    }
+
+                    if (response['error']['end_date'] === undefined) {
+                        $("#txtEndDate").removeClass('is-invalid');
+                        $("#txtEndDate").attr('title', '');
+                    } else {
+                        $("#txtEndDate").addClass('is-invalid');
+                        $("#txtEndDate").attr('title', response['error']['end_date']);
+                    }
+                }else if (response['hasError'] == 1 && response['result'] == 0 ) {
+                    toastr.error(response['message']);
+                }else if (response['hasExisted'] > 0 ) {
+                    toastr.error('Selected Employee/s is already allocated, Please Re-evaluate');
+
+                    // First, clear any previous highlights/details
+                    $('.conflict-row').removeClass('conflict-row');
+                    $('.conflict-details-row').remove();
+
+                    // Loop through conflicts
+                    response.conflicts.forEach(function(conflict){
+
+                        // Find the checkbox with matching data-checkbox-id
+                        dtMasterListToAlloc.rows().every(function(){
+                            let $row = $(this.node());
+                            let checkbox = $row.find('.itemCheckbox');
+                            let checkboxId = checkbox.data('checkbox-id'); //read data-checkbox-id
+                            console.log('checkboxId, conflict.requestee_ml_id', checkboxId, conflict.requestee_ml_id);
+
+                            if(checkboxId == conflict.requestee_ml_id){
+                                console.log('matched',$row);
+
+                                // Highlight main row
+                                $row.addClass('conflict-row');
+
+                                // Get column count for colspan
+                                let colspan = $row.find('td').length;
+
+                                // Insert a details row under it
+                                let detailsRow = `
+                                    <tr class="conflict-details-row">
+                                        <td colspan="${colspan}" style="font-weight:bold; color:#000; text-align:center;">
+                                            ${conflict.requested_emp} is already allocated from <span style="color:#b30000">${conflict.start}</span>
+                                            to <span style="color:#b30000">${conflict.end}</span>
+                                            (Requested by: <span style="color:#b30000">${conflict.requested_by}</span>)
+                                        </td>
+                                    </tr>
+                                `;
+
+                                // Append details row after the highlighted row
+                                $row.after(detailsRow);
+                            }
+                        });
+                    });
+
+                }else if (response['hasError'] == 0 ) {
+                    toastr.success('Successful!');
+                    $("#modalAddAllocation").modal('hide');
+                    dtAllocation.draw();
+                }else{
+                    toastr.error('Error!, Please Contanct ISS Local 208');
+                }
+            }
+        });
     });
 
-    function GetDetailsForFiltering(param_factory, param_department, param_section){
+    function getDetailsForFiltering(param_factory, param_department, param_section){
         let result;
         // let result = '<option value="" disabled selected> Select Device Name </option>';
         $.ajax({
@@ -350,31 +483,34 @@ $(document).ready(function(){
         });
     }
 
-    function filterDataTable(loadExistingData = false, viewMode = false) {
+    function filterDataTable(loadExistingData = false, viewMode = false){
         const factoryVal = $('.selectAllocFactory').val();
         const deptVal = $('.selectAllocDepartment').val();
         const sectionVal = $('.selectAllocSection').val();
 
-        if (!loadExistingData && (!factoryVal || !deptVal || !sectionVal)) {
+        if(!loadExistingData && (!factoryVal || !deptVal || !sectionVal)) {
             dtMasterListToAlloc
                 .column(6).search('___NO_MATCH___')
                 .column(3).search('')
                 .column(4).search('')
                 .draw();
-            return;
-        }
-
-        dtMasterListToAlloc
+        }else{
+            dtMasterListToAlloc
             .column(6).search(factoryVal && factoryVal !== "ALL" ? factoryVal : '')
-            .column(3).search(deptVal && deptVal !== "ALL" ? deptVal : '')
+            .column(3).search(deptVal && deptVal !== "ALL" ? '<span>' + deptVal + '</span>' : '')
             .column(4).search(sectionVal && sectionVal !== "ALL" ? sectionVal : '')
             .draw();
-
-        if(viewMode){
-            dtMasterListToAlloc.column(0).visible(false); // column index starts at 0
-        }else{
-            dtMasterListToAlloc.column(0).visible(true); // column index starts at 0
         }
+
+        // console.log('viewMode', viewMode);
+        dtMasterListToAlloc.column(0).visible(!viewMode);
+        // if(viewMode){
+        //     dtMasterListToAlloc.column(0).visible(false); // column index starts at 0
+        //     // console.log('col 0 invi');
+        // }else{
+        //     dtMasterListToAlloc.column(0).visible(true); // column index starts at 0
+        //     // console.log('col 0 not invi');
+        // }
     }
 
     $('#txtTypeOfRequest').on('change', function() {
@@ -382,6 +518,7 @@ $(document).ready(function(){
 
         if (selectedValue == 2) {
             $('#txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', true);
+            $('#txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').val('').trigger('change');
         }else{
             $('#txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', false);
         }
@@ -446,13 +583,15 @@ $(document).ready(function(){
         }
 
         // ✅ Check if the changed element is .selectAllocFactory
-        GetDetailsForFiltering(factoryVal, departmentVal, sectionVal);
+        getDetailsForFiltering(factoryVal, departmentVal, sectionVal);
         filterDataTable(false, false); //this will draw the table;
     });
 
     $('#modalAddAllocation').on('hidden.bs.modal', function (e){
         let form = $(this).find('form');
         form[0].reset(); // reset normal fields
+        // console.log('test val', $('#formAddAllocation #txtIsViewMode').val());
+
         selectedIds.clear(); // removes all items
         // form.find('select').val('').trigger('change'); // reset
         form.find('#txtTypeOfRequest').val(0).trigger('change'); // reset
@@ -468,14 +607,26 @@ $(document).ready(function(){
         // Remove restrictions
         form.find('#txtStartDate').removeAttr('max');
         form.find('#txtEndDate').removeAttr('min');
+
+        $('#formAddAllocation').find('input').prop('disabled', false)
+        $('#formAddAllocation').find('select').prop('disabled', false)
+        $('#txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', false);
+
+        $('#modalAddAllocation #btnSaveNewAllocation').removeClass('d-none');
+
+        $('#formAddAllocation').find('select').removeClass('is-invalid');
+        $('#formAddAllocation').find('select').attr('title', '');
+
+        $('#formAddAllocation').find('input').removeClass('is-invalid');
+        $('#formAddAllocation').find('input').attr('title', '');
+
+        $('#chkAllItems').prop('disabled', false);
     });
 
     $('#tblAllocation').on('click', '.editRequest', function (e){
         e.preventDefault();
         $('#allocationRequestChangeTitle').html('<i class="fas fa-info-circle"></i>&nbsp; Edit Employee/s Allocation Request');
-        $('#tblMasterListToAlloc #actionTextTheadDiv').removeClass('d-none');
-        $('#tblMasterListToAlloc #actionCheckAllTheadDiv').addClass('d-none');
-
+        $('#formAddAllocation #txtIsViewMode').val(2);
         $('.selectAllocFactory').val('').trigger('change');
         $('.selectAllocDepartment').val('').trigger('change');
         $('.selectAllocSection').val('').trigger('change');
@@ -534,10 +685,6 @@ $(document).ready(function(){
         e.preventDefault();
 
         $('#allocationRequestChangeTitle').html('<i class="fas fa-info-circle"></i>&nbsp; View Employee/s Allocation Request');
-        $('#tblMasterListToAlloc #actionTextTheadDiv').removeClass('d-none');
-        $('#tblMasterListToAlloc #actionCheckAllTheadDiv').addClass('d-none');
-        $('#modalAddAllocation #btnSaveNewAllocation').addClass('d-none');
-
         $('#formAddAllocation #txtIsViewMode').val(1);
         $('#modalAddAllocation').modal('show');
         let control_number = $(this).data('control_no');
@@ -572,9 +719,9 @@ $(document).ready(function(){
                 $('#txtStartDate', formAddAllocation).val(allocDetails[0].alloc_date_start);
                 $('#txtEndDate', formAddAllocation).val(allocDetails[0].alloc_date_end);
 
-                $('#formAddAllocation').find('input').prop('disabled', true)
+
                 $('#formAddAllocation').find('select').prop('disabled', true)
-                $('#txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', true);
+                $('#txtStartDate, #txtEndDate, #txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', true);
 
                 allocDetails.forEach(function(id) {
                     selectedIds.add(id.requestee_ml_id);
@@ -613,9 +760,6 @@ $(document).ready(function(){
             $('#btnDeleteRequest').html('<i class="fa fa-arrow-rotate-right"></i> Activate Allocation Request');
 
         }
-
-        // $('#tblMasterListToAlloc #actionTextTheadDiv').removeClass('d-none');
-        // $('#tblMasterListToAlloc #actionCheckAllTheadDiv').addClass('d-none');
 
         $('#modalDeleteRequest').modal('show')
         $('#modalDeleteRequest').find('#deleteFrmControlNumber').val(deleteControlNo);

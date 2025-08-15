@@ -86,7 +86,7 @@ class UserController extends Controller
                 'email' => 'required',
                 'department' => 'required',
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
             } else {
@@ -102,7 +102,7 @@ class UserController extends Controller
                         'created_at' => date('Y-m-d H:i:s'),
                         'is_deleted' => 0
                     ]);
-    
+
                     // User::where('id', $userId)->update(['created_by' => $userId]);
                     DB::commit();
                     return response()->json(['hasError' => 0]);
@@ -119,7 +119,7 @@ class UserController extends Controller
                 'email' => 'required',
                 'department' => 'required',
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
             } else {
@@ -134,7 +134,7 @@ class UserController extends Controller
                         'user_role_id' => $request->user_roles,
                         'updated_at' => date('Y-m-d H:i:s'),
                     ]);
-    
+
                     // User::where('id', $userId)->update(['created_by' => $userId]);
                     DB::commit();
                     return response()->json(['hasError' => 0]);
@@ -160,14 +160,13 @@ class UserController extends Controller
 
     public function viewUsers(){
         $userDetails = User::with('user_roles')->where('status', 1)->where('is_deleted', 0)->get();
-        
+
         return DataTables::of($userDetails)
             ->addColumn('status', function($userDetail){
                 $result = "";
                 if($userDetail->status == 1){
                     $result .= '<center><span class="badge badge-pill badge-success">Active</span></center>';
-                }
-                else{
+                }else{
                     $result .= '<center><span class="badge badge-pill text-secondary" style="background-color: #E6E6E6">Inactive</span></center>';
                 }
                 return $result;
@@ -190,7 +189,7 @@ class UserController extends Controller
                 else{
                     $result =   '<center>
                                 <button type="button" class="btn btn-primary btn-xs text-center actionEditUser mr-1" user-id="' . $userDetail->id . '" data-bs-toggle="modal" data-bs-target="#modalAddUser" title="Edit User Details">
-                                    <i class="fa fa-xl fa-edit"></i> 
+                                    <i class="fa fa-xl fa-edit"></i>
                                 </button>
                                 <button type="button" class="btn btn-warning btn-xs text-center actionEditUserStatus mr-1" user-id="' . $userDetail->id . '" user-status="' . $userDetail->status . '" data-bs-toggle="modal" data-bs-target="#modalEditUserStatus" title="Activate User">
                                     <i class="fa-solid fa-xl fa-arrow-rotate-right"></i>
@@ -209,7 +208,7 @@ class UserController extends Controller
         return response()->json(['userDetails' => $userDetails]);
     }
 
-    public function editUserStatus(Request $request){        
+    public function editUserStatus(Request $request){
         date_default_timezone_set('Asia/Manila');
         session_start();
 
@@ -242,7 +241,7 @@ class UserController extends Controller
                 $status = User::where('id', $request->user_id)->value('status');
                 return response()->json(['hasError' => 0, 'status' => (int)$status]);
             }
-                
+
         }
         else{
             return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
@@ -284,10 +283,10 @@ class UserController extends Controller
         $totalRoutes = Routes::where('is_deleted', 0)->where('status', 1)->get();
         $totalShuttleProvider = ShuttleProvider::where('is_deleted', 0)->where('shuttle_provider_status', 1)->get();
         return response()->json([
-            'totalUsers' => count($totalUsers), 
-            'totalMasterlist' => count($totalMasterlist), 
-            'totalRoutes' => count($totalRoutes), 
-            'totalShuttleProvider' => count($totalShuttleProvider), 
+            'totalUsers' => count($totalUsers),
+            'totalMasterlist' => count($totalMasterlist),
+            'totalRoutes' => count($totalRoutes),
+            'totalShuttleProvider' => count($totalShuttleProvider),
         ]);
     }
 
@@ -295,5 +294,10 @@ class UserController extends Controller
         $userData = User::where('rapidx_user_id', $request->rapidxUserId)->where('is_deleted', 0)->get();
         // return $userData;
         return response()->json(['userData' => $userData]);
+    }
+
+    public function getUserByRapidxId(Request $request){
+        $userDetails = User::with('user_roles')->where('rapidx_user_id', $request->userId)->first();
+        return response()->json(['userDetails' => $userDetails]);
     }
 }

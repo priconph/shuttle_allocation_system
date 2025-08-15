@@ -53,25 +53,42 @@ class ExportReportV2Controller extends Controller
         ->where('request_status', '0')
         ->where('request_type', '!=', '2')
         ->where(function ($query) use ($incoming, $outgoing) {
-            $query->where('alloc_incoming', $incoming)
-                    ->orWhere('alloc_outgoing', $outgoing);
-        })
-        ->where(function ($query) {
-            $query->where('alloc_incoming', '!=', 'N/A')
-                    ->orWhere('alloc_outgoing', '!=', 'N/A');
+            $query->where(function($q) use ($incoming, $outgoing) {
+                $q->where('alloc_incoming', $incoming)
+                    ->where('alloc_outgoing', $outgoing);
+            })
+            ->orWhere(function($q) use ($incoming, $outgoing) {
+                $q->where('alloc_incoming', 'N/A')
+                    ->where('alloc_outgoing', $outgoing);
+            })
+            ->orWhere(function($q) use ($incoming, $outgoing) {
+                $q->where('alloc_outgoing', 'N/A')
+                    ->where('alloc_incoming', $incoming);
+            });
         })
         ->where(function ($query) use ($from, $to) {
             $query->whereDate('alloc_date_start', '<=', $to)
                     ->whereDate('alloc_date_end', '>=', $from);
         })
         ->get();
-        // ->filter(function ($allocation) use ($factory) {
-        //     return optional($allocation->request_ml_info)->masterlist_factory === $factory;
-        // });
         // return $allocationlists;
 
         // All Allocations (for filtering masterlists)
-        $allAllocations = Allocations::select('requestee_ml_id', 'alloc_factory', 'alloc_incoming', 'alloc_outgoing', 'alloc_date_start', 'alloc_date_end', 'request_type')
+        $allAllocations = 
+            Allocations::select(
+                'requestee_ml_id',
+                'alloc_factory',
+                'alloc_incoming',
+                'alloc_outgoing',
+                'alloc_date_start',
+                'alloc_date_end',
+                'request_type',
+                'request_status', 
+                'is_deleted'
+            )
+            ->where('request_type', '!=', 2)
+            ->where('request_status', 0)
+            ->where('is_deleted', 0)
             ->whereNotNull('requestee_ml_id')
             ->get();
 
@@ -83,8 +100,7 @@ class ExportReportV2Controller extends Controller
                     $alloc->alloc_incoming      != $incoming ||
                     $alloc->alloc_outgoing      != $outgoing ||
                     $alloc->alloc_date_start    != $from || 
-                    $alloc->alloc_date_end      != $to ||
-                    $alloc->request_type        != 2
+                    $alloc->alloc_date_end      != $to
                 );
             })
             ->pluck('requestee_ml_id')

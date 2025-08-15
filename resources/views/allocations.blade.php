@@ -13,6 +13,9 @@
 @section('title', 'Dashboard')
 @section('content_page')
     <style>
+        table.dataTable tr.conflict-row {
+            background-color: #ffb3b3 !important; /* light red */
+        }
     </style>
     <div class="content-wrapper">
         <!-- Main content -->
@@ -217,11 +220,12 @@
                                             <label for="alloc_outgoing" class="form-label">Allocate Outgoing</label>
                                             {{-- <input type="time" class="form-control" name="alloc_outgoing" id="txtAllocOutgoing"> --}}
                                             <select class="form-control form-control-sm select2bs5" type="text" name="alloc_outgoing" id="txtAllocOutgoing">
-                                                <option value="" disabled selected>Select Incoming</option>
+                                                <option value="" disabled selected>Select Outgoing</option>
                                                 <option value="N/A" id="na_out_option">N/A</option>
                                                 <option value="3:30PM">3:30 PM</option>
                                                 <option value="4:30PM">4:30 PM</option>
                                                 <option value="7:30PM">7:30 PM</option>
+                                                <option value="7:30AM">7:30 AM</option>
                                             </select>
                                         </div>
                                     </div>
@@ -293,12 +297,13 @@
                                             <th rowspan="2" style="width: 10%;">Department</th>
                                             <th rowspan="2" style="width: 10%;">Section</th>
                                             <th rowspan="2" style="width: 30%;">Route</th>
-                                            <th colspan="3" style="width: 20%; text-align: center; background-color: #4baeff;">CURRENT DATA</th>
+                                            <th colspan="4" style="width: 20%; text-align: center; background-color: #4baeff;">CURRENT DATA</th>
                                         </tr>
                                         <tr class="bg-light " style="text-align: center;">
                                             <th>Factory</th>
                                             <th>Incoming</th>
                                             <th>Outgoing</th>
+                                            <th>Created By</th>
                                         </tr>
                                     </thead>
                                     <tbody id="divForTblMasterListToAllocTbody">
