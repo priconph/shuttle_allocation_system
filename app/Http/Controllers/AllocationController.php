@@ -19,10 +19,11 @@ use App\Models\Allocations;
 // use App\Models\SystemOneHRIS;
 // use App\Models\SystemOneSubcon;
 
-
 use App\Models\SystemOneDivision;
 use App\Models\SystemOneDepartment;
 use App\Models\SystemOneSection;
+
+use App\Services\AllocationService;
 
 class AllocationController extends Controller
 {
@@ -505,32 +506,12 @@ class AllocationController extends Controller
                             })
                         ]);
                     }
-
-                    // $checkExistingAllocation = Allocations::where('requestee_ml_id', $request->selectedIds[$key])
-                    //                                     ->where('is_deleted', 0)
-                    //                                     ->whereDate('alloc_date_start', '<=', $request->end_date) // existing starts before new ends
-                    //                                     ->whereDate('alloc_date_end', '>=', $request->start_date) // existing ends after new starts
-                    //                                     ->first();
-
-                    // $checkExistingAllocation = Allocations::where('requestee_ml_id', $request->selectedIds[$key])
-                    //                                         ->whereDate('alloc_date_start', '>=', $request->start_date)
-                    //                                         ->whereDate('alloc_date_end', '<=', $request->end_date)
-                    //                                         ->where('is_deleted', 0)
-                    //                                         ->first();
-
-                    // return $checkExistingAllocation != null;
-                    // $checkExistingAllocation = Allocations::where('requestee_ml_id', $request->selectedIds[$key])->get();
-                    // return $checkExistingAllocation;
-
-                    // if($checkExistingAllocation != null && $checkExistingAllocation->control_number != $request->request_control_no){
-                    //     return response()->json(['hasError' => 1, 'hasExisted' => count($checkExistingAllocation)]);
-                    // }
                 }
             }
 
             DB::beginTransaction();
             try {
-
+                // return 'true';
                 if(isset($request->request_control_no)){
                     //🔴 Delete existing data
                     Allocations::where('control_number', $request->request_control_no)->delete();
@@ -555,8 +536,10 @@ class AllocationController extends Controller
                 }
 
                 if(strlen($control_no_counter) == 1){
-                    $digit_prefix = '00';
+                    $digit_prefix = '000';
                 }else if(strlen($control_no_counter) == 2){
+                    $digit_prefix = '00';
+                }else if(strlen($control_no_counter) == 3){
                     $digit_prefix = '0';
                 }
 
@@ -634,4 +617,14 @@ class AllocationController extends Controller
             return response()->json(['hasError' => 1, 'exceptionError' => $e]);
         }
     }
+
+    // public function changeAllocationStatus(Request $request, AllocationService $allocationService)
+    // {
+    //     $result = $allocationService->changeStatus(
+    //         $request->delete_control_no,
+    //         $request->delete_request_status
+    //     );
+
+    //     return response()->json($result);
+    // }
 }

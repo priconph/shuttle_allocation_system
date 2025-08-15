@@ -128,7 +128,7 @@
 
     <!-- Add Masterlist Modal Start -->
     <div class="modal fade" id="modalAddAllocation" data-bs-keyboard="false" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered modal-lg-custom">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="allocationRequestChangeTitle"></h4>

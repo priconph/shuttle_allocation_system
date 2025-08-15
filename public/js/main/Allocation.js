@@ -430,7 +430,7 @@ $(document).ready(function(){
                     $("#modalAddAllocation").modal('hide');
                     dtAllocation.draw();
                 }else{
-                    toastr.error('Error!, Please Contanct ISS Local 208');
+                    toastr.error('Error!, Please Contact ISS Local 208');
                 }
             }
         });
