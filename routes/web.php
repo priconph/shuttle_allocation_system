@@ -8,14 +8,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoutesController;
 use App\Http\Controllers\SubconController;
+use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\SystemOneController;
 use App\Http\Controllers\AllocationController;
 use App\Http\Controllers\CutoffTimeController;
 use App\Http\Controllers\MasterlistController;
 use App\Http\Controllers\PickupTimeController;
 use App\Http\Controllers\ExportReportController;
-use App\Http\Controllers\ShuttleProviderController;
 use App\Http\Controllers\ExportReportV2Controller;
+use App\Http\Controllers\ShuttleProviderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,6 +92,9 @@ Route::get('/subcon_attendance_management', function () {
     return view('subcon_attendance_management');
 })->name('subcon_attendance_management');
 
+Route::get('/import_shuttle_manifest', function () {
+    return view('import_shuttle_manifest');
+})->name('import_shuttle_manifest');
 
 
 /**
@@ -190,3 +194,7 @@ Route::controller(SubconController::class)->group(function(){
 
 // EXPORT DATA
 Route::get('/export_v2/{factory}/{url_route}/{incoming}/{outgoing}/{from}/{to}', [ExportReportV2Controller::class, 'export_v2']);
+
+// IMPORT MANIFEST
+Route::get('/dt_get_manifest', [ManifestController::class, 'dt_get_manifest'])->name('dt_get_manifest');
+Route::post('/import_manifest', [ManifestController::class, 'import_manifest'])->name('import_manifest');

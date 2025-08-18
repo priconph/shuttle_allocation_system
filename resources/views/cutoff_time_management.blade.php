@@ -38,6 +38,7 @@
                                             <tr>
                                                 <th>Action</th>
                                                 <th>Status</th>
+                                                <th>Factory</th>
                                                 {{-- <th>Cutoff Time</th> --}}
                                             </tr>   
                                         </thead>
@@ -138,6 +139,19 @@
                 "columns":[
                     { "data" : "action", orderable:false, searchable:false},
                     { "data" : "cutoff_time_status"},
+                    { "data" : "factory",
+                        "defaultContent": 'N/A',
+                        "name": 'user_level',
+                        "orderable": true,
+                        "searchable": true,
+                        "render": function (data, type, row) {
+                            if(row.factory == 1){
+                                return "Factory 1";
+                            }else{
+                                return "Factory 3";
+                            }
+                        },
+                    }
                     // { "data" : "cutoff_time"},
                 ],
             });

@@ -597,26 +597,26 @@ class AllocationController extends Controller
         return response()->json(['allocationDetails' => $allocationData, 'userDetails' => $userData]);
     }
 
-    public function changeAllocationStatus(Request $request){
-        DB::beginTransaction();
-        try {
+    // public function changeAllocationStatus(Request $request){
+    //     DB::beginTransaction();
+    //     try {
 
-            if($request->delete_request_status == 0){
-                $change_status_to = 1;
-            }else if($request->delete_request_status == 1){
-                $change_status_to = 0;
-            }else{ //Run only when setting status to "finished"
-                $change_status_to = 2;
-            }
+    //         if($request->delete_request_status == 0){
+    //             $change_status_to = 1;
+    //         }else if($request->delete_request_status == 1){
+    //             $change_status_to = 0;
+    //         }else{ //Run only when setting status to "finished"
+    //             $change_status_to = 2;
+    //         }
 
-            Allocations::where('control_number', $request->delete_control_no)->update(['request_status' => $change_status_to, 'updated_at' => date('Y-m-d H:i:s')]);
-            DB::commit();
-            return response()->json(['hasError' => 0]);
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json(['hasError' => 1, 'exceptionError' => $e]);
-        }
-    }
+    //         Allocations::where('control_number', $request->delete_control_no)->update(['request_status' => $change_status_to, 'updated_at' => date('Y-m-d H:i:s')]);
+    //         DB::commit();
+    //         return response()->json(['hasError' => 0]);
+    //     } catch (\Exception $e) {
+    //         DB::rollback();
+    //         return response()->json(['hasError' => 1, 'exceptionError' => $e]);
+    //     }
+    // }
 
     // public function changeAllocationStatus(Request $request, AllocationService $allocationService)
     // {

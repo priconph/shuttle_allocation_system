@@ -16,6 +16,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+
+        // Run every day at midnight
+        $schedule->command('allocations:auto-close')->dailyAt('00:05');
     }
 
     /**

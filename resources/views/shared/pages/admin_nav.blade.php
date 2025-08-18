@@ -30,7 +30,7 @@
                 </li>
 
                 <li class="nav-header font-weight-bold">&nbsp;MOBILE APPLICATION</li>
-                <li class="nav-item has-treeview mb-3">
+                <li class="nav-item has-treeview">
                     <a href="http://192.168.3.188/shuttle_manifest/F1shuttleManifest.apk" class="nav-link">
                         <i class="fa fa-download"></i>
                         <p>F1 Application Download</p></p>
@@ -94,10 +94,16 @@
                     </a>
                 </li>
 
-                <li class="nav-item has-treeview mb-3">
+                <li class="nav-item has-treeview">
                     <a href="{{ route('cutoff_time_management')}}" class="nav-link">
                         <i class="nav-icon fa-solid fa-bell-slash"></i>
                         <p>Cut-off Time</p></p>
+                    </a>
+                </li>
+                <li class="nav-item has-treeview mb-3">
+                    <a href="{{ route('import_shuttle_manifest')}}" class="nav-link">
+                        <i class="nav-icon fa-solid fa-file-excel"></i>
+                        <p>Import Manifest</p></p>
                     </a>
                 </li>
 
