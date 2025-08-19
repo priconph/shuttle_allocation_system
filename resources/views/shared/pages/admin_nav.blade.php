@@ -100,7 +100,7 @@
                         <p>Cut-off Time</p></p>
                     </a>
                 </li>
-                <li class="nav-item has-treeview mb-3">
+                <li class="nav-item has-treeview mb-3 d-none">
                     <a href="{{ route('import_shuttle_manifest')}}" class="nav-link">
                         <i class="nav-icon fa-solid fa-file-excel"></i>
                         <p>Import Manifest</p></p>
