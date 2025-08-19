@@ -21,7 +21,7 @@ class CutoffTimeController extends Controller
 {
     public function viewCutoffTime(){
         $cutoffTimeData = CutoffTime::where('is_deleted', 0)->get();
-        
+
         return DataTables::of($cutoffTimeData)
             ->addColumn('cutoff_time', function($row){
                 $result = "";
@@ -43,7 +43,7 @@ class CutoffTimeController extends Controller
                 // $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditCutoffTime mr-1" pickup-time-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddCutoffTime" title="Edit Shuttle Provider Details">';
                 // $result .=          '<i class="fa fa-xl fa-edit"></i> ';
                 // $result .=      '</button>';
-                
+
 
                 if($row->cutoff_time_status == 1){
                     $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->cutoff_time_status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
@@ -73,7 +73,7 @@ class CutoffTimeController extends Controller
             $validator = Validator::make($data, [
                 'cutoff_time' => 'required',
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
             } else {
@@ -93,8 +93,7 @@ class CutoffTimeController extends Controller
                     return response()->json(['hasError' => 1, 'exceptionError' => $e]);
                 }
             }
-        }
-        else{ /* For Update */
+        }else{ /* For Update */
             $validator = Validator::make($data, [
                 'cutoff_time_id' => 'required',
                 'cutoff_time' => 'required',
@@ -116,7 +115,7 @@ class CutoffTimeController extends Controller
                         'last_updated_by' => $_SESSION['rapidx_user_id'],
                         'updated_at' => date('Y-m-d H:i:s'),
                     ]);
-                    
+
                     DB::commit();
                     return response()->json(['hasError' => 0]);
                 } catch (\Exception $e) {
@@ -127,17 +126,17 @@ class CutoffTimeController extends Controller
             }
         }
     }
-    
+
     public function getCutoffTimeById(Request $request){
         $cutoffTimeData = CutoffTime::where('id', $request->cutoffTimeId)->get();
         // return $cutoffTimeData;
         return response()->json(['cutoffTimeData' => $cutoffTimeData]);
     }
 
-    public function editCutoffTimeStatus(Request $request){        
+    public function editCutoffTimeStatus(Request $request){
         date_default_timezone_set('Asia/Manila');
         session_start();
-        
+
         $data = $request->all(); // collect all input fields
         $validator = Validator::make($data, [
             'cutoff_time_id' => 'required',

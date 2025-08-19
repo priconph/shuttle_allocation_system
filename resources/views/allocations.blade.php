@@ -349,7 +349,7 @@
                 </div>
             </div>
         </div>
-        <!-- Delete request MODAL END -->
+    <!-- Delete request MODAL END -->
 
     <!-- Edit Masterlist Status Modal Start -->
     {{-- <div class="modal fade" id="modalEditAllocationStatus" data-bs-keyboard="false" data-bs-backdrop="static">

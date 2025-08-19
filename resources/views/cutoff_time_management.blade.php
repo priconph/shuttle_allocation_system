@@ -29,8 +29,8 @@
                                 <h3 class="card-title" style="margin-top: 8px;">Cutoff Time Management</h3>
                             </div>
                             <div class="card-body">
-                                <div class="text-right mt-4">                   
-                                    {{-- <button type="button" class="btn btn-primary mb-3" id="buttonAddCutoffTime" data-bs-toggle="modal" data-bs-target="#modalAddCutoffTime"><i class="fa fa-plus fa-md"></i> New Cutoff Time</button> --}}
+                                <div class="text-right mt-4">
+                                    <button type="button" class="btn btn-primary mb-3" id="buttonAddCutoffTime" data-bs-toggle="modal" data-bs-target="#modalAddCutoffTime"><i class="fa fa-plus fa-md"></i> New Cutoff Time</button>
                                 </div>
                                 <div class="table-responsive">
                                     <table id="tableCutoffTime" class="table table-bordered table-hover nowrap" style="width: 100%;">
@@ -39,8 +39,8 @@
                                                 <th>Action</th>
                                                 <th>Status</th>
                                                 <th>Factory</th>
-                                                {{-- <th>Cutoff Time</th> --}}
-                                            </tr>   
+                                                <th>Cutoff Time</th>
+                                            </tr>
                                         </thead>
                                     </table>
                                 </div>
@@ -51,7 +51,7 @@
             </div>
         </section>
     </div>
-    
+
     <!-- Add Cutoff Time Modal Start -->
     <div class="modal fade" id="modalAddCutoffTime" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg">
@@ -68,16 +68,21 @@
                                 <div class="card-body">
                                     <!-- For Cutoff Time Id -->
                                     <input type="text" class="form-control" style="display: none" name="cutoff_time_id" id="cutoffTimeId">
-                                    
+
                                     <div class="mb-3">
                                         <label for="username" class="form-label">Cutoff Time</label>
                                         <input type="time" class="form-control" name="cutoff_time" id="textCutoffTime" placeholder="Cutoff Time">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Cutoff Time</label>
+                                        <input type="time" class="form-control" name="cutoff_time" id="textFactory" placeholder="Cutoff Time">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="btnAddCutoffTime" class="btn btn-primary"><i id="iBtnAddCutoffTimeIcon" class="fa fa-check"></i> Save</button>
@@ -86,7 +91,7 @@
             </div>
         </div>
     </div><!-- Add Cutoff Time Modal End -->
-    
+
     <!-- Edit Cutoff Time Status Modal Start -->
     <div class="modal fade" id="modalEditCutoffTimeStatus" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-md">
@@ -102,7 +107,7 @@
                         <input type="hidden" name="cutoff_time_id" placeholder="Cutoff Time Id" id="textEditCutoffTimeStatusCutoffTimeId">
                         <input type="hidden" name="cutoff_time_status" placeholder="Cutoff Time Status" id="textEditCutoffTimeStatus">
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="buttonEditCutoffTimeStatus" class="btn btn-primary"><i id="iBtnAddCutoffTimeIcon" class="fa fa-check"></i> Save</button>
@@ -151,8 +156,8 @@
                                 return "Factory 3";
                             }
                         },
-                    }
-                    // { "data" : "cutoff_time"},
+                    },
+                    { "data" : "cutoff_time"},
                 ],
             });
 
@@ -173,7 +178,7 @@
                 let cutoffTimeStatus = $(this).attr('pickup-time-status');
                 console.log('cutoffTimeId', cutoffTimeId);
                 console.log('cutoffTimeStatus', cutoffTimeStatus);
-                
+
                 $("#textEditCutoffTimeStatusCutoffTimeId").val(cutoffTimeId);
                 $("#textEditCutoffTimeStatus").val(cutoffTimeStatus);
 

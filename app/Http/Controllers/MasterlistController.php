@@ -167,9 +167,10 @@ class MasterlistController extends Controller
                     $result =   '<center>';
                     // $result =   'dates '.$parsedTime . ' & ' . $dateNow;
 
-                    if($cutoffTimeData == 0){
-                        $disabled = 'disabled';
-                    }
+                    // clark comment 08/19/2025
+                    // if($cutoffTimeData == 0){
+                    //     $disabled = 'disabled';
+                    // }
 
                     // if( $_SESSION['rapidx_department_id'] === 27){ // TODO:ESS Access only
                         $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" '.$disabled.' masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
@@ -183,8 +184,7 @@ class MasterlistController extends Controller
                     $result .=          '<i class="fa-solid fa-xl fa-trash"></i>';
                     $result .=      '</button>';
                     $result .=  '</center>';
-                }
-                else{
+                }else{
                     // if( $_SESSION['rapidx_department_id'] === 27){ //TODO:ESS Access only
                         $result =   '<center>';
                         // $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
