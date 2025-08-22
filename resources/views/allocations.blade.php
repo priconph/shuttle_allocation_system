@@ -206,6 +206,20 @@
                                 <div class="mb-3">
                                     <div class="row">
                                         <div class="col-sm-6">
+                                            <label for="start_date" class="form-label">Date Start</label>
+                                            <input type="date" class="form-control" name="start_date" id="txtStartDate">
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <label for="end_date" class="form-label">Date End</label>
+                                            <input type="date" class="form-control" name="end_date" id="txtEndDate">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="row">
+                                        <div class="col-sm-6">
                                             <label for="alloc_incoming" class="form-label">Allocate Incoming</label>
                                             {{-- <input type="time" class="form-control" name="alloc_incoming" id="txtAllocIncoming"> --}}
                                             <select class="form-control form-control-sm select2bs5 SelectAllocIncoming" type="text" name="alloc_incoming" id="txtAllocIncoming" disabled>
@@ -219,20 +233,6 @@
                                             <select class="form-control form-control-sm select2bs5 SelectAllocOutgoing" type="text" name="alloc_outgoing" id="txtAllocOutgoing" disabled>
                                                 <option value="" disabled selected>Select Outgoing</option>
                                             </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <label for="start_date" class="form-label">Date Start</label>
-                                            <input type="date" class="form-control" name="start_date" id="txtStartDate">
-                                        </div>
-
-                                        <div class="col-sm-6">
-                                            <label for="end_date" class="form-label">Date End</label>
-                                            <input type="date" class="form-control" name="end_date" id="txtEndDate">
                                         </div>
                                     </div>
                                 </div>

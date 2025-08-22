@@ -1,5 +1,6 @@
 $(document).ready(function(){
     let txtGlobalUserId = $('#txtGlobalUserId').val();
+    const formAddAllocation = $('#formAddAllocation');
     // Run check every minute
     // let currentSessionUserRole;
     // checkButtonStatus(currentSessionUserRole);
@@ -91,15 +92,36 @@ $(document).ready(function(){
     });
 
     // When start date changes
-    $('#formAddAllocation #txtStartDate').on('change', function() {
+    $('#formAddAllocation #txtStartDate').on('change', function(){
         let startDate = $(this).val();
         $('#formAddAllocation #txtEndDate').attr('min', startDate); // end date cannot be before start date
+        console.log('startval', startDate);
+        console.log('endval', $('#formAddAllocation #txtEndDate').val());
+
+        // if($('#formAddAllocation #txtTypeOfRequest').val() == 1 && startDate != '' && $('#formAddAllocation #txtEndDate').val() != ''){
+        //     $('#txtAllocIncoming').prop('disabled', false);
+        //     $('#txtAllocOutgoing').prop('disabled', false);
+        // }else{
+        //     $('#txtAllocIncoming').prop('disabled', true);
+        //     $('#txtAllocOutgoing').prop('disabled', true);
+        // }
+        buttonDisablingForInOut()
+        getSchedulesForFiltering()
     });
 
     // When end date changes
-    $('#formAddAllocation #txtEndDate').on('change', function() {
+    $('#formAddAllocation #txtEndDate').on('change', function(){
         let endDate = $(this).val();
         $('#formAddAllocation #txtStartDate').attr('max', endDate); // start date cannot be after end date
+
+        // if($('#formAddAllocation #txtTypeOfRequest').val() == 1 && endDate != '' && $('#formAddAllocation #txtStartDate').val() != ''){
+        //     $('#txtAllocIncoming').prop('disabled', false);
+        //     $('#txtAllocOutgoing').prop('disabled', false);
+        // }else{
+        //     $('#txtAllocIncoming').prop('disabled', true);
+        //     $('#txtAllocOutgoing').prop('disabled', true);
+        // }
+        buttonDisablingForInOut()
     });
 
     dtAllocation = $("#tblAllocation").DataTable({
@@ -228,7 +250,6 @@ $(document).ready(function(){
             beforeSend: function(){
             },
             success: function(response){
-                let formAddAllocation = $('#formAddAllocation');
                 let userDetails = response['userDetails'];
                 let scheduleDetails = response['scheduleDetails'];
                 if(userDetails != null){
@@ -267,26 +288,114 @@ $(document).ready(function(){
     });
 
     $('#txtAllocFactory').on('change', function(){
-       let txtFactory = $(this).val();
+        buttonDisablingForInOut()
+    })
+
+    //     getSchedulesForFiltering()
+        // let txtFactory = $(this).val();
+        // if(txtFactory == 'F1'){
+        //     txtFactory = 1;
+        // }else if(txtFactory == 'F3'){
+        //     txtFactory = 3;
+        // }else{
+        //     txtFactory = null;
+        // }
+
+        // $.ajax({
+        //     url: "get_cutoff_time",
+        //     method: "get",
+        //     data:{
+        //         factory : txtFactory,
+        //     },
+        //     dataType: "json",
+        //     beforeSend: function(){
+        //     },
+        //     success: function(response){
+        //         // if(txtFactory != null){
+        //         //     $('#txtAllocIncoming').prop('disabled', false);
+        //         //     $('#txtAllocOutgoing').prop('disabled', false);
+        //         // }
+
+        //         let scheduleDetails = response['scheduleDetails'];
+        //         let disabled = '';
+
+        //         if(scheduleDetails != null){
+        //             result_out_schedule = '<option value="" disabled selected> Select Outgoing </option>';
+        //             result_in_schedule = '<option value="" disabled selected> Select Incoming </option>';
+
+        //             result_out_schedule += '<option value="N/A">N/A</option>';
+        //             result_in_schedule += '<option value="N/A">N/A</option>';
+
+        //             for (let c = 0; c < scheduleDetails.length; c++){
+        //                 if(scheduleDetails[c].status == 0){//Not Active
+        //                     disabled = 'disabled';
+        //                 }else{
+        //                     disabled = '';
+        //                 }
+
+        //                 if(scheduleDetails[c].category > 0){ //1 or 2 Incoming  & Outgoing
+        //                     result_out_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
+        //                 }
+
+        //                 if(scheduleDetails[c].category == 2){ //1 Outgoing
+        //                     result_in_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
+        //                 }
+        //             }
+        //             $('.SelectAllocOutgoing').html(result_out_schedule);
+        //             $('.SelectAllocIncoming').html(result_in_schedule);
+        //         }
+        //     },
+        //     error: function(data, xhr, status){
+        //         toastr.error('An error occured!\n' + 'Data: ' + data + "\n" + "XHR: " + xhr + "\n" + "Status: " + status);
+        //     },
+        // });
+    // });
+
+    function buttonDisablingForInOut(){
+        let RequestTypeVal = formAddAllocation.find('#txtTypeOfRequest').val();
+        let FactoryVal = formAddAllocation.find('#txtAllocFactory').val();
+        let StartdateVal = formAddAllocation.find('#txtStartDate').val();
+        let EnddateVal = formAddAllocation.find('#txtEndDate').val();
+
+        if(RequestTypeVal != 2 && FactoryVal != null && StartdateVal != '' && EnddateVal != ''){
+            $('#formAddAllocation').find('#txtAllocIncoming').prop('disabled', false);
+            $('#formAddAllocation').find('#txtAllocOutgoing').prop('disabled', false);
+        }else{
+            $('#formAddAllocation').find('#txtAllocIncoming').prop('disabled', true);
+            $('#formAddAllocation').find('#txtAllocOutgoing').prop('disabled', true);
+        }
+    }
+
+    function getSchedulesForFiltering(){
+        const today = new Date();
+        let yyyy = today.getFullYear();
+        let mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0
+        let dd = String(today.getDate()).padStart(2, '0');
+        let formattedDate = `${yyyy}-${mm}-${dd}`;
+
+        let txtFactory = $('#formAddAllocation').find('#txtAllocFactory').val();
+        let txtStartDate = $('#formAddAllocation').find('#txtStartDate').val();
+
         if(txtFactory == 'F1'){
             txtFactory = 1;
-        }else{
+        }else if(txtFactory == 'F3'){
             txtFactory = 3;
+        }else{
+            txtFactory = null;
         }
 
         $.ajax({
             url: "get_cutoff_time",
             method: "get",
             data:{
-                factory : txtFactory,
+                param_factory : txtFactory,
+                // param_start_date : txtStartDate,
             },
             dataType: "json",
             beforeSend: function(){
+
             },
             success: function(response){
-                $('#txtAllocIncoming').prop('disabled', false);
-                $('#txtAllocOutgoing').prop('disabled', false);
-
                 let scheduleDetails = response['scheduleDetails'];
                 let disabled = '';
 
@@ -294,9 +403,16 @@ $(document).ready(function(){
                     result_out_schedule = '<option value="" disabled selected> Select Outgoing </option>';
                     result_in_schedule = '<option value="" disabled selected> Select Incoming </option>';
 
+                    result_out_schedule += '<option value="N/A">N/A</option>';
+                    result_in_schedule += '<option value="N/A">N/A</option>';
+
                     for (let c = 0; c < scheduleDetails.length; c++){
-                        if(scheduleDetails[c].status == 0){//Not Active
-                            disabled = 'disabled';
+                        if(scheduleDetails[c].status == 0){//Locked
+                            if(scheduleDetails[c].schedule != '7:30AM' && txtStartDate == formattedDate){//SUCCEEDING DAYS
+                                disabled = 'disabled';
+                            }else if(scheduleDetails[c].schedule == '7:30AM' && txtStartDate > formattedDate){//TODAY
+                                disabled = 'disabled';
+                            }
                         }else{
                             disabled = '';
                         }
@@ -317,7 +433,7 @@ $(document).ready(function(){
                 toastr.error('An error occured!\n' + 'Data: ' + data + "\n" + "XHR: " + xhr + "\n" + "Status: " + status);
             },
         });
-    });
+    }
 
     dtMasterListToAlloc.on('draw', function () {
         // Loop through all checkboxes in the current page
@@ -570,12 +686,11 @@ $(document).ready(function(){
 
     $('#txtTypeOfRequest').on('change', function() {
         const selectedValue = $(this).val();
-
         if (selectedValue == 2) {
             $('#txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', true);
             $('#txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').val('').trigger('change');
         }else{
-            $('#txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', false);
+            $('#txtAllocFactory').prop('disabled', false);
         }
     });
 
@@ -664,8 +779,8 @@ $(document).ready(function(){
         form.find('#txtEndDate').removeAttr('min');
 
         $('#formAddAllocation').find('input').prop('disabled', false)
-        $('#formAddAllocation').find('select').prop('disabled', false)
-        $('#txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', false);
+        $('#formAddAllocation').find('#txtAllocFactory').prop('disabled', false)
+        $('#txtAllocFactory').prop('disabled', false);
 
         $('#modalAddAllocation #btnSaveNewAllocation').removeClass('d-none');
 
@@ -691,7 +806,7 @@ $(document).ready(function(){
         $('.selectAllocSection').prop('disabled', true);
 
         $('#formAddAllocation').find('input').prop('disabled', false)
-        $('#txtTypeOfRequest, #txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', false);
+        $('#txtTypeOfRequest, #txtAllocIncoming, #txtOAllocutgoing, #txtAllocFactory').prop('disabled', false);
 
         $('#modalAddAllocation').modal('show');
         let control_number = $(this).data('control_no');
@@ -705,7 +820,6 @@ $(document).ready(function(){
             },
             dataType: "json",
             success: function (response) {
-                let formAddAllocation = $('#formAddAllocation');
                 let allocDetails = response['allocationDetails'];
                 let userDetails = response['userDetails'];
 
@@ -753,7 +867,6 @@ $(document).ready(function(){
             },
             dataType: "json",
             success: function (response){
-                let formAddAllocation = $('#formAddAllocation');
                 let allocDetails = response['allocationDetails'];
                 let userDetails = response['userDetails'];
 
