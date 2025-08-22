@@ -379,7 +379,7 @@ class AllocationController extends Controller
     }
 
     public function getCutOffTime(Request $request){
-        $scheduleData = CutoffTime::where('is_deleted', 0)->where('factory', $request->factory)->get();
+        $scheduleData = CutoffTime::where('is_deleted', 0)->where('factory', $request->param_factory)->get();
         return response()->json(['scheduleDetails' => $scheduleData]);
     }
 
@@ -464,7 +464,7 @@ class AllocationController extends Controller
             'end_date'        => 'required',
         ];
 
-        // Add additional rules if type_of_request is 1
+        // Add additional rules if type_of_request is 1 change schedule
         if ($request->type_of_request == 1 || $request->type_of_request == 0) {
             $validate_array = array_merge($validate_array, [
                 'alloc_factory'  => 'required',
