@@ -87,12 +87,12 @@ class AllocationController extends Controller
             ->addColumn('action', function($row) use ($userData) {
                 date_default_timezone_set('Asia/Manila');
                 $disabled = '';
-                $today = Carbon::today()->toDateString();
-                $currentHour = date('H'); // 24-hour format
+                // $today = Carbon::today()->toDateString();
+                // $currentHour = date('H'); // 24-hour format
                 // Disable after 3 PM
-                if($currentHour >= 15 && $userData != 1 && $row->alloc_date_end <= $today){
-                    $disabled = 'disabled';
-                }
+                // if($currentHour >= 15 && $userData != 1 && $row->alloc_date_end <= $today){
+                //     $disabled = 'disabled';
+                // }
                 //clark comment 08/14/2025
 
                 if($row->request_status == 0){
@@ -454,9 +454,9 @@ class AllocationController extends Controller
         $userData = User::where('rapidx_user_id', $request->requestor_id)->value('user_role_id');
         // $cutoffTimeData = CutoffTime::where('id', $request->cutoffTimeId)->get();
 
-        if ($currentHour >= 15 && $userData != 1 && $request->start_date == date('Y-m-d')){
-            return response()->json(['hasError' => 1, 'result' => 0, 'message' => 'Allocation for TODAY is already closed.']);
-        }
+        // if ($currentHour >= 15 && $userData != 1 && $request->start_date == date('Y-m-d')){
+        //     return response()->json(['hasError' => 1, 'result' => 0, 'message' => 'Allocation for TODAY is already closed.']);
+        // }
 
         $validate_array = [
             'type_of_request' => 'required',
