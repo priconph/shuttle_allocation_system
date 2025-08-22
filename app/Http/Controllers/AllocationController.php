@@ -43,6 +43,9 @@ class AllocationController extends Controller
                 'requestor_user_info',
             ])
             ->where('is_deleted', 0)
+            ->when($request->Status != 'ALL', function ($query) use ($request) {
+                $query->where('request_status', $request->Status); // or change to ID if needed
+            })
             ->when(!empty($request->RequestType), function ($query) use ($request) {
                 $query->where('request_type', $request->RequestType); // or change to ID if needed
             })
@@ -72,8 +75,14 @@ class AllocationController extends Controller
             ])
             ->where('is_deleted', 0)
             ->where('created_by', $request->rapidXUserId)
+            ->when($request->Status != 'ALL', function ($query) use ($request) {
+                $query->where('request_status', $request->Status); // or change to ID if needed
+            })
             ->when(!empty($request->RequestType), function ($query) use ($request) {
                 $query->where('request_type', $request->RequestType); // or change to ID if needed
+            })
+            ->when(!empty($request->Factory) && $request->Factory != 'ALL', function ($query) use ($request) {
+                $query->where('alloc_factory', $request->Factory); // or change to ID if needed
             })
             ->when(!empty($request->AllocationStartDate) && !empty($request->AllocationEndDate), function ($query) use ($request) {
                 $query->whereDate('alloc_date_start', '>=', $request->AllocationStartDate)->whereDate('alloc_date_end', '<=', $request->AllocationEndDate); // or change to ID if needed

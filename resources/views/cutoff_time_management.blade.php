@@ -185,7 +185,7 @@
                             }else if(row.schedule == '7:30PM'){
                                 return "OUTGOING 7:30PM";
                             }else if(row.schedule == '7:30AM'){
-                                return "SUCCEDING DAYS (INCOMING & OUTGOING 7:30AM)";
+                                return "SUCCEEDING DAYS (INCOMING & OUTGOING 7:30AM)";
                             }else{
                                 return "---";
                             }
