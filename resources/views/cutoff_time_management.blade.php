@@ -39,7 +39,7 @@
                                                 <th>Action</th>
                                                 <th>Status</th>
                                                 <th>Factory</th>
-                                                <th>Cutoff Time</th>
+                                                <th>Schedule</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -70,14 +70,31 @@
                                     <input type="text" class="form-control" style="display: none" name="cutoff_time_id" id="cutoffTimeId">
 
                                     <div class="mb-3">
-                                        <label for="username" class="form-label">Cutoff Time</label>
-                                        <input type="time" class="form-control" name="cutoff_time" id="textCutoffTime" placeholder="Cutoff Time">
+                                        <div class="row">
+                                            <label>Factory</label>
+                                            <div class="input-group input-group-sm mb-3">
+                                                <select class="form-control select2bs5" name="factory" id="txtFactory">
+                                                    <option value="0" disabled selected>Select Factory</option>
+                                                    <option value="1">F1</option>
+                                                    <option value="3">F3</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="username" class="form-label">Cutoff Time</label>
-                                        <input type="time" class="form-control" name="cutoff_time" id="textFactory" placeholder="Cutoff Time">
+                                        <label>Schedule</label>
+                                        <div class="input-group input-group-sm mb-3">
+                                            <select class="form-control select2bs5" name="schedule" id="txtSchedule">
+                                                <option value="0" disabled selected>Select Schedule</option>
+                                                <option value="3:30PM">OUTGOING 3:30PM</option>
+                                                <option value="4:30PM">OUTGOING 4:30PM</option>
+                                                <option value="7:30PM">OUTGOING 7:30PM/INCOMING 7:30PM</option>
+                                                <option value="7:30AM">SUCCEDING DAYS (INCOMING & OUTGOING 7:30AM)</option>
+                                            </select>
+                                        </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -105,7 +122,7 @@
                     <div class="modal-body">
                         <p id="paragraphEditCutoffTimeStatus"></p>
                         <input type="hidden" name="cutoff_time_id" placeholder="Cutoff Time Id" id="textEditCutoffTimeStatusCutoffTimeId">
-                        <input type="hidden" name="cutoff_time_status" placeholder="Cutoff Time Status" id="textEditCutoffTimeStatus">
+                        <input type="hidden" name="status" placeholder="Cutoff Time Status" id="textEditCutoffTimeStatus">
                     </div>
 
                     <div class="modal-footer justify-content-between">
@@ -125,7 +142,8 @@
             /**
              * Initialize Select2 Elements
             */
-            $('.select2').select2({
+            $('.select2bs5').select2({
+                // width: '100%',
                 theme: 'bootstrap-5'
             });
 
@@ -143,7 +161,7 @@
                 },
                 "columns":[
                     { "data" : "action", orderable:false, searchable:false},
-                    { "data" : "cutoff_time_status"},
+                    { "data" : "status"},
                     { "data" : "factory",
                         "defaultContent": 'N/A',
                         "name": 'user_level',
@@ -157,13 +175,34 @@
                             }
                         },
                     },
-                    { "data" : "cutoff_time"},
+                    { "data" : "schedule",
+                        "defaultContent": 'N/A',
+                        "render": function (data, type, row) {
+                            if(row.schedule == '3:30PM'){
+                                return "OUTGOING 3:30PM";
+                            }else if(row.schedule == '4:30PM'){
+                                return "OUTGOING 4:30PM";
+                            }else if(row.schedule == '7:30PM'){
+                                return "OUTGOING 7:30PM";
+                            }else if(row.schedule == '7:30AM'){
+                                return "SUCCEDING DAYS (INCOMING & OUTGOING 7:30AM)";
+                            }else{
+                                return "---";
+                            }
+                        },
+                    },
                 ],
             });
 
             $("#formAddCutoffTime").submit(function(event){
                 event.preventDefault();
                 addCutoffTime();
+            });
+
+            $('#modalAddCutoffTime').on('hidden.bs.modal', function (e){
+                let form = $(this).find('form');
+                    form.find('#txtFactory').val(0).trigger('change'); // reset
+                    form.find('#txtSchedule').val(0).trigger('change'); // reset
             });
 
             $(document).on('click', '.actionEditCutoffTime', function(){

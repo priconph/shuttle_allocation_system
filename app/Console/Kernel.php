@@ -18,7 +18,8 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         // Run every day at midnight
-        $schedule->command('allocations:auto-close')->dailyAt('00:05');
+        $schedule->command('allocations:auto-close')->dailyAt('00:05')->timezone('Asia/Manila')->appendOutputTo(storage_path('logs/scheduler.log'));
+        // ->dailyAt('10:40')
     }
 
     /**

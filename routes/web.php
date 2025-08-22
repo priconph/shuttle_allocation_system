@@ -159,7 +159,7 @@ Route::get('/get_masterlist', [MasterlistController::class, 'getMasterlist'])->n
 Route::get('/view_cutoff_time', [CutoffTimeController::class, 'viewCutoffTime'])->name('view_cutoff_time');
 Route::post('/add_cutoff_time', [CutoffTimeController::class, 'addCutoffTime'])->name('add_cutoff_time');
 Route::get('/get_cutoff_time_by_id', [CutoffTimeController::class, 'getCutoffTimeById'])->name('get_cutoff_time_by_id');
-Route::post('/edit_cutoff_time_status', [CutoffTimeController::class, 'editCutoffTimeStatus'])->name('edit_cutoff_time_status');
+Route::post('/edit_status', [CutoffTimeController::class, 'editCutoffTimeStatus'])->name('edit_status');
 Route::get('/get_cutoff_time', [CutoffTimeController::class, 'getCutoffTime'])->name('get_masterlist');
 
 /**
@@ -179,6 +179,7 @@ Route::get('/export_report_test',[ExportReportController::class, 'export_report_
 Route::get('/view_allocations', [AllocationController::class, 'viewAllocations'])->name('view_allocations');
 Route::get('/view_master_list_for_allocation', [AllocationController::class, 'viewMasterListForAllocation'])->name('view_master_list_for_allocation');
 Route::get('/get_user_info', [AllocationController::class, 'getUserInfo'])->name('get_user_info');
+Route::get('/get_cutoff_time', [AllocationController::class, 'getCutOffTime'])->name('get_cutoff_time');
 Route::get('/get_masterlist_info_for_filter', [AllocationController::class, 'getMasterlistInfoForFilter'])->name('get_masterlist_info_for_filter');
 Route::post('/add_allocation_data', [AllocationController::class, 'addAllocationData'])->name('add_allocation_data');
 Route::get('/get_allocation_data', [AllocationController::class, 'getAllocationData'])->name('get_allocation_data');
@@ -198,3 +199,5 @@ Route::get('/export_v2/{factory}/{url_route}/{incoming}/{outgoing}/{from}/{to}',
 // IMPORT MANIFEST
 Route::get('/dt_get_manifest', [ManifestController::class, 'dt_get_manifest'])->name('dt_get_manifest');
 Route::post('/import_manifest', [ManifestController::class, 'import_manifest'])->name('import_manifest');
+Route::get('/get_route_code', [ManifestController::class, 'get_route_code'])->name('get_route_code');
+Route::get('/dt_get_inconsistent', [ManifestController::class, 'dt_get_inconsistent'])->name('dt_get_inconsistent');

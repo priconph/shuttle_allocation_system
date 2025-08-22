@@ -59,13 +59,14 @@ class AutoChangeAllocationStatusCommand extends Command
 
     public function handle()
     {
+        date_default_timezone_set('Asia/Manila');
         $today = Carbon::today()->toDateString();
         // Find allocations that have ended and are not yet status 2
         $affected = Allocations::whereDate('alloc_date_end', '<', $today)
             ->where('request_status', '!=', 2)
             ->update([
                 'request_status' => 2,
-                'updated_at' => now()
+                'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
         $this->info("$affected allocation(s) closed.");
