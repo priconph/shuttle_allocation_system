@@ -28,13 +28,13 @@ class CutoffTimeController extends Controller
                 $result .= '<center><span>'. Carbon::parse($row->cutoff_time)->format('h:iA') .'</span></center>';
                 return $result;
             })
-            ->addColumn('cutoff_time_status', function($row){
+            ->addColumn('status', function($row){
                 $result = "";
-                if($row->cutoff_time_status == 1){
-                    $result .= '<center><span class="badge badge-pill badge-success">Active</span></center>';
+                if($row->status == 1){
+                    $result .= '<center><span class="badge badge-pill badge-success">UNLOCKED</span></center>';
                 }
                 else{
-                    $result .= '<center><span class="badge badge-pill text-secondary" style="background-color: #E6E6E6">Inactive</span></center>';
+                    $result .= '<center><span class="badge badge-pill" style="background-color: #f10a0aff">LOCKED</span></center>';
                 }
                 return $result;
             })
@@ -45,13 +45,13 @@ class CutoffTimeController extends Controller
                 // $result .=      '</button>';
 
 
-                if($row->cutoff_time_status == 1){
-                    $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->cutoff_time_status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
+                if($row->status == 1){
+                    $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
                     $result .=          '<i class="fa-solid fa-xl fa-lock"></i> Lock';
                     $result .=      '</button>';
                 }
                 else{
-                    $result .=      '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->cutoff_time_status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
+                    $result .=      '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
                     $result .=          '<i class="fa-solid fa-xl fa-unlock"></i> Unlock';
                     $result .=      '</button>';
                 }
@@ -59,7 +59,7 @@ class CutoffTimeController extends Controller
                 $result .=  '</center>';
                 return $result;
             })
-        ->rawColumns(['cutoff_time','cutoff_time_status', 'action'])
+        ->rawColumns(['cutoff_time','status', 'action'])
         ->make(true);
     }
 
@@ -71,16 +71,19 @@ class CutoffTimeController extends Controller
         /* For Insert */
         if(!isset($request->cutoff_time_id)){
             $validator = Validator::make($data, [
-                'cutoff_time' => 'required',
+                'factory' => 'required',
+                'schedule' => 'required',
             ]);
 
-            if ($validator->fails()) {
+            if ($validator->fails()){
                 return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
-            } else {
+            }else{
+
                 DB::beginTransaction();
                 try {
-                    $pickupTimeId = CutoffTime::insertGetId([
-                        'cutoff_time' => $request->cutoff_time,
+                    CutoffTime::insert([
+                        'factory' => $request->factory,
+                        'schedule' => $request->schedule,
                         'created_by' => $_SESSION['rapidx_user_id'],
                         'created_at' => date('Y-m-d H:i:s'),
                         'is_deleted' => 0
@@ -96,7 +99,8 @@ class CutoffTimeController extends Controller
         }else{ /* For Update */
             $validator = Validator::make($data, [
                 'cutoff_time_id' => 'required',
-                'cutoff_time' => 'required',
+                'factory' => 'required',
+                'schedule' => 'required',
             ]);
 
             // For debugging of session only
@@ -105,22 +109,22 @@ class CutoffTimeController extends Controller
             //     $sessionChecker = "session set";
             // }
 
-            if ($validator->fails()) {
+            if ($validator->fails()){
                 return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
-            } else {
+            }else{
                 DB::beginTransaction();
-                try {
+                try{
                     CutoffTime::where('id', $request->cutoff_time_id)->update([
-                        'cutoff_time' => $request->cutoff_time,
+                        'factory' => $request->factory,
+                        'schedule' => $request->schedule,
                         'last_updated_by' => $_SESSION['rapidx_user_id'],
                         'updated_at' => date('Y-m-d H:i:s'),
                     ]);
 
                     DB::commit();
                     return response()->json(['hasError' => 0]);
-                } catch (\Exception $e) {
+                }catch (\Exception $e) {
                     DB::rollback();
-
                     return response()->json(['hasError' => 1, 'exceptionError' => $e, 'sessionChecker' => $sessionChecker]);
                 }
             }
@@ -140,29 +144,29 @@ class CutoffTimeController extends Controller
         $data = $request->all(); // collect all input fields
         $validator = Validator::make($data, [
             'cutoff_time_id' => 'required',
-            'cutoff_time_status' => 'required',
+            'status' => 'required',
         ]);
 
         if($validator->passes()){
-            if($request->cutoff_time_status == 1){
+            if($request->status == 1){
                 CutoffTime::where('id', $request->cutoff_time_id)
                     ->update([
-                            'cutoff_time_status' => 0,
+                            'status' => 0,
                             'last_updated_by' => $_SESSION['rapidx_user_id'],
                             'updated_at' => date('Y-m-d H:i:s'),
                         ]
                     );
-                $status = CutoffTime::where('id', $request->cutoff_time_id)->value('cutoff_time_status');
+                $status = CutoffTime::where('id', $request->cutoff_time_id)->value('status');
                 return response()->json(['hasError' => 0, 'status' => (int)$status]);
             }else{
                 CutoffTime::where('id', $request->cutoff_time_id)
                     ->update([
-                            'cutoff_time_status' => 1,
+                            'status' => 1,
                             'last_updated_by' => $_SESSION['rapidx_user_id'],
                             'updated_at' => date('Y-m-d H:i:s'),
                         ]
                     );
-                $status = CutoffTime::where('id', $request->cutoff_time_id)->value('cutoff_time_status');
+                $status = CutoffTime::where('id', $request->cutoff_time_id)->value('status');
                 return response()->json(['hasError' => 0, 'status' => (int)$status]);
             }
         }

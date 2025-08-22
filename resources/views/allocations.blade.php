@@ -208,24 +208,16 @@
                                         <div class="col-sm-6">
                                             <label for="alloc_incoming" class="form-label">Allocate Incoming</label>
                                             {{-- <input type="time" class="form-control" name="alloc_incoming" id="txtAllocIncoming"> --}}
-                                            <select class="form-control form-control-sm select2bs5" type="text" name="alloc_incoming" id="txtAllocIncoming">
+                                            <select class="form-control form-control-sm select2bs5 SelectAllocIncoming" type="text" name="alloc_incoming" id="txtAllocIncoming" disabled>
                                                 <option value="" disabled selected>Select Incoming</option>
-                                                <option value="N/A" id="na_in_option">N/A</option>
-                                                <option value="7:30AM">7:30 AM</option>
-                                                <option value="7:30PM">7:30 PM</option>
                                             </select>
                                         </div>
 
                                         <div class="col-sm-6">
                                             <label for="alloc_outgoing" class="form-label">Allocate Outgoing</label>
                                             {{-- <input type="time" class="form-control" name="alloc_outgoing" id="txtAllocOutgoing"> --}}
-                                            <select class="form-control form-control-sm select2bs5" type="text" name="alloc_outgoing" id="txtAllocOutgoing">
+                                            <select class="form-control form-control-sm select2bs5 SelectAllocOutgoing" type="text" name="alloc_outgoing" id="txtAllocOutgoing" disabled>
                                                 <option value="" disabled selected>Select Outgoing</option>
-                                                <option value="N/A" id="na_out_option">N/A</option>
-                                                <option value="3:30PM">3:30 PM</option>
-                                                <option value="4:30PM">4:30 PM</option>
-                                                <option value="7:30PM">7:30 PM</option>
-                                                <option value="7:30AM">7:30 AM</option>
                                             </select>
                                         </div>
                                     </div>

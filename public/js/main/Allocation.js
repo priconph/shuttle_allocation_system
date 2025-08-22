@@ -221,7 +221,8 @@ $(document).ready(function(){
             url: "get_user_info",
             method: "get",
             data:{
-                userId : txtGlobalUserId,
+                userId  : txtGlobalUserId,
+                factory : txtGlobalUserId,
             },
             dataType: "json",
             beforeSend: function(){
@@ -229,6 +230,7 @@ $(document).ready(function(){
             success: function(response){
                 let formAddAllocation = $('#formAddAllocation');
                 let userDetails = response['userDetails'];
+                let scheduleDetails = response['scheduleDetails'];
                 if(userDetails != null){
                     $('#txtEmployeeNumber', formAddAllocation).val(userDetails.rapidx_user_info.employee_number);
                     $('#txtRequestorId', formAddAllocation).val(userDetails.rapidx_user_id);
@@ -262,6 +264,59 @@ $(document).ready(function(){
             $('#chkAllItems').prop('checked', false);
         }
         console.log('selectedIds', selectedIds)
+    });
+
+    $('#txtAllocFactory').on('change', function(){
+       let txtFactory = $(this).val();
+        if(txtFactory == 'F1'){
+            txtFactory = 1;
+        }else{
+            txtFactory = 3;
+        }
+
+        $.ajax({
+            url: "get_cutoff_time",
+            method: "get",
+            data:{
+                factory : txtFactory,
+            },
+            dataType: "json",
+            beforeSend: function(){
+            },
+            success: function(response){
+                $('#txtAllocIncoming').prop('disabled', false);
+                $('#txtAllocOutgoing').prop('disabled', false);
+
+                let scheduleDetails = response['scheduleDetails'];
+                let disabled = '';
+
+                if(scheduleDetails != null){
+                    result_out_schedule = '<option value="" disabled selected> Select Outgoing </option>';
+                    result_in_schedule = '<option value="" disabled selected> Select Incoming </option>';
+
+                    for (let c = 0; c < scheduleDetails.length; c++){
+                        if(scheduleDetails[c].status == 0){//Not Active
+                            disabled = 'disabled';
+                        }else{
+                            disabled = '';
+                        }
+
+                        if(scheduleDetails[c].category > 0){ //1 or 2 Incoming  & Outgoing
+                            result_out_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
+                        }
+
+                        if(scheduleDetails[c].category == 2){ //1 Outgoing
+                            result_in_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
+                        }
+                    }
+                    $('.SelectAllocOutgoing').html(result_out_schedule);
+                    $('.SelectAllocIncoming').html(result_in_schedule);
+                }
+            },
+            error: function(data, xhr, status){
+                toastr.error('An error occured!\n' + 'Data: ' + data + "\n" + "XHR: " + xhr + "\n" + "Status: " + status);
+            },
+        });
     });
 
     dtMasterListToAlloc.on('draw', function () {

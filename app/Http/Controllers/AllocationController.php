@@ -16,6 +16,7 @@ use App\Models\Masterlist;
 use App\Models\RapidXUser;
 use App\Models\User;
 use App\Models\Allocations;
+use App\Models\CutoffTime;
 // use App\Models\SystemOneHRIS;
 // use App\Models\SystemOneSubcon;
 
@@ -24,6 +25,7 @@ use App\Models\SystemOneDepartment;
 use App\Models\SystemOneSection;
 
 use App\Services\AllocationService;
+
 
 class AllocationController extends Controller
 {
@@ -221,9 +223,9 @@ class AllocationController extends Controller
                 'routes_info',
                 'rapidx_user_info',
             ])
-            ->when($isViewMode != 1, function ($query){
-                $query->where('is_deleted', 0);
-            })
+            // ->when($isViewMode == 0, function ($query){
+            //     $query->where('is_deleted', 0);
+            // })
             ->when($request->requestControlNo, function ($query) use ($requestMlIds) {
                 $query->whereIn('id', $requestMlIds);
             })
@@ -262,9 +264,9 @@ class AllocationController extends Controller
                 'routes_info',
                 'rapidx_user_info',
             ])
-            ->when($isViewMode != 1, function ($query) {
-                $query->where('is_deleted', 0);
-            })
+            // ->when($isViewMode == 0, function ($query) {
+            //     $query->where('is_deleted', 0);
+            // })
             ->when($request->requestControlNo, function ($query) use ($requestMlIds) {
                 $query->whereIn('id', $requestMlIds);
             })
@@ -374,6 +376,11 @@ class AllocationController extends Controller
     public function getUserInfo(Request $request){
         $userData = User::with(['rapidx_user_info'])->where('rapidx_user_id', $request->userId)->where('is_deleted', 0)->first();
         return response()->json(['userDetails' => $userData]);
+    }
+
+    public function getCutOffTime(Request $request){
+        $scheduleData = CutoffTime::where('is_deleted', 0)->where('factory', $request->factory)->get();
+        return response()->json(['scheduleDetails' => $scheduleData]);
     }
 
     public function getMasterlistInfoForFilter(Request $request){
@@ -598,26 +605,26 @@ class AllocationController extends Controller
         return response()->json(['allocationDetails' => $allocationData, 'userDetails' => $userData]);
     }
 
-    // public function changeAllocationStatus(Request $request){
-    //     DB::beginTransaction();
-    //     try {
+    public function changeAllocationStatus(Request $request){
+        DB::beginTransaction();
+        try {
 
-    //         if($request->delete_request_status == 0){
-    //             $change_status_to = 1;
-    //         }else if($request->delete_request_status == 1){
-    //             $change_status_to = 0;
-    //         }else{ //Run only when setting status to "finished"
-    //             $change_status_to = 2;
-    //         }
+            if($request->delete_request_status == 0){
+                $change_status_to = 1;
+            }else if($request->delete_request_status == 1){
+                $change_status_to = 0;
+            }else{ //Run only when setting status to "finished"
+                $change_status_to = 2;
+            }
 
-    //         Allocations::where('control_number', $request->delete_control_no)->update(['request_status' => $change_status_to, 'updated_at' => date('Y-m-d H:i:s')]);
-    //         DB::commit();
-    //         return response()->json(['hasError' => 0]);
-    //     } catch (\Exception $e) {
-    //         DB::rollback();
-    //         return response()->json(['hasError' => 1, 'exceptionError' => $e]);
-    //     }
-    // }
+            Allocations::where('control_number', $request->delete_control_no)->update(['request_status' => $change_status_to, 'updated_at' => date('Y-m-d H:i:s')]);
+            DB::commit();
+            return response()->json(['hasError' => 0]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['hasError' => 1, 'exceptionError' => $e]);
+        }
+    }
 
     // public function changeAllocationStatus(Request $request, AllocationService $allocationService)
     // {

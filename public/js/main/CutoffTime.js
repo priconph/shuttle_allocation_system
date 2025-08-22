@@ -9,13 +9,20 @@ function addCutoffTime(){
         success: function(response){
             if(response['validationHasError'] == 1){
                 toastr.error('Saving failed!');
-                if(response['error']['cutoff_time'] === undefined){
-                    $("#textCutoffTime").removeClass('is-invalid');
-                    $("#textCutoffTime").attr('title', '');
+                if(response['error']['factory'] === undefined){
+                    $("#txtFactory").removeClass('is-invalid');
+                    $("#txtFactory").attr('title', '');
+                }else{
+                    $("#txtFactory").addClass('is-invalid');
+                    $("#txtFactory").attr('title', response['error']['factory']);
                 }
-                else{
-                    $("#textCutoffTime").addClass('is-invalid');
-                    $("#textCutoffTime").attr('title', response['error']['cutoff_time']);
+
+                if(response['error']['schedule'] === undefined) {
+                    $("#txtSchedule").removeClass('is-invalid');
+                    $("#txtSchedule").attr('title', '');
+                }else{
+                    $("#txtSchedule").addClass('is-invalid');
+                    $("#txtSchedule").attr('title', response['error']['schedule']);
                 }
             }else if(response['hasError'] == 0){
                 $("#formAddCutoffTime")[0].reset();
@@ -33,8 +40,6 @@ function addCutoffTime(){
         }
     });
 }
-
-
 
 function getCutoffTimeById(id){
     $.ajax({
@@ -65,7 +70,7 @@ function getCutoffTimeById(id){
 
 function editCutoffTimeStatus(){
     $.ajax({
-        url: "edit_cutoff_time_status",
+        url: "edit_status",
         method: "post",
         data: $('#formEditCutoffTimeStatus').serialize(),
         dataType: "json",
