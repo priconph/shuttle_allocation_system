@@ -60,6 +60,11 @@ $(document).ready(function(){
         }
     }
 
+    $('#filterStatus').change(function (e) {
+        e.preventDefault();
+        dtAllocation.draw();
+    });
+
     $('#filterRequestType').change(function (e) {
         e.preventDefault();
         if($(this).val() == 1){
@@ -106,7 +111,7 @@ $(document).ready(function(){
         //     $('#txtAllocOutgoing').prop('disabled', true);
         // }
         buttonDisablingForInOut()
-        getSchedulesForFiltering()
+        getSchedulesForFiltering('', '')
     });
 
     // When end date changes
@@ -139,6 +144,7 @@ $(document).ready(function(){
             url: "view_allocations",
             data: function (param){
                 param.rapidXUserId          = txtGlobalUserId;
+                param.Status                = $('#filterStatus').find(':selected').val();
                 param.RequestType           = $('#filterRequestType').find(':selected').val();
                 param.Factory               = $('#filterFactory').find(':selected').val();
                 param.AllocationStartDate   = $('#filterStartDate').val();
@@ -366,7 +372,7 @@ $(document).ready(function(){
         }
     }
 
-    function getSchedulesForFiltering(){
+    function getSchedulesForFiltering(AllocIncomingVal, AllocOutgoingVal){
         const today = new Date();
         let yyyy = today.getFullYear();
         let mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0
@@ -403,10 +409,10 @@ $(document).ready(function(){
                     result_out_schedule = '<option value="" disabled selected> Select Outgoing </option>';
                     result_in_schedule = '<option value="" disabled selected> Select Incoming </option>';
 
-                    result_out_schedule += '<option value="N/A">N/A</option>';
-                    result_in_schedule += '<option value="N/A">N/A</option>';
+                    result_out_schedule += '<option value="N/A" id="na_out_option">N/A</option>';
+                    result_in_schedule += '<option value="N/A" id="na_in_option>N/A</option>';
 
-                    for (let c = 0; c < scheduleDetails.length; c++){
+                    for(let c = 0; c < scheduleDetails.length; c++){
                         if(scheduleDetails[c].status == 0){//Locked
                             if(scheduleDetails[c].schedule != '7:30AM' && txtStartDate == formattedDate){//SUCCEEDING DAYS
                                 disabled = 'disabled';
@@ -425,8 +431,17 @@ $(document).ready(function(){
                             result_in_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
                         }
                     }
+
                     $('.SelectAllocOutgoing').html(result_out_schedule);
                     $('.SelectAllocIncoming').html(result_in_schedule);
+
+                    if(AllocIncomingVal != null){
+                        $('#txtAllocIncoming').val(AllocIncomingVal).trigger('change');
+                    }
+
+                    if(AllocOutgoingVal != null){
+                        $('#txtAllocOutgoing').val(AllocOutgoingVal).trigger('change');
+                    }
                 }
             },
             error: function(data, xhr, status){
@@ -835,8 +850,10 @@ $(document).ready(function(){
                 $('#txtRequestControlNo', formAddAllocation).val(allocDetails[0].control_number);
                 $('#txtTypeOfRequest', formAddAllocation).val(allocDetails[0].request_type).trigger('change');
                 $('#txtAllocFactory', formAddAllocation).val(allocDetails[0].alloc_factory).trigger('change');
-                $('#txtAllocIncoming', formAddAllocation).val(allocDetails[0].alloc_incoming).trigger('change');
-                $('#txtAllocOutgoing', formAddAllocation).val(allocDetails[0].alloc_outgoing).trigger('change');
+
+                // $('#txtAllocIncoming', formAddAllocation).val(allocDetails[0].alloc_incoming).trigger('change');
+                // $('#txtAllocOutgoing', formAddAllocation).val(allocDetails[0].alloc_outgoing).trigger('change');
+
                 $('#txtStartDate', formAddAllocation).val(allocDetails[0].alloc_date_start);
                 $('#txtEndDate', formAddAllocation).val(allocDetails[0].alloc_date_end);
 
@@ -846,6 +863,7 @@ $(document).ready(function(){
                 console.log('selectedIds', selectedIds)
 
                 filterDataTable(true, false); //this will draw the table;
+                getSchedulesForFiltering(allocDetails[0].alloc_incoming, allocDetails[0].alloc_outgoing)
             }
         });
     });

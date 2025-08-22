@@ -42,6 +42,18 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="row">
+                                    <div class="col-sm-1">
+                                        <label class="form-label">Filter Status</label>
+                                        <div class="input-group input-group-sm mb-3">
+                                            <select class="form-control select2bs5" id="filterStatus">
+                                                <option value="ALL">ALL</option>
+                                                <option value="0" selected>Active</option>
+                                                <option value="1">Inactive</option>
+                                                <option value="2">Finished</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
                                     <div class="col-sm-2">
                                         <label class="form-label">Filter Request Type</label>
                                         <div class="input-group input-group-sm mb-3">
