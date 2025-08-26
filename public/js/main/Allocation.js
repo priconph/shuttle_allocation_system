@@ -154,7 +154,7 @@ $(document).ready(function(){
         "columns":[
             { "data" : "action", orderable:false, searchable:false},
             { "data" : "request_status"},
-            { "data" : "date_requested"},
+            { "data" : "date_created"},
             { "data" : "request_category"},
             { "data" : "allocation_date"},
             { "data" : "allocated_factory"},
@@ -410,7 +410,7 @@ $(document).ready(function(){
                     result_in_schedule = '<option value="" disabled selected> Select Incoming </option>';
 
                     result_out_schedule += '<option value="N/A" id="na_out_option">N/A</option>';
-                    result_in_schedule += '<option value="N/A" id="na_in_option>N/A</option>';
+                    result_in_schedule += '<option value="N/A" id="na_in_option">N/A</option>';
 
                     for(let c = 0; c < scheduleDetails.length; c++){
                         if(scheduleDetails[c].status == 0){//Locked
@@ -491,6 +491,8 @@ $(document).ready(function(){
 
     $('#formAddAllocation').submit(function (e) {
         e.preventDefault();
+        $('#txtAllocIncoming').prop('disabled', false);
+        $('#txtAllocOutgoing').prop('disabled', false);
         // let serializedFormAddAllocation = $('#formAddAllocation').serialize();
 
         let formDataAddAllocation = new FormData($('#formAddAllocation')[0]);
@@ -620,6 +622,7 @@ $(document).ready(function(){
                 }
             }
         });
+
     });
 
     function getDetailsForFiltering(param_factory, param_department, param_section){
