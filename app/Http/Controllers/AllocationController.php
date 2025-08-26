@@ -133,6 +133,11 @@ class AllocationController extends Controller
                 }
                 return $result;
             })
+            ->addColumn('date_created', function($row){
+                $result = "";
+                $result .= '<center><span>'.$row->created_at.'</span></center>';
+                return $result;
+            })
             ->addColumn('request_status', function($row){
                 $result = "";
                 if($row->request_status == 0){
@@ -190,6 +195,7 @@ class AllocationController extends Controller
             })
         ->rawColumns([
             'action',
+            'date_created',
             'request_status',
             'request_category',
             'allocation_date',
@@ -232,9 +238,9 @@ class AllocationController extends Controller
                 'routes_info',
                 'rapidx_user_info',
             ])
-            // ->when($isViewMode == 0, function ($query){
-            //     $query->where('is_deleted', 0);
-            // })
+            ->when($isViewMode != 2, function ($query){
+                $query->where('is_deleted', 0);
+            })
             ->when($request->requestControlNo, function ($query) use ($requestMlIds) {
                 $query->whereIn('id', $requestMlIds);
             })
@@ -273,9 +279,9 @@ class AllocationController extends Controller
                 'routes_info',
                 'rapidx_user_info',
             ])
-            // ->when($isViewMode == 0, function ($query) {
-            //     $query->where('is_deleted', 0);
-            // })
+            ->when($isViewMode != 2, function ($query){
+                $query->where('is_deleted', 0);
+            })
             ->when($request->requestControlNo, function ($query) use ($requestMlIds) {
                 $query->whereIn('id', $requestMlIds);
             })
