@@ -106,6 +106,19 @@ class ExportReportV2Controller extends Controller
             ->pluck('requestee_ml_id')
             ->unique();
 
+        // CHAN - 08-20-2025
+        $type2Allocations = Allocations::where('request_type', 2)
+            ->where('request_status', 0)
+            ->where('is_deleted', 0)
+            ->whereNotNull('requestee_ml_id')
+            ->pluck('requestee_ml_id')
+            ->unique();
+
+        // CHAN - 08-20-2025
+        $masterlists = $masterlists->filter(function ($ml) use ($type2Allocations) {
+            return !$type2Allocations->contains($ml->id);
+        });
+
         $filteredMasterlists = $masterlists->filter(function ($ml) use ($excludedMasterlistIds) {
             return !$excludedMasterlistIds->contains($ml->id);
         });

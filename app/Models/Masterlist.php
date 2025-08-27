@@ -36,6 +36,6 @@ class Masterlist extends Model
     }
 
     public function allocation_info(){
-        return $this->hasOne(Allocations::class, 'id', 'requestee_ml_id');
+        return $this->hasOne(Allocations::class, 'requestee_ml_id', 'id');
     }
 }

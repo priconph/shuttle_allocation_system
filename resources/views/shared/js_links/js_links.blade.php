@@ -71,3 +71,4 @@
 <script src="{{ asset('public/js/main/Masterlist.js') }}?<?=time()?>"></script>
 <script src="{{ asset('public/js/main/CutoffTime.js') }}?<?=time()?>"></script>
 <script src="@php echo asset("public/js/main/Allocation.js?".date("YmdHis")) @endphp"></script>
+<script src="@php echo asset("public/js/main/ImportShuttleManifest.js?".date("YmdHis")) @endphp"></script>

@@ -100,7 +100,7 @@
                         <p>Cut-off Time</p></p>
                     </a>
                 </li>
-                <li class="nav-item has-treeview mb-3 d-none">
+                <li class="nav-item has-treeview mb-3">
                     <a href="{{ route('import_shuttle_manifest')}}" class="nav-link">
                         <i class="nav-icon fa-solid fa-file-excel"></i>
                         <p>Import Manifest</p></p>
@@ -112,6 +112,13 @@
                     <a href="{{ route('export_report_v2')}}" class="nav-link">
                         <i class="nav-icon fa-solid fa-file-excel"></i>
                         <p>Reports</p></p>
+                    </a>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="{{ route('export_report_v3')}}" class="nav-link">
+                        <i class="nav-icon fa-solid fa-file-excel"></i>
+                        <p>Reports - TEST</p></p>
                     </a>
                 </li>
 

@@ -161,7 +161,7 @@ class MasterlistController extends Controller
                  * to disable editing in Masterlist Module
                  */
                 $disabled = '';
-                $cutoffTimeData = CutoffTime::value('cutoff_time_status');
+                $cutoffTimeData = CutoffTime::value('status');
 
                 if($row->masterlist_status == 1){
                     $result =   '<center>';

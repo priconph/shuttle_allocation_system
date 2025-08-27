@@ -16,6 +16,7 @@ use App\Http\Controllers\MasterlistController;
 use App\Http\Controllers\PickupTimeController;
 use App\Http\Controllers\ExportReportController;
 use App\Http\Controllers\ExportReportV2Controller;
+use App\Http\Controllers\ExportReportV3Controller;
 use App\Http\Controllers\ShuttleProviderController;
 
 /*
@@ -79,6 +80,10 @@ Route::get('/export_report', function () {
 Route::get('/export_report_v2', function () {
     return view('export_report_v2');
 })->name('export_report_v2');
+
+Route::get('/export_report_v3', function () {
+    return view('export_report_v3');
+})->name('export_report_v3');
 
 Route::get('/cutoff_time_management', function () {
     return view('cutoff_time_management');
@@ -193,8 +198,11 @@ Route::controller(SubconController::class)->group(function(){
     Route::get('dt_get_subcon_attendance', 'dtGetSubconAttendance')->name('dt_get_subcon_attendance');
 });
 
-// EXPORT DATA
+// EXPORT DATA v2
 Route::get('/export_v2/{factory}/{url_route}/{incoming}/{outgoing}/{from}/{to}', [ExportReportV2Controller::class, 'export_v2']);
+
+// EXPORT DATA v3
+Route::get('/export_v3/{factory}/{from}/{to}', [ExportReportV3Controller::class, 'export_v3']);
 
 // IMPORT MANIFEST
 Route::get('/dt_get_manifest', [ManifestController::class, 'dt_get_manifest'])->name('dt_get_manifest');
