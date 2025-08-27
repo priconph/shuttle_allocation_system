@@ -161,8 +161,8 @@ class MasterlistController extends Controller
                  * to disable editing in Masterlist Module
                  */
                 $disabled = '';
-                $cutoffTimeData = CutoffTime::value('status'); //clark change column name from "cutoff_time_status" to "status"
-                $result = '';
+                $cutoffTimeData = CutoffTime::value('status');
+
                 if($row->masterlist_status == 1){
                     $result .=   '<center>';
                     // $result =   'dates '.$parsedTime . ' & ' . $dateNow;

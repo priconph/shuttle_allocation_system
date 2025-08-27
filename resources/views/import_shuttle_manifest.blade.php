@@ -2,6 +2,15 @@
 
 @section('title', 'Dashboard')
 @section('content_page')
+    <style>
+        .card-header .nav-tabs {
+            margin-bottom: -0.75rem; /* adjust until tabs touch */
+        }
+        .card-header .nav-item .nav-link {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+    </style>
     <div class="content-wrapper">
         <!-- Main content -->
         <section class="content-header">
@@ -23,31 +32,82 @@
         <section class="content">
             <div class="container-fluid">
                 <div class="card"> 
-                    <div class="card-header d-flex justify-content-end">
-                        <button class="btn btn-primary btn-sm" title="Import Manifest" id="btnImportManifest"
+                    <div class="card-header d-flex">
+                        <div >
+                           <ul class="nav nav-tabs" id="manifestTab" role="tablist">
+                               <li class="nav-item" role="">
+                                   <button class="nav-link active" id="allManifestTab" data-bs-toggle="pill"
+                                       data-bs-target="#allImportTab" type="button" role="tab" aria-controls="allImportTab"
+                                       aria-selected="true">All Data</button>
+                               </li>
+                               <li class="nav-item" role="">
+                                   <button class="nav-link" id="inconsistentTab" data-bs-toggle="pill"
+                                       data-bs-target="#inconsistent" type="button" role="tab"
+                                       aria-controls="inconsistent" aria-selected="false">Inconsistent Data</button>
+                               </li>
+                           </ul>
+                        </div>
+                        <div class="ms-auto">
+                            <button class="btn btn-primary btn-sm" title="Import Manifest" id="btnImportManifest"
                             data-bs-toggle="modal" data-bs-target="#modalImportManifest">Import Shuttle Manifest</button>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="table-responsive">
-                                    <table class="table table-hover table-striped w-100" id="tableManifest">
-                                        <thead>
-                                            <tr>
-                                                <th>Emp no.</th>
-                                                <th>Date Scanned</th>
-                                                <th>Time Scanned</th>
-                                                <th>Route</th>
-                                                <th>Factory</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
+                        <div class="tab-content" id="myTabContent">
+                           <div class="tab-pane fade show active" id="allImportTab" role="tabpanel" aria-labelledby="allManifestTab">
+                                 <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="row mb-2">
+                                            <div class="col-sm-2">
+                                                <input type="date" class="form-control filterList" value="{{ now()->format('Y-m-d') }}" name="" id="txtDateScanFilter">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <select name="" id="selRouteFilter" class="form-control filterList"></select>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped w-100" id="tableManifest">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Emp no.</th>
+                                                        <th>Date Scanned</th>
+                                                        <th>Time Scanned</th>
+                                                        <th>Route</th>
+                                                        <th>Factory</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="tab-pane fade" id="inconsistent" role="tabpanel" aria-labelledby="inconsistent">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="row mb-2">
+                                            <div class="col-sm-3">
+                                                <input type="date" class="form-control filterListInconsistent" value="{{ now()->format('Y-m-d') }}" name="" id="txtDateInconsistent">
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped w-100" id="tableInconsistent">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Emp no.</th>
+                                                        <th>Date Scanned</th>
+                                                        <th>Time Scanned</th>
+                                                        <th>Route</th>
+                                                        <th>Factory</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
                         </div>
                     </div>
                 </div>
-                
             </div>
         </section>
     </div>
@@ -86,23 +146,26 @@
 <!--     {{-- JS CONTENT --}} -->
 @section('js_content')
     <script type="text/javascript">
-        let dtManifest;
+        let dtManifest, dtInconsistent;
         $(document).ready(function () {
+            getRouteCode($('#selRouteFilter'));
+
             dtManifest = $("#tableManifest").DataTable({
                 "processing" : true,
                 "serverSide" : true,
                 "ajax" : {
                     url: "{{ route('dt_get_manifest') }}",
-                    //  data: function (param){
-                    //     param.po = $("#id").val();
-                    // }
+                     data: function (param){
+                        param.date_scanned = $("#txtDateScanFilter").val();
+                        param.route = $("#selRouteFilter").val();
+                    }
                 },
                 fixedHeader: true,
                 "columns":[
                     { "data" : "emp_no" },
                     { "data" : "date_scanned" },
                     { "data" : "time_scanned" },
-                    { "data" : "route" },
+                    { "data" : "route_details.routes_destination" },
                     { 
                         "data" : "factory",
                         render: function(data){
@@ -160,8 +223,62 @@
                     }
                 });
             });
+
+            $('#inconsistentTab').on('click', function(){
+                drawInconsistentTable();
+            });
         });
         
+        $(document).on('change', '.filterList', function(){
+            dtManifest.draw();
+        });
+
+        $(document).on('change', '.filterListInconsistent', function(){
+            drawInconsistentTable();
+        });
+
+        const drawInconsistentTable = () => {
+            dtInconsistent = $("#tableInconsistent").DataTable({
+                "processing" : true,
+                "serverSide" : true,
+                "bDestroy"  : true,
+                "ajax" : {
+                    url: "{{ route('dt_get_inconsistent') }}",
+                     data: function (param){
+                        param.date = $("#txtDateInconsistent").val();
+                    }
+                },
+                fixedHeader: true,
+                "columns":[
+                    { "data" : "emp_no" },
+                    { "data" : "date_scanned" },
+                    { "data" : "time_scanned" },
+                    { "data" : "route_details.routes_destination" },
+                    { 
+                        "data" : "factory",
+                        render: function(data){
+                            if(data == 1){
+                                return "Factory 1 & 2";
+                            }
+                            else{
+                                return "Factory 3";
+                            }
+                        }
+                    },
+                ],
+                // "columnDefs": [
+                //     {"className": "dt-center", "targets": "_all"},
+                //     {
+                //         "targets": [7],
+                //         "data": null,
+                //         "defaultContent": "---"
+                //     },
+                // ],
+                // 'drawCallback': function( settings ) {
+                //     let dtApi = this.api();
+                // }
+            });//end of dataTableDevices
+        }
     </script>
 @endsection
 
