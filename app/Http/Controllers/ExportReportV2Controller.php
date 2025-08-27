@@ -27,7 +27,7 @@ class ExportReportV2Controller extends Controller
             'subcon_info.division_info',
             'subcon_info.department_info',
             'subcon_info.section_info',
-            'rapidx_user_info'
+            'rapidx_user_info',
         ])
         ->where('masterlist_status', '1')
         ->where('is_deleted', '0')
@@ -35,7 +35,6 @@ class ExportReportV2Controller extends Controller
         ->where('masterlist_incoming', $incoming)
         ->where('masterlist_outgoing', $outgoing)
         ->get();
-        // return $masterlists;
 
         $allocationlists = Allocations::with([
             'request_ml_info.routes_info',
@@ -70,11 +69,12 @@ class ExportReportV2Controller extends Controller
             $query->whereDate('alloc_date_start', '<=', $to)
                     ->whereDate('alloc_date_end', '>=', $from);
         })
+        ->orderByDesc('id')        // order child records desc
+        ->where('is_deleted', 0)
         ->get();
-        // return $allocationlists;
 
         // All Allocations (for filtering masterlists)
-        $allAllocations = 
+        $allAllocations =
             Allocations::select(
                 'requestee_ml_id',
                 'alloc_factory',
@@ -83,7 +83,7 @@ class ExportReportV2Controller extends Controller
                 'alloc_date_start',
                 'alloc_date_end',
                 'request_type',
-                'request_status', 
+                'request_status',
                 'is_deleted'
             )
             ->where('request_type', '!=', 2)
@@ -92,19 +92,32 @@ class ExportReportV2Controller extends Controller
             ->whereNotNull('requestee_ml_id')
             ->get();
 
-        // Filter out masterlists that already have allocations in other factory or time
-        $excludedMasterlistIds = $allAllocations
+            // Filter out masterlists that already have allocations in other factory or time
+            $excludedMasterlistIds = $allAllocations
             ->filter(function ($alloc) use ($factory, $incoming, $outgoing, $from, $to) {
                 return (
                     $alloc->alloc_factory       != $factory ||
                     $alloc->alloc_incoming      != $incoming ||
                     $alloc->alloc_outgoing      != $outgoing ||
-                    $alloc->alloc_date_start    != $from || 
+                    $alloc->alloc_date_start    != $from ||
                     $alloc->alloc_date_end      != $to
                 );
             })
             ->pluck('requestee_ml_id')
             ->unique();
+
+        // CHAN - 08-20-2025
+        $type2Allocations = Allocations::where('request_type', 2)
+        ->where('request_status', 0)
+        ->where('is_deleted', 0)
+        ->whereNotNull('requestee_ml_id')
+        ->pluck('requestee_ml_id')
+        ->unique();
+
+        // CHAN - 08-20-2025
+        $masterlists = $masterlists->filter(function ($ml) use ($type2Allocations) {
+            return !$type2Allocations->contains($ml->id);
+        });
 
         $filteredMasterlists = $masterlists->filter(function ($ml) use ($excludedMasterlistIds) {
             return !$excludedMasterlistIds->contains($ml->id);
@@ -140,22 +153,22 @@ class ExportReportV2Controller extends Controller
                     $routesInfo = optional($item->routes_info);
                     $fallbackRoutesInfo = optional(optional($item->request_ml_info)->routes_info);
                     $allocIncoming = $item->alloc_incoming;
-                
+
                     $actualRouteName = $routesInfo->routes_name ?? $fallbackRoutesInfo->routes_name;
-                
+
                     return $actualRouteName === $routeName && $allocIncoming !== 'N/A';
                 })->count();
-                
+
                 $outgoingCount = $mergedLists->filter(function ($item) use ($routeName) {
                     $routesInfo = optional($item->routes_info);
                     $fallbackRoutesInfo = optional(optional($item->request_ml_info)->routes_info);
                     $allocOutgoing = $item->alloc_outgoing;
-                
+
                     $actualRouteName = $routesInfo->routes_name ?? $fallbackRoutesInfo->routes_name;
-                
+
                     return $actualRouteName === $routeName && $allocOutgoing !== 'N/A';
                 })->count();
-                
+
 
                 $routeNameCounts->push([
                     'routes_destination' => $route->routes_destination,
@@ -175,21 +188,21 @@ class ExportReportV2Controller extends Controller
             ];
         })->values();
         // return $routeDestinationFinalCount;
-        
+
         if(count($mergedLists) > 0){
             $factory = str_replace('F', '', $factory);
             return Excel::download(
                 new ExportReportV2(
                     $mergedLists,
-                    $routeNameCounts, 
-                    $routeDestinationFinalCount, 
+                    $routeNameCounts,
+                    $routeDestinationFinalCount,
                     $factory,
                     $incoming,
                     $outgoing,
                     $from,
                     $to,
                     $route_code
-                ), 
+                ),
                 'F'.$factory.' - Shuttle Bus Allocation Report for '.$from.' from '.$incoming.' - '.$outgoing.'.xlsx'
             );
         }else{

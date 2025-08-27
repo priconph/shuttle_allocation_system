@@ -64,7 +64,7 @@ function addMasterlist(){
                     $("#selectRoutes").attr('title', response['error']['routes_id']);
                 }
             }else if(response['hasExisted'] == 1){
-                toastr.warning('Employee already added!');
+                toastr.warning('Employee already exists! Please activate the existing employee');
             }
             else if(response['hasError'] == 0){
                 $("#formAddMasterlist")[0].reset();
@@ -186,7 +186,7 @@ function getMasterlistById(id){
                         console.log('getRoutes response ', response);
                         // $('select#selectRoutes').prop('disabled', false);
                         $("#selectRoutes").val(masterlistData[0].routes_id).trigger('change');
-                        // $('#selectRoutes').prop('disabled', true) // 8/15/2025 mdr 
+                        // $('#selectRoutes').prop('disabled', true) // 8/15/2025 mdr
                         $('#selectRoutes').prop('disabled', false)
                     }).catch((error) => {
                         console.log('error ', error);

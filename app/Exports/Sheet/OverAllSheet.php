@@ -105,7 +105,7 @@ class OverAllSheet implements FromView, ShouldAutoSize, WithEvents, WithTitle
                 'bold' => true,
             ],
         ];
-        
+
         return [
             AfterSheet::class => function (AfterSheet $event) use (
                 $mergedLists,
@@ -119,13 +119,13 @@ class OverAllSheet implements FromView, ShouldAutoSize, WithEvents, WithTitle
                 $font14ArialBold
             ) {
                 $sheet = $event->sheet->getDelegate();
-        
+
                 // Freeze and background
                 $sheet->freezePane('C4');
                 $sheet->getStyle('A1:J2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('B7D8FF');
                 $sheet->getStyle('A3:J3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('70ECF9');
                 $sheet->getStyle('A1:J3')->applyFromArray($border);
-        
+
                 // Column widths
                 foreach (['A', 'B', 'E', 'H', 'I', 'J'] as $col) {
                     $sheet->getColumnDimension($col)->setWidth(30);
@@ -133,16 +133,16 @@ class OverAllSheet implements FromView, ShouldAutoSize, WithEvents, WithTitle
                 foreach (['C', 'D', 'F', 'G'] as $col) {
                     $sheet->getColumnDimension($col)->setWidth(20);
                 }
-        
+
                 // Row heights
                 $sheet->getRowDimension(1)->setRowHeight(25);
                 $sheet->getRowDimension(3)->setRowHeight(25);
-        
+
                 // Title and headers
                 $sheet->mergeCells('A1:J2');
                 $sheet->setCellValue('A1', 'Shuttle Bus Allocation');
                 $sheet->getStyle('A1')->applyFromArray(array_merge($textAlignCenter, $font14ArialBold));
-        
+
                 $headers = [
                     'A3' => 'ID Number',
                     'B3' => 'Full Name',
@@ -159,47 +159,47 @@ class OverAllSheet implements FromView, ShouldAutoSize, WithEvents, WithTitle
                     $sheet->setCellValue($cell, $text);
                 }
                 $sheet->getStyle('A3:J3')->applyFromArray(array_merge($textAlignCenter, $font12ArialBold));
-        
+
                 $startRow = 4;
-        
+
                 foreach ($mergedLists as $item) {
                     $sheet->getStyle("A{$startRow}:J{$startRow}")
                         ->applyFromArray(array_merge($border, $textAlignLeft, $font10Arial));
-        
+
                     $isAllocation = isset($item->request_ml_info);
                     $source = $isAllocation ? $item->request_ml_info : $item;
-        
+
                     $incoming = $isAllocation ? $item->alloc_incoming : $source->masterlist_incoming;
                     $outgoing = $isAllocation ? $item->alloc_outgoing : $source->masterlist_outgoing;
-        
+
                     // Set the value
                     $sheet->setCellValue("A{$startRow}", "\n  " . $source->masterlist_employee_number);
                     $sheet->setCellValue("C{$startRow}", "\n  " . $incoming);
                     $sheet->setCellValue("D{$startRow}", "\n  " . $outgoing);
                     $sheet->setCellValue("E{$startRow}", "\n  " . optional($source->routes_info)->routes_name);
-        
+
                     $person = $source->hris_info ?? $source->subcon_info;
                     $name = "\n  " . optional($person)->FirstName . ' ' . optional($person)->LastName;
                     $replacements = [
                         'Ã±' => 'ñ',
                         'ÃÂ±' => 'ñ',
                     ];
-                    
+
                     $fixedName = strtr($name, $replacements);
-                    
+
                     // Set the value
                     $sheet->setCellValue("B{$startRow}", $fixedName);
                     $sheet->setCellValue("F{$startRow}", "\n  " . optional($person->position_info)->Position);
                     $sheet->setCellValue("G{$startRow}", "\n  " . optional($person->division_info)->Division);
                     $sheet->setCellValue("H{$startRow}", "\n  " . optional($person->department_info)->Department);
                     $sheet->setCellValue("I{$startRow}", "\n  " . optional($person->section_info)->Section);
-        
+
                     $user = $isAllocation ? $source->rapidx_user_info : $item->rapidx_user_info;
                     $sheet->setCellValue("J{$startRow}", "\n  " . optional($user)->name);
-        
+
                     $startRow++;
                 }
             },
-        ];                
+        ];
     }
 }

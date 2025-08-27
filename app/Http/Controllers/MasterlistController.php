@@ -161,10 +161,10 @@ class MasterlistController extends Controller
                  * to disable editing in Masterlist Module
                  */
                 $disabled = '';
-                $cutoffTimeData = CutoffTime::value('cutoff_time_status');
-
+                $cutoffTimeData = CutoffTime::value('status'); //clark change column name from "cutoff_time_status" to "status"
+                $result = '';
                 if($row->masterlist_status == 1){
-                    $result =   '<center>';
+                    $result .=   '<center>';
                     // $result =   'dates '.$parsedTime . ' & ' . $dateNow;
 
                     // clark comment 08/19/2025
@@ -172,11 +172,11 @@ class MasterlistController extends Controller
                     //     $disabled = 'disabled';
                     // }
 
-                    // if( $_SESSION['rapidx_department_id'] === 27){ // TODO:ESS Access only
+                    if( $_SESSION['rapidx_department_id'] === 27){ // TODO:ESS Access only
                         $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" '.$disabled.' masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
                         $result .=          '<i class="fa fa-xl fa-edit"></i> ';
                         $result .=      '</button>';
-                    // }
+                    }
                     $result .=      '<button type="button" class="btn btn-warning text-white btn-xs text-center actionEditMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-status="' . $row->masterlist_status . '" data-bs-toggle="modal" data-bs-target="#modalEditMasterlistStatus" title="Deactivate Masterlist">';
                     $result .=          '<i class="fa-solid fa-xl fa-ban"></i>';
                     $result .=      '</button>';
@@ -185,13 +185,13 @@ class MasterlistController extends Controller
                     $result .=      '</button>';
                     $result .=  '</center>';
                 }else{
-                    // if( $_SESSION['rapidx_department_id'] === 27){ //TODO:ESS Access only
-                        $result =   '<center>';
-                        // $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
-                        // $result .=          '<i class="fa fa-xl fa-edit"></i>';
-                        // $result .=      '</button>
-                        // ';
-                    // }
+                    if( $_SESSION['rapidx_department_id'] === 27){ //TODO:ESS Access only
+                        $result .=   '<center>';
+                        $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
+                        $result .=          '<i class="fa fa-xl fa-edit"></i>';
+                        $result .=      '</button>
+                        ';
+                    }
                     $result .=      '<button type="button" class="btn btn-warning btn-xs text-center actionEditMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-status="' . $row->masterlist_status . '" data-bs-toggle="modal" data-bs-target="#modalEditMasterlistStatus" title="Activate Masterlist">';
                     $result .=          '<i class="fa-solid fa-xl fa-arrow-rotate-right"></i>';
                     $result .=      '</button>';
@@ -363,21 +363,24 @@ class MasterlistController extends Controller
                 'routes_id' => 'required',
                 'factory' => 'required',
             ]);
+            /**
+             * Validation for existing employee
+             */
+            $masterlistData = Masterlist::where('masterlist_employee_number', $request->employee_number)
+            ->where('is_deleted', 0)
+            ->count();
+        //    return $masterlistDataInactive = Masterlist::where('masterlist_employee_number', $request->employee_number)
+        //     ->where('masterlist_status', 0)
+        //     ->where('created_by', $_SESSION['rapidx_user_id'])
+        //     ->count();
+            // if( $masterlistData > 0 || $masterlistDataInactive > 0){
+            if( $masterlistData > 0){
+                return response()->json(['hasError' => 1, 'hasExisted' => $masterlistData]);
+            }
 
             if ($validator->fails()) {
                 return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
             } else {
-
-                /**
-                 * Validation for existing employee
-                 */
-                $masterlistData = Masterlist::where('masterlist_employee_number', $request->employee_number)
-                ->where('is_deleted', 0)
-                ->get();
-                if(count($masterlistData) > 0){
-                    return response()->json(['hasError' => 1, 'hasExisted' => count($masterlistData)]);
-                }
-
                 $insertData = [
                     'masterlist_factory' => $request->factory,
                     'masterlist_employee_type' => $request->employee_type,
