@@ -494,7 +494,6 @@ $(document).ready(function(){
         e.preventDefault();
         $('#txtAllocIncoming').prop('disabled', false);
         $('#txtAllocOutgoing').prop('disabled', false);
-
         // let serializedFormAddAllocation = $('#formAddAllocation').serialize();
 
         let formDataAddAllocation = new FormData($('#formAddAllocation')[0]);
@@ -624,6 +623,7 @@ $(document).ready(function(){
                 }
             }
         });
+
     });
 
     function getDetailsForFiltering(param_factory, param_department, param_section){

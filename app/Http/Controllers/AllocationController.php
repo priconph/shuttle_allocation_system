@@ -195,6 +195,7 @@ class AllocationController extends Controller
             })
         ->rawColumns([
             'action',
+            'date_created',
             'request_status',
             'request_category',
             'allocation_date',

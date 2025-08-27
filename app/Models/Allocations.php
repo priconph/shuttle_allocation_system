@@ -33,4 +33,7 @@ class Allocations extends Model
         return $this->hasOne(Routes::class, 'id', 'alloc_routes_id');
     }
 
+    public function masterlist_info(){
+        return $this->hasOne(Masterlist::class, 'id', 'requestee_ml_id')->where('masterlist_status', 1)->where('is_deleted', 0);
+    }
 }
