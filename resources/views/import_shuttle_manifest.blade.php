@@ -86,18 +86,29 @@
                                     <div class="col-sm-12">
                                         <div class="row mb-2">
                                             <div class="col-sm-3">
-                                                <input type="date" class="form-control filterListInconsistent" value="{{ now()->format('Y-m-d') }}" name="" id="txtDateInconsistent">
+                                                <input type="date" class="form-control filterListInconsistent" value="{{ now()->format('Y-m-d') }}" name="" id="txtDateInconsistent" hidden>
                                             </div>
                                         </div>
                                         <div class="table-responsive">
-                                            <table class="table table-hover table-striped w-100" id="tableInconsistent">
-                                                <thead>
+                                            <table class="table table-bordered table-hover table-striped w-100" id="tableInconsistent">
+                                                <thead class="text-center">
                                                     <tr>
-                                                        <th>Emp no.</th>
-                                                        <th>Date Scanned</th>
-                                                        <th>Time Scanned</th>
-                                                        <th>Route</th>
-                                                        <th>Factory</th>
+                                                        <th rowspan="2">Emp no.</th>
+                                                        <th rowspan="2">Date Scanned</th>
+                                                        <th colspan="2" class="text-center">Time</th>
+                                                        <th colspan="2" class="text-center">Route</th>
+                                                        {{-- <th>Time (Scanned)</th>
+                                                        <th>Time (Allocation)</th>
+                                                        <th>Route (Scanned)</th>
+                                                        <th>Route (allocation)</th> --}}
+                                                        <th rowspan="2">Factory</th>
+
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Original</th>
+                                                        <th>Actual</th>
+                                                        <th>Original</th>
+                                                        <th>Actual</th>
                                                     </tr>
                                                 </thead>
                                             </table>
@@ -253,7 +264,11 @@
                     { "data" : "emp_no" },
                     { "data" : "date_scanned" },
                     { "data" : "time_scanned" },
+                    { "data" : "expected_incoming" },
                     { "data" : "route_details.routes_destination" },
+                    { 
+                        "data" : "expected_routeDesc"
+                     },
                     { 
                         "data" : "factory",
                         render: function(data){
@@ -266,14 +281,14 @@
                         }
                     },
                 ],
-                // "columnDefs": [
-                //     {"className": "dt-center", "targets": "_all"},
-                //     {
-                //         "targets": [7],
-                //         "data": null,
-                //         "defaultContent": "---"
-                //     },
-                // ],
+                "columnDefs": [
+                    {"className": "dt-center", "targets": "_all"},
+                    {
+                        "targets": [3,5],
+                        "data": null,
+                        "defaultContent": "<strong class='text-danger'>No Allocation</strong>"
+                    },
+                ],
                 // 'drawCallback': function( settings ) {
                 //     let dtApi = this.api();
                 // }

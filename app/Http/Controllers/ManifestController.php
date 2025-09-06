@@ -71,7 +71,8 @@ class ManifestController extends Controller
 
 
         $allocations = Allocations::with([
-            'request_ml_info'
+            'request_ml_info',
+            'request_ml_info.routes_info',
         ])
         ->where('alloc_date_start', '<=', $request->date)
         ->where('alloc_date_end', '>=', $request->date)
@@ -80,27 +81,98 @@ class ManifestController extends Controller
 
         // get all employee numbers that are already allocated
         $allocatedEmployeeNumbers = Allocations::where('alloc_date_start', '<=', $request->date)
-            ->where('alloc_date_end', '>=', $request->date)
-            ->where('is_deleted', 0)
-            ->pluck('requestee_ml_id'); // employee numbers
+        ->where('alloc_date_end', '>=', $request->date)
+        ->where('is_deleted', 0)
+        ->pluck('requestee_ml_id'); // employee numbers
 
         // remove them from masterlist
-        $masterlist_removed_data = Masterlist::where('masterlist_status', 1)
-            ->where('is_deleted', 0)
-            ->whereNotIn('id', $allocatedEmployeeNumbers) // compare employee number
-            ->get();
+        $masterlist_removed_data = Masterlist::with([
+            'routes_info'
+        ])
+        ->where('masterlist_status', 1)
+        ->where('is_deleted', 0)
+        ->whereNotIn('id', $allocatedEmployeeNumbers) // compare employee number
+        ->get();
 
-        $merged = $allocations->merge($masterlist_removed_data);
+        $merged = $allocations->merge($masterlist_removed_data); // merge the allocation and masterlist
 
-        return response()->json([
-            // 'allocatedEmployeeNumbers' => $allocatedEmployeeNumbers,
-            // 'masterlist_removed_data' => $masterlist_removed_data,
-            'allocations' => $allocations,
-            'manifests' => $manifests,
-            // 'merged' => $merged,
-        ]);
+        /**
+         * Compare manifests against merged records.
+         *
+         * @var $result contains manifest records that DO NOT have
+         *              a matching employee number + route description
+         *              in the merged data.
+         * 
+         * Each record will include an extra field:
+         *   - expected_routeDesc → the route description from merged (if any)
+         */
+        $result = $manifests->map(function ($m) use ($merged) {
+            // find first merged record with same emp_no
+            $match = $merged->first(function ($mer) use ($m) {
+                $empNo = $mer['request_ml_info']['masterlist_employee_number']
+                    ?? $mer['masterlist_employee_number']
+                    ?? null;
+                return $m['emp_no'] == $empNo;
+            });
+            // expected routeDesc if emp_no matched
+            $routeDesc = $match['request_ml_info']['routes_info']['routes_description']
+                ?? $match['routes_info']['routes_description']
+                ?? null;
 
-        // return DataTables::of($manifests)
-        // ->make(true);
+            $incoming = $match['alloc_incoming']
+                ?? $match['masterlist_incoming']
+                ?? null;
+            // attach expected_routeDesc to manifest
+            $m['expected_routeDesc'] = $routeDesc;
+            $m['expected_incoming'] = $incoming;
+            return $m;
+        })
+        ->reject(function ($m) {
+            // reject if route matches
+            // return ($m['route_details']['routes_destination'] ?? null) === ($m['expected_routeDesc'] ?? null);
+
+            $timeScanned = $m['time_scanned'] ?? null;
+            $expectedIncoming = $m['expected_incoming'] ?? null;
+
+            // default is keep
+            $invalidTime = false;
+
+            if ($timeScanned != null) {
+                // $ts = \Carbon\Carbon::createFromFormat('H:i:s', $timeScanned);
+
+                // if ($expectedIncoming === '7:30AM') {
+                //     // valid if 05:00:00–09:00:00
+                //     $invalidTime = !$ts->between(
+                //         \Carbon\Carbon::createFromTime(5, 0, 0),
+                //         \Carbon\Carbon::createFromTime(9, 0, 0)
+                //     );
+                // } elseif ($expectedIncoming === '7:30PM') {
+                //     // valid if 17:00:00–21:00:00
+                //     $invalidTime = !$ts->between(
+                //         \Carbon\Carbon::createFromTime(17, 0, 0),
+                //         \Carbon\Carbon::createFromTime(21, 0, 0)
+                //     );
+                // }
+                $ts = date('H:i:s', strtotime($timeScanned));
+                
+                if ($expectedIncoming === '7:30AM') {
+                    // valid if 05:00:00–09:00:00
+                    $invalidTime = ($ts >= '05:00:00' && $ts <= '09:00:00');
+                } elseif ($expectedIncoming === '7:30PM') {
+                    // valid if 17:00:00–21:00:00
+                    $invalidTime = ($ts >= '17:00:00' && $ts <= '21:00:00');
+                }
+            }
+
+            return 
+                // reject if route matches
+                (($m['route_details']['routes_destination'] ?? null) === ($m['expected_routeDesc'] ?? null))
+                // OR reject if incoming matches time range invalid
+                && $invalidTime;
+        })
+        ->values(); // reindex
+
+        return DataTables::of($result)
+        ->make(true);
     }
 }
