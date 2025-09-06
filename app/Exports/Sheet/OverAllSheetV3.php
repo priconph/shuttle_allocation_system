@@ -173,13 +173,13 @@ class OverAllSheetV3 implements FromView, ShouldAutoSize, WithEvents, WithTitle
                     $outgoing = $isAllocation ? $item->alloc_outgoing : $source->masterlist_outgoing;
         
                     // Set the value
-                    $sheet->setCellValue("A{$startRow}", "\n  " . $source->masterlist_employee_number);
-                    $sheet->setCellValue("C{$startRow}", "\n  " . $incoming);
-                    $sheet->setCellValue("D{$startRow}", "\n  " . $outgoing);
-                    $sheet->setCellValue("E{$startRow}", "\n  " . optional($source->routes_info)->routes_name);
+                    $sheet->setCellValue("A{$startRow}", $source->masterlist_employee_number);
+                    $sheet->setCellValue("C{$startRow}", $incoming);
+                    $sheet->setCellValue("D{$startRow}", $outgoing);
+                    $sheet->setCellValue("E{$startRow}", optional($source->routes_info)->routes_name);
         
                     $person = $source->hris_info ?? $source->subcon_info;
-                    $name = "\n  " . optional($person)->FirstName . ' ' . optional($person)->LastName;
+                    $name = optional($person)->FirstName . ' ' . optional($person)->LastName;
                     $replacements = [
                         'Ã±' => 'ñ',
                         'ÃÂ±' => 'ñ',
@@ -189,14 +189,14 @@ class OverAllSheetV3 implements FromView, ShouldAutoSize, WithEvents, WithTitle
                     
                     // Set the value
                     $sheet->setCellValue("B{$startRow}", $fixedName);
-                    $sheet->setCellValue("F{$startRow}", "\n  " . optional($person->position_info)->Position);
-                    $sheet->setCellValue("G{$startRow}", "\n  " . optional($person->division_info)->Division);
-                    $sheet->setCellValue("H{$startRow}", "\n  " . optional($person->department_info)->Department);
-                    $sheet->setCellValue("I{$startRow}", "\n  " . optional($person->section_info)->Section);
+                    $sheet->setCellValue("F{$startRow}", optional($person->position_info)->Position);
+                    $sheet->setCellValue("G{$startRow}", optional($person->division_info)->Division);
+                    $sheet->setCellValue("H{$startRow}", optional($person->department_info)->Department);
+                    $sheet->setCellValue("I{$startRow}", optional($person->section_info)->Section);
         
                     $user = $source ? $item->requestor_user_info : $item->rapidx_user_info;
-                    // dd($item);
-                    $sheet->setCellValue("J{$startRow}", "\n  " . optional($user)->name);
+                    // dd($isAllocation);
+                    $sheet->setCellValue("J{$startRow}", optional($user)->name);
         
                     $startRow++;
                 }

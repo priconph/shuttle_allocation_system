@@ -35,6 +35,7 @@ class ExportReportV2Controller extends Controller
         ->where('masterlist_incoming', $incoming)
         ->where('masterlist_outgoing', $outgoing)
         ->get();
+        // return $masterlists;
 
         $allocationlists = Allocations::with([
             'request_ml_info.routes_info',
@@ -69,9 +70,9 @@ class ExportReportV2Controller extends Controller
             $query->whereDate('alloc_date_start', '<=', $to)
                     ->whereDate('alloc_date_end', '>=', $from);
         })
-        ->orderByDesc('id')        // order child records desc
         ->where('is_deleted', 0)
         ->get();
+        // return $allocationlists;
 
         // All Allocations (for filtering masterlists)
         $allAllocations =
@@ -91,25 +92,31 @@ class ExportReportV2Controller extends Controller
             ->where('is_deleted', 0)
             ->whereNotNull('requestee_ml_id')
             ->get();
-
-            // Filter out masterlists that already have allocations in other factory or time
-            $excludedMasterlistIds = $allAllocations
-            ->filter(function ($alloc) use ($factory, $incoming, $outgoing, $from, $to) {
-                return (
-                    $alloc->alloc_factory       != $factory ||
-                    $alloc->alloc_incoming      != $incoming ||
-                    $alloc->alloc_outgoing      != $outgoing ||
-                    $alloc->alloc_date_start    != $from ||
-                    $alloc->alloc_date_end      != $to
-                );
-            })
-            ->pluck('requestee_ml_id')
-            ->unique();
-
+        // return $allAllocations;
+            
+        // Filter out masterlists that already have allocations in other factory or time
+        $excludedMasterlistIds = $allAllocations
+        ->filter(function ($alloc) use ($factory, $incoming, $outgoing, $from, $to) {
+            return (
+                $alloc->alloc_factory       != $factory ||
+                $alloc->alloc_incoming      != $incoming ||
+                $alloc->alloc_outgoing      != $outgoing ||
+                $alloc->alloc_date_start    != $from ||
+                $alloc->alloc_date_end      != $to
+            );
+        })
+        ->where('alloc_date_start', '<=', $to)
+        ->where('alloc_date_end', '>=', $from)
+        ->pluck('requestee_ml_id')
+        ->unique();
+        // return $excludedMasterlistIds;
+        
         // CHAN - 08-20-2025
         $type2Allocations = Allocations::where('request_type', 2)
             ->where('request_status', 0)
             ->where('is_deleted', 0)
+            ->where('alloc_date_start', '<=', $to)
+            ->where('alloc_date_end', '>=', $from)
             ->whereNotNull('requestee_ml_id')
             ->pluck('requestee_ml_id')
             ->unique();

@@ -256,28 +256,24 @@ class Allocation implements FromView, ShouldAutoSize, WithEvents, WithTitle
                         $currentRow = $startRow;
 
                         if ($detailCount) {   
-                            $capacity = 0;    
                             for ($i=0; $i < count($details); $i++) {
-                                if ($details[$i]->shuttle_provider_info != null) {    
-                                    $capacity = $details[$i]->shuttle_provider_info->shuttle_provider_capacity ?? 0;
-                                }
-                                $sheet->setCellValue("{$col[2]}{$currentRow}", "\n  " . $details[$i]->routes_name);
+                                $sheet->setCellValue("{$col[2]}{$currentRow}", $details[$i]->routes_name);
                                 $sheet->getStyle("{$col[2]}{$currentRow}:{$col[5]}{$currentRow}")
                                     ->applyFromArray($border + $textAlignCenter + $font10Arial)
                                     ->getAlignment()->setWrapText(true);
 
-                                for ($ii=0; $ii < count($routeNameCounts); $ii++) {
+                                for($ii=0; $ii < count($routeNameCounts); $ii++) {
                                     if($details[$i]->routes_name == $routeNameCounts[$ii]['route_name']){
                                         if($type === 'Incoming'){
                                             $sheet->setCellValue("{$col[3]}{$currentRow}", $routeNameCounts[$ii]['incoming_count']);
-                                        }else {
+                                        }else{
                                             $sheet->setCellValue("{$col[3]}{$currentRow}", $routeNameCounts[$ii]['outgoing_count']);
                                         }
                                     }
                                 }
                                 $currentRow++;
                             }
-                        } else {
+                        }else{
                             $sheet->getStyle("{$col[2]}{$startRow}:{$col[5]}{$startRow}")
                                 ->applyFromArray($border + $textAlignCenter + $font10Arial)
                                 ->getAlignment()->setWrapText(true);

@@ -84,7 +84,11 @@ class ExportReportV3Controller extends Controller
                 $alloc->alloc_date_start != $from ||
                 $alloc->alloc_date_end != $to
             );
-        })->pluck('requestee_ml_id')->unique();
+        })
+        ->where('alloc_date_start', '<=', $to)
+        ->where('alloc_date_end', '>=', $from)
+        ->pluck('requestee_ml_id')
+        ->unique();
 
         $filteredMasterlists = $masterlists->filter(function ($ml) use ($excludedMasterlistIds) {
             return !$excludedMasterlistIds->contains($ml->id);
@@ -97,7 +101,9 @@ class ExportReportV3Controller extends Controller
         });
 
         // 7. Combine both datasets
-        $mergedLists = $allocationlists->values()->merge($unmatchedMasterlists->values());
+        // $mergedLists = $allocationlists->values()->merge($unmatchedMasterlists->values());
+        $mergedLists = $unmatchedMasterlists->values()->merge($allocationlists->values());
+        // $mergedLists = $mergedLists->sortByDesc('created_at')->values();
         // return $mergedLists;
 
         // 8. Route Codes
@@ -110,7 +116,7 @@ class ExportReportV3Controller extends Controller
         $routeNameCounts = collect();
         foreach ($route_code as $route) {
             $destination = strtolower(trim($route->routes_destination));
-        
+
             $matchingDetails = $route->routes_details->filter(function ($detail) use ($destination) {
                 return strtolower(trim($detail->routes_description)) === $destination;
             });
@@ -126,9 +132,9 @@ class ExportReportV3Controller extends Controller
                     $routesInfo = optional($item->routes_info);
                     $fallbackRoutesInfo = optional(optional($item->request_ml_info)->routes_info);
                     $actualRouteName = $routesInfo->routes_name ?? $fallbackRoutesInfo->routes_name;
-        
+
                     if ($actualRouteName !== $routeName) continue;
-                
+
                     // Count alloc_incoming
                     if (!empty($item->alloc_incoming)) {
                         $time = date('h:i A', strtotime($item->alloc_incoming));
@@ -146,14 +152,14 @@ class ExportReportV3Controller extends Controller
                         $time = date('h:i A', strtotime($item->alloc_outgoing));
                         $outgoingCounts[$time] = ($outgoingCounts[$time] ?? 0) + 1;
                     }
-        
+
                     // Count masterlist_outgoing
                     if (!empty($item->masterlist_outgoing)) {
                         $time = date('h:i A', strtotime($item->masterlist_outgoing));
                         $outgoingCounts[$time] = ($outgoingCounts[$time] ?? 0) + 1;
                     }
                 }
-        
+
                 $routeNameCounts->push([
                     'routes_destination' => $route->routes_destination,
                     'route_code'         => $route->routes_code,
@@ -197,7 +203,7 @@ class ExportReportV3Controller extends Controller
     // public function export_v3($factory, $from, $to)
     // {
     //     date_default_timezone_set('Asia/Manila');
-    
+
     //     // Masterlist Query
     //     $masterlists = Masterlist::with([
     //         'routes_info',
@@ -215,7 +221,7 @@ class ExportReportV3Controller extends Controller
     //     ->where('is_deleted', '0')
     //     ->where('masterlist_factory', $factory)
     //     ->get();
-    
+
     //     $allocationlists = Allocations::with([
     //         'request_ml_info.routes_info',
     //         'request_ml_info.hris_info.position_info',
@@ -236,14 +242,14 @@ class ExportReportV3Controller extends Controller
     //               ->whereDate('alloc_date_end', '>=', $from);
     //     })
     //     ->get();
-    
+
     //     $allAllocations = Allocations::select(
     //         'requestee_ml_id',
     //         'alloc_factory',
     //         'alloc_date_start',
     //         'alloc_date_end',
     //         'request_type',
-    //         'request_status', 
+    //         'request_status',
     //         'is_deleted'
     //     )
     //     ->where('request_type', '!=', 2)
@@ -251,18 +257,18 @@ class ExportReportV3Controller extends Controller
     //     ->where('is_deleted', 0)
     //     ->whereNotNull('requestee_ml_id')
     //     ->get();
-    
+
     //     $excludedMasterlistIds = $allAllocations
     //         ->filter(function ($alloc) use ($factory, $from, $to) {
     //             return (
     //                 $alloc->alloc_factory       != $factory ||
-    //                 $alloc->alloc_date_start    != $from || 
+    //                 $alloc->alloc_date_start    != $from ||
     //                 $alloc->alloc_date_end      != $to
     //             );
     //         })
     //         ->pluck('requestee_ml_id')
     //         ->unique();
-    
+
     //     // CHAN - 08-20-2025
     //     $type2Allocations = Allocations::where('request_type', 2)
     //         ->where('request_status', 0)
@@ -270,59 +276,59 @@ class ExportReportV3Controller extends Controller
     //         ->whereNotNull('requestee_ml_id')
     //         ->pluck('requestee_ml_id')
     //         ->unique();
-    
+
     //     // Filter out type 2 (Not riding shuttle)
     //     $masterlists = $masterlists->filter(function ($ml) use ($type2Allocations) {
     //         return !$type2Allocations->contains($ml->id);
     //     });
-    
+
     //     // Remove masterlists already allocated elsewhere
     //     $filteredMasterlists = $masterlists->filter(function ($ml) use ($excludedMasterlistIds) {
     //         return !$excludedMasterlistIds->contains($ml->id);
     //     });
-    
+
     //     $matchedIds = $allocationlists->pluck('request_ml_info.id')->filter()->unique();
-    
+
     //     $unmatchedMasterlists = $filteredMasterlists->filter(function ($item) use ($matchedIds) {
     //         return !$matchedIds->contains($item->id);
     //     });
-    
+
     //     // Merge allocations + remaining masterlist users
     //     $mergedLists = $allocationlists->values()->merge($unmatchedMasterlists->values());
-    
+
     //     // Route Code Grouping and Counting
     //     $route_code = RouteCode::with(['routes_details.shuttle_provider_info'])
     //         ->whereNull('deleted_at')
     //         ->orderBy('routes_code', 'asc')
     //         ->get();
-    
+
     //     $routeNameCounts = collect();
     //     $routeDestinationCounts = collect();
-    
+
     //     foreach ($route_code as $route) {
     //         $destination = strtolower(trim($route->routes_destination));
-        
+
     //         $matchingDetails = $route->routes_details->filter(function ($detail) use ($destination) {
     //             return strtolower(trim($detail->routes_description)) === $destination;
     //         });
-        
+
     //         foreach ($matchingDetails as $detail) {
     //             $routeName = $detail->routes_name;
     //             if (!$routeName) continue;
-        
+
     //             $incomingCounts = [];
     //             $outgoingCounts = [];
-        
+
     //             foreach ($mergedLists as $item) {
     //                 $routesInfo = optional($item->routes_info);
     //                 $fallbackRoutesInfo = optional(optional($item->request_ml_info)->routes_info);
     //                 $actualRouteName = $routesInfo->routes_name ?? $fallbackRoutesInfo->routes_name;
-        
+
     //                 if ($actualRouteName !== $routeName) continue;
-        
+
     //                 $incomingTime = trim($item->alloc_incoming ?? '');
     //                 $outgoingTime = trim($item->alloc_outgoing ?? '');
-        
+
     //                 if (!empty($incomingTime)) {
     //                     $incomingTime = date('h:i A', strtotime($incomingTime));
     //                     if (!isset($incomingCounts[$incomingTime])) {
@@ -330,7 +336,7 @@ class ExportReportV3Controller extends Controller
     //                     }
     //                     $incomingCounts[$incomingTime]++;
     //                 }
-        
+
     //                 if (!empty($outgoingTime)) {
     //                     $outgoingTime = date('h:i A', strtotime($outgoingTime));
     //                     if (!isset($outgoingCounts[$outgoingTime])) {
@@ -339,7 +345,7 @@ class ExportReportV3Controller extends Controller
     //                     $outgoingCounts[$outgoingTime]++;
     //                 }
     //             }
-        
+
     //             $routeNameCounts->push([
     //                 'routes_destination' => $route->routes_destination,
     //                 'route_code'         => $route->routes_code,
@@ -349,7 +355,7 @@ class ExportReportV3Controller extends Controller
     //             ]);
     //         }
     //     }
-        
+
     //     // return $routeNameCounts;
     //     $routeDestinationFinalCount = $routeDestinationCounts->map(function ($count, $destination) {
     //         return [
@@ -357,7 +363,7 @@ class ExportReportV3Controller extends Controller
     //             'total_employee_count'  => $count,
     //         ];
     //     })->values();
-    
+
     //     if (count($mergedLists) > 0) {
     //         $factory = str_replace('F', '', $factory);
     //         return Excel::download(
@@ -376,5 +382,5 @@ class ExportReportV3Controller extends Controller
     //         return redirect()->back()->with('message', 'There are no data for the chosen date/time.');
     //     }
     // }
-    
+
 }

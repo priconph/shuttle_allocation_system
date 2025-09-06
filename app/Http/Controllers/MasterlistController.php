@@ -162,7 +162,7 @@ class MasterlistController extends Controller
                  */
                 $disabled = '';
                 $cutoffTimeData = CutoffTime::value('status');
-
+                $result =   '';
                 if($row->masterlist_status == 1){
                     $result .=   '<center>';
                     // $result =   'dates '.$parsedTime . ' & ' . $dateNow;
