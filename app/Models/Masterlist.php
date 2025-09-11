@@ -38,4 +38,8 @@ class Masterlist extends Model
     public function allocation_info(){
         return $this->hasOne(Allocations::class, 'requestee_ml_id', 'id');
     }
+
+    public function allocation_info_v2(){
+        return $this->hasOne(Allocations::class, 'requestee_ml_id', 'id')->where('request_status', 0)->where('is_deleted', 0);
+    }
 }

@@ -360,7 +360,7 @@
                 "processing" : false,
                 "serverSide" : true,
                 "responsive": true,
-                // "order": [[ 0, "desc" ],[ 4, "desc" ]],
+                "order": [[ 1, "ASC" ],[ 4, "ASC" ]],
                 "language": {
                     "info": "Showing _START_ to _END_ of _TOTAL_ employee records",
                     "lengthMenu": "Show _MENU_ employee records",

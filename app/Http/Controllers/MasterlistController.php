@@ -70,6 +70,7 @@ class MasterlistController extends Controller
                 },
                 'routes_info',
                 'rapidx_user_info',
+                // 'allocation_info_v2'
             ])
             ->where('is_deleted', 0);
         }else{
@@ -91,6 +92,7 @@ class MasterlistController extends Controller
                 },
                 'routes_info',
                 'rapidx_user_info',
+                // 'allocation_info_v2'
             ])
             ->where('is_deleted', 0)
             ->where('created_by', $request->rapidXUserId);
@@ -130,7 +132,7 @@ class MasterlistController extends Controller
                 break;
         }
         $masterlistData = $masterlistData->get();
-
+        // return $masterlistData;
 
         return DataTables::of($masterlistData)
             ->addColumn('masterlist_status', function($row){
@@ -163,40 +165,44 @@ class MasterlistController extends Controller
                 $disabled = '';
                 $cutoffTimeData = CutoffTime::value('status');
                 $result =   '';
-                if($row->masterlist_status == 1){
-                    $result .=   '<center>';
-                    // $result =   'dates '.$parsedTime . ' & ' . $dateNow;
-
-                    // clark comment 08/19/2025
-                    // if($cutoffTimeData == 0){
-                    //     $disabled = 'disabled';
-                    // }
-
-                    if( $_SESSION['rapidx_department_id'] === 27){ // TODO:ESS Access only
-                        $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" '.$disabled.' masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
-                        $result .=          '<i class="fa fa-xl fa-edit"></i> ';
-                        $result .=      '</button>';
-                    }
-                    $result .=      '<button type="button" class="btn btn-warning text-white btn-xs text-center actionEditMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-status="' . $row->masterlist_status . '" data-bs-toggle="modal" data-bs-target="#modalEditMasterlistStatus" title="Deactivate Masterlist">';
-                    $result .=          '<i class="fa-solid fa-xl fa-ban"></i>';
-                    $result .=      '</button>';
-                    $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionDeleteMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-is-deleted="' . $row->is_deleted . '" data-bs-toggle="modal" data-bs-target="#modalDeleteMasterlistStatus" title="Delete Masterlist">';
-                    $result .=          '<i class="fa-solid fa-xl fa-trash"></i>';
-                    $result .=      '</button>';
-                    $result .=  '</center>';
-                }else{
-                    if( $_SESSION['rapidx_department_id'] === 27){ //TODO:ESS Access only
+                // if($row->allocation_info_v2 == null){
+                    if($row->masterlist_status == 1){
                         $result .=   '<center>';
-                        $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
-                        $result .=          '<i class="fa fa-xl fa-edit"></i>';
-                        $result .=      '</button>
-                        ';
+                        // $result =   'dates '.$parsedTime . ' & ' . $dateNow;
+    
+                        // clark comment 08/19/2025
+                        // if($cutoffTimeData == 0){
+                        //     $disabled = 'disabled';
+                        // }
+    
+                        if( $_SESSION['rapidx_department_id'] === 27){ // TODO:ESS Access only
+                            $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" '.$disabled.' masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
+                            $result .=          '<i class="fa fa-xl fa-edit"></i> ';
+                            $result .=      '</button>';
+                        }
+                        $result .=      '<button type="button" class="btn btn-warning text-white btn-xs text-center actionEditMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-status="' . $row->masterlist_status . '" data-bs-toggle="modal" data-bs-target="#modalEditMasterlistStatus" title="Deactivate Masterlist">';
+                        $result .=          '<i class="fa-solid fa-xl fa-ban"></i>';
+                        $result .=      '</button>';
+                        // $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionDeleteMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-is-deleted="' . $row->is_deleted . '" data-bs-toggle="modal" data-bs-target="#modalDeleteMasterlistStatus" title="Delete Masterlist">';
+                        // $result .=          '<i class="fa-solid fa-xl fa-trash"></i>';
+                        $result .=      '</button>';
+                        $result .=  '</center>';
+                    }else{
+                        if( $_SESSION['rapidx_department_id'] === 27){ //TODO:ESS Access only
+                            $result .=   '<center>';
+                            $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
+                            $result .=          '<i class="fa fa-xl fa-edit"></i>';
+                            $result .=      '</button>
+                            ';
+                        }
+                        $result .=      '<button type="button" class="btn btn-warning btn-xs text-center actionEditMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-status="' . $row->masterlist_status . '" data-bs-toggle="modal" data-bs-target="#modalEditMasterlistStatus" title="Activate Masterlist">';
+                        $result .=          '<i class="fa-solid fa-xl fa-arrow-rotate-right"></i>';
+                        $result .=      '</button>';
+                        $result .=  '</center>';
                     }
-                    $result .=      '<button type="button" class="btn btn-warning btn-xs text-center actionEditMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-status="' . $row->masterlist_status . '" data-bs-toggle="modal" data-bs-target="#modalEditMasterlistStatus" title="Activate Masterlist">';
-                    $result .=          '<i class="fa-solid fa-xl fa-arrow-rotate-right"></i>';
-                    $result .=      '</button>';
-                    $result .=  '</center>';
-                }
+                // }else{
+                //     $result .= '<center><span>Currently allocated</span></center>';
+                // }
                 return $result;
             })
             ->addColumn('masterlist_employee_name', function($row){
@@ -402,7 +408,7 @@ class MasterlistController extends Controller
                 try {
                     Masterlist::insert([
                         $insertData
-                    ]);
+                    ]);                        
 
                     DB::commit();
                     return response()->json(['hasError' => 0]);

@@ -63,8 +63,9 @@ function addMasterlist(){
                     $("#selectRoutes").addClass('is-invalid');
                     $("#selectRoutes").attr('title', response['error']['routes_id']);
                 }
-            }else if(response['hasExisted'] == 1){
-                toastr.warning('Employee already exists! Please activate the existing employee');
+            }
+            else if(response['hasExisted'] == 1){
+                toastr.warning('Employee already exists!');
             }
             else if(response['hasError'] == 0){
                 $("#formAddMasterlist")[0].reset();
@@ -72,6 +73,10 @@ function addMasterlist(){
                 $('#modalAddMasterlist').modal('hide');
                 dataTablesMasterlist.draw();
             }
+            // else{
+            //     toastr.warning('Employee already exists!');
+            // }
+
 
             $("#btnAddMasterlistIcon").removeClass('spinner-border spinner-border-sm');
             $("#btnAddMasterlist").removeClass('disabled');
