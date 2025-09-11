@@ -169,8 +169,8 @@ class OverAllSheetV3 implements FromView, ShouldAutoSize, WithEvents, WithTitle
                     $isAllocation = isset($item->request_ml_info);
                     $source = $isAllocation ? $item->request_ml_info : $item;
         
-                    $incoming = $isAllocation ? $item->alloc_incoming : $source->masterlist_incoming;
-                    $outgoing = $isAllocation ? $item->alloc_outgoing : $source->masterlist_outgoing;
+                    $incoming = $item->alloc_incoming ?? $item->masterlist_incoming;
+                    $outgoing = $item->alloc_outgoing ?? $item->masterlist_outgoing;
         
                     // Set the value
                     $sheet->setCellValue("A{$startRow}", $source->masterlist_employee_number);
@@ -194,8 +194,7 @@ class OverAllSheetV3 implements FromView, ShouldAutoSize, WithEvents, WithTitle
                     $sheet->setCellValue("H{$startRow}", optional($person->department_info)->Department);
                     $sheet->setCellValue("I{$startRow}", optional($person->section_info)->Section);
         
-                    $user = $source ? $item->requestor_user_info : $item->rapidx_user_info;
-                    // dd($isAllocation);
+                    $user = $item->rapidx_user_info ?? $item->requestor_user_info;
                     $sheet->setCellValue("J{$startRow}", optional($user)->name);
         
                     $startRow++;

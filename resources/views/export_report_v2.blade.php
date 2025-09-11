@@ -41,14 +41,14 @@
                                     <div class="input-group-prepend w-50">
                                         <span class="input-group-text w-100">Incoming:</span>
                                     </div>
-                                    <input type="text" class="form-control datetimepicker" name="incoming" id="incoming" placeholder="Incoming">
+                                    <input type="text" class="form-control datetimepicker" name="incoming" id="incoming" placeholder="Incoming" autocomplete="off">
                                 </div>
 
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend w-50">
                                         <span class="input-group-text w-100">Outgoing:</span>
                                     </div>
-                                    <input type="text" class="form-control datetimepicker" id="outgoing" name="outgoing" placeholder="Outgoing">
+                                    <input type="text" class="form-control datetimepicker" id="outgoing" name="outgoing" placeholder="Outgoing" autocomplete="off">
                                 </div>
 
                                 <div class="input-group mb-3">

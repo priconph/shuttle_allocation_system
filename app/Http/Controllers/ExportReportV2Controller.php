@@ -47,7 +47,7 @@ class ExportReportV2Controller extends Controller
             'request_ml_info.subcon_info.division_info',
             'request_ml_info.subcon_info.department_info',
             'request_ml_info.subcon_info.section_info',
-            'request_ml_info.rapidx_user_info'
+            'requestor_user_info'
         ])
         ->where('alloc_factory', $factory)
         ->where('request_status', '0')
