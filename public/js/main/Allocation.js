@@ -204,7 +204,7 @@ $(document).ready(function(){
             }
         },
         "columns":[
-            { "data" : "action", width: '5%', orderable:false, searchable:false},
+            { "data" : "action", width: '5%', orderable:true, searchable:false},
             { "data" : "masterlist_employee_number", width: '5%'},
             { "data" : "name", width: '15%'},
             { "data" : "department", width: '10%'},
