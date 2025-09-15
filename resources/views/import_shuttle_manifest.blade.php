@@ -105,10 +105,10 @@
 
                                                     </tr>
                                                     <tr>
-                                                        <th>Original</th>
                                                         <th>Actual</th>
                                                         <th>Original</th>
                                                         <th>Actual</th>
+                                                        <th>Original</th>
                                                     </tr>
                                                 </thead>
                                             </table>

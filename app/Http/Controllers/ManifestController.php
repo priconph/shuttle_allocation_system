@@ -49,6 +49,7 @@ class ManifestController extends Controller
                     'factory' => $value[4]
                 ]);
             }
+            
             DB::commit();
             return response()->json([
                 'result' => true,
