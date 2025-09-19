@@ -184,10 +184,11 @@ class MasterlistController extends Controller
                                 $result .=      '<button type="button" class="btn btn-warning text-white btn-xs text-center actionEditMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-status="' . $row->masterlist_status . '" data-bs-toggle="modal" data-bs-target="#modalEditMasterlistStatus" title="Deactivate Masterlist">';
                                 $result .=          '<i class="fa-solid fa-xl fa-ban"></i>';
                                 $result .=      '</button>';
+
+                                $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionDeleteMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-is-deleted="' . $row->is_deleted . '" data-bs-toggle="modal" data-bs-target="#modalDeleteMasterlistStatus" title="Delete Masterlist">';
+                                $result .=          '<i class="fa-solid fa-xl fa-trash"></i>';
                             }
                         }
-                        // $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionDeleteMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-is-deleted="' . $row->is_deleted . '" data-bs-toggle="modal" data-bs-target="#modalDeleteMasterlistStatus" title="Delete Masterlist">';
-                        // $result .=          '<i class="fa-solid fa-xl fa-trash"></i>';
                         $result .=      '</button>';
                         $result .=  '</center>';
                 }else{
