@@ -61,6 +61,7 @@
                                                 <th>Action</th>
                                                 <th>Status</th>
                                                 <th>Employee #</th>
+                                                <th>Assigned Superior</th>
                                                 <th>Factory</th>
                                                 <th>Employee name</th>
                                                 <th>Incoming</th>
@@ -129,6 +130,14 @@
                                             <option value="0" disabled selected>Select One</option>
                                         </select>
                                     </div>
+
+                                    <div class="mb-3">
+                                        <label for="txtAssignedSuperior" class="form-label">Select Assigned Superior<span class="text-danger" title="Required">*</span></label>
+                                        <select class="form-select select2" id="txtAssignedSuperior"  name="assigned_superior">
+                                            <option value="0" disabled selected>Select One</option>
+                                        </select>
+                                    </div>
+
                                     <div class="mb-3">
                                         <label for="selectRoutes" class="form-label">Select Routes<span class="text-danger" title="Required">*</span></label>
                                         <select class="form-select select2" id="selectRoutes" disabled name="routes_id">
@@ -298,6 +307,8 @@
                 },
             });
 
+
+
             $("select#selectEmployeeType").on('change',function(){
                 // console.log('selectEmployeeType onchange');
                 let selectedEmployeeType = $(this).children("option:selected").attr('value');
@@ -377,6 +388,7 @@
                     { "data" : "action", orderable:false, searchable:false},
                     { "data" : "masterlist_status"},
                     { "data" : "masterlist_employee_number"},
+                    { "data" : "assigned_superior"},
                     { "data" : "masterlist_factory"},
                     { "data" : "masterlist_employee_name"},
                     { "data" : "masterlist_incoming"},
@@ -454,6 +466,8 @@
                 event.preventDefault();
                 deleteMasterlist();
             });
+
+            getRapidxUsers($('#txtAssignedSuperior'))
         });
     </script>
 @endsection

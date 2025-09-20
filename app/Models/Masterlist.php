@@ -34,6 +34,9 @@ class Masterlist extends Model
     public function rapidx_user_info(){
         return $this->hasOne(RapidXUser::class, 'id', 'created_by');
     }
+    public function rapidx_assigned_superior(){
+        return $this->hasOne(RapidXUser::class, 'id', 'assigned_superior');
+    }
 
     public function allocation_info(){
         return $this->hasOne(Allocations::class, 'requestee_ml_id', 'id');

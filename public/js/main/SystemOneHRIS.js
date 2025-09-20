@@ -20,10 +20,10 @@ function getEmployees(cboElement, employeeType, systemoneHRISIdAsEmpName){
                     let department = "";
                     let section = "";
                     let fullName = "";
-                    
+
                     result = '<option value="0" disabled selected>Select One</option>';
                     for(let index = 0; index < response['employeesData'].length; index++){
-                        
+
                         if(response['employeesData'][index].FirstName != '' && response['employeesData'][index].LastName != ''){
                             fullName = `${response['employeesData'][index].FirstName} ${response['employeesData'][index].LastName}`;
                             // console.log('not null ', `${response['employeesData'][index].FirstName} ${response['employeesData'][index].LastName}`);
@@ -38,7 +38,7 @@ function getEmployees(cboElement, employeeType, systemoneHRISIdAsEmpName){
                         if(response['employeesData'][index]['division_info'] != null){
                             division = response['employeesData'][index]['division_info'].Division;
                         }
-                        
+
                         if(response['employeesData'][index]['department_info'] != null){
                             department = response['employeesData'][index]['department_info'].Department;
                         }
