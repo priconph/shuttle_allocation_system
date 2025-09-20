@@ -154,6 +154,7 @@ function getUserRoles(cboElement){
 }
 
 function getRapidxUsers(cboElement){
+
 	let result = '<option value="0" disabled selected>Select One</option>';
 	$.ajax({
 		url: 'get_rapidx_users',

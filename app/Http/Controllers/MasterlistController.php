@@ -70,8 +70,10 @@ class MasterlistController extends Controller
                 },
                 'routes_info',
                 'rapidx_user_info',
+                'rapidx_assigned_superior',
                 'allocation_info_v2'
             ])
+            // ->where('assigned_superior', 605)
             ->where('is_deleted', 0);
         }else{
             $masterlistData = Masterlist::with([
@@ -92,9 +94,11 @@ class MasterlistController extends Controller
                 },
                 'routes_info',
                 'rapidx_user_info',
+                'rapidx_assigned_superior',
                 'allocation_info_v2'
             ])
             ->where('is_deleted', 0)
+            // ->where('assigned_superior', 605)
             ->where('created_by', $request->rapidXUserId);
         }
         $selectedFactory = $request->selectedFactory;
@@ -168,32 +172,33 @@ class MasterlistController extends Controller
                 if($row->masterlist_status == 1){
                     $result .=   '<center>';
                     // $result =   'dates '.$parsedTime . ' & ' . $dateNow;
-                    
+
                     // clark comment 08/19/2025
                     // if($cutoffTimeData == 0){
                         //     $disabled = 'disabled';
                         // }
-                        
+
                         // if( $_SESSION['rapidx_department_id'] === 27){ // TODO:ESS Access only
                         if (in_array($_SESSION['rapidx_department_id'], [27, 1], true)) { // TODO:ESS and ISS Access only
                             $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" '.$disabled.' masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
                             $result .=          '<i class="fa fa-xl fa-edit"></i> ';
                             $result .=      '</button>';
-                            
+
                             if($row->allocation_info_v2 == null){
                                 $result .=      '<button type="button" class="btn btn-warning text-white btn-xs text-center actionEditMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-status="' . $row->masterlist_status . '" data-bs-toggle="modal" data-bs-target="#modalEditMasterlistStatus" title="Deactivate Masterlist">';
                                 $result .=          '<i class="fa-solid fa-xl fa-ban"></i>';
                                 $result .=      '</button>';
+
+                                $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionDeleteMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-is-deleted="' . $row->is_deleted . '" data-bs-toggle="modal" data-bs-target="#modalDeleteMasterlistStatus" title="Delete Masterlist">';
+                                $result .=          '<i class="fa-solid fa-xl fa-trash"></i>';
                             }
                         }
-                        // $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionDeleteMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-is-deleted="' . $row->is_deleted . '" data-bs-toggle="modal" data-bs-target="#modalDeleteMasterlistStatus" title="Delete Masterlist">';
-                        // $result .=          '<i class="fa-solid fa-xl fa-trash"></i>';
                         $result .=      '</button>';
                         $result .=  '</center>';
                 }else{
                     // if( $_SESSION['rapidx_department_id'] === 27){ // TODO:ESS Access only
                     if (in_array($_SESSION['rapidx_department_id'], [27, 1], true)) { // TODO:ESS and ISS Access only
-                        $result .=   '<center>'; 
+                        $result .=   '<center>';
                         // $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
                         // $result .=          '<i class="fa fa-xl fa-edit"></i>';
                         // $result .=      '</button>';
@@ -340,6 +345,11 @@ class MasterlistController extends Controller
                 }
                 return $result;
             })
+            ->addColumn('assigned_superior', function($row){
+                $result = $row->rapidx_assigned_superior->name ?? '---';
+
+                return $result;
+            })
         ->rawColumns([
             'masterlist_status',
             'action',
@@ -362,6 +372,7 @@ class MasterlistController extends Controller
         /* For Insert */
         if(!isset($request->masterlist_id)){
             $validator = Validator::make($data, [
+                'assigned_superior' => 'required',
                 'employee_type' => 'required',
                 'employee_number' => 'required', // When employee number is selected then systemone_id will automatically append values
                 'systemone_id' => 'required',
@@ -389,6 +400,7 @@ class MasterlistController extends Controller
                 return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
             } else {
                 $insertData = [
+                    'assigned_superior' => $request->assigned_superior,
                     'masterlist_factory' => $request->factory,
                     'masterlist_employee_type' => $request->employee_type,
                     'masterlist_employee_number' => $request->employee_number,
@@ -409,7 +421,7 @@ class MasterlistController extends Controller
                 try {
                     Masterlist::insert([
                         $insertData
-                    ]);                        
+                    ]);
 
                     DB::commit();
                     return response()->json(['hasError' => 0]);
@@ -421,12 +433,12 @@ class MasterlistController extends Controller
         }
         else{ /* For Update */
             $validator = Validator::make($data, [
+                'assigned_superior' => 'required',
                 'masterlist_id' => 'required',
                 'systemone_id' => 'required',
                 'factory' => 'required',
                 'routes_id' => 'required',
                 // 'employee_type' => 'required',
-                // 'employee_number' => 'required',
                 'masterlist_incoming' => 'required',
                 'masterlist_outgoing' => 'required',
             ]);
@@ -435,6 +447,7 @@ class MasterlistController extends Controller
                 return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
             } else {
                 $updateData = [
+                    'assigned_superior' => $request->assigned_superior,
                     'routes_id' => $request->routes_id,
                     'masterlist_factory' => $request->factory,
                     'masterlist_incoming' => $request->masterlist_incoming,

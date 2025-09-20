@@ -25,8 +25,9 @@ class CreateMasterlistsTable extends Migration
             $table->string('systemone_subcon_id')->nullable()->comment = 'db_subcon tbl_EmployeeInfo(table) id';
 
            // Defaults
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('last_updated_by')->nullable();
+           $table->unsignedBigInteger('created_by')->nullable();
+           $table->unsignedBigInteger('last_updated_by')->nullable();
+           $table->unsignedBigInteger('assigned_superior')->nullable();
             $table->tinyInteger('is_deleted')->nullable()->default(0)->comment = '0-Active, 1-Deleted';
             $table->timestamps();
         });
