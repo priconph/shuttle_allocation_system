@@ -20,10 +20,35 @@ use App\Models\SystemOneSubcon;
 class SystemOneController extends Controller
 {
     public function getEmployees(Request $request){
-        $databaseModel;
+
+        // if($request->employeeType == 'all'){
+        //     $databaseModelHRIS = 'App\Models\SystemOneHRIS';
+        //     $databaseModelSubcon = 'App\Models\SystemOneSubcon';
+
+        //     $employeesDataHRIS = $databaseModelHRIS::with([
+        //         'position_info',
+        //         'division_info',
+        //         'department_info',
+        //         'section_info',
+        //     ])
+        //     ->where('EmpStatus', 1)
+        //     ->get();
+        //     $employeesDataSubcon = $databaseModelSubcon::with([
+        //         'position_info',
+        //         'division_info',
+        //         'department_info',
+        //         'section_info',
+        //     ])
+        //     ->where('EmpStatus', 1)
+        //     ->get();
+        //     $arrayEmpMerge = array_merge($employeesDataHRIS->toArray(),$employeesDataSubcon->toArray());
+        //     return response()->json(['employeesData1' => $arrayEmpMerge]);
+        // }
+
         if($request->employeeType == 1){
             $databaseModel = 'App\Models\SystemOneHRIS';
-        }else{
+        }
+        else{
             $databaseModel = 'App\Models\SystemOneSubcon';
         }
         $employeesData = $databaseModel::with([

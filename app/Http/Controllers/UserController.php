@@ -147,7 +147,7 @@ class UserController extends Controller
     }
 
     public function getRapidxUsers(Request $request){
-        $rapidxUsers = RapidXUser::with('department')->where('user_stat', '!=', 0)->get();
+        $rapidxUsers = RapidXUser::with('department')->where('user_stat', 1)->get();
         // return $rapidxUsers;
         return response()->json(['rapidxUsers' => $rapidxUsers]);
     }
