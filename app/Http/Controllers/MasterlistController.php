@@ -346,7 +346,7 @@ class MasterlistController extends Controller
                 return $result;
             })
             ->addColumn('assigned_superior', function($row){
-                $result = $row->rapidx_assigned_superior->name ?? '---';
+                $result = $row->rapidx_assigned_superior->name ?? '<center><span class="badge badge-pill badge-danger">FOR UPDATE</span></center>';
 
                 return $result;
             })
