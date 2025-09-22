@@ -432,13 +432,16 @@ class MasterlistController extends Controller
             }
         }
         else{ /* For Update */
+
+         
+
             $validator = Validator::make($data, [
                 'assigned_superior' => 'required',
                 'masterlist_id' => 'required',
                 'systemone_id' => 'required',
                 'factory' => 'required',
                 'routes_id' => 'required',
-                // 'employee_type' => 'required',
+                'employee_type' => 'required',
                 'masterlist_incoming' => 'required',
                 'masterlist_outgoing' => 'required',
             ]);
