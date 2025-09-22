@@ -329,6 +329,9 @@
 
                     getEmployees($('#selectEmployeeName'), selectedEmployeeType).then((response) => {
                         console.log('response ', response);
+                        $('#textMasterlistIncoming').prop('disabled', false);
+                        $('#textMasterlistOutgoing').prop('disabled', false);
+
                     }).catch((error) => {
                         console.log('error ', error);
                     });
