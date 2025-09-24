@@ -7,7 +7,7 @@
     $layout = "";
     if(isset($_SESSION['rapidx_user_id'])){
         $isLogin = true;
-        $user_level_id = $_SESSION['rapidx_user_level_id']; 
+        $user_level_id = $_SESSION['rapidx_user_level_id'];
         $rapidx_user_id =  $_SESSION["rapidx_user_id"];
         $shuttle_allocation_user_role_id =  $_SESSION["shuttle_allocation_user_role_id"];
     }
@@ -23,6 +23,8 @@
             $layout = "layouts.person_incharge_layout";
         }else if($shuttle_allocation_user_role_id == 3){
             $layout = "layouts.superior_layout";
+        }else if($shuttle_allocation_user_role_id == 4){
+            $layout = "layouts.subcon_coor_layout";
         }
     @endphp
 
