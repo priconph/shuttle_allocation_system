@@ -434,6 +434,9 @@ class MasterlistController extends Controller
             }
         }
         else{ /* For Update */
+
+
+
             $validator = Validator::make($data, [
                 'assigned_superior' => 'required',
                 'masterlist_id' => 'required',

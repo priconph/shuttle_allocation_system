@@ -61,6 +61,8 @@ class ExportReportV3Controller extends Controller
         $requestType2Allocations = Allocations::where('request_type', 2)
             ->where('request_status', 0)
             ->where('is_deleted', 0)
+            ->whereDate('alloc_date_start', '<=', $to)
+            ->whereDate('alloc_date_end', '>=', $from)
             ->whereNotNull('requestee_ml_id')
             ->pluck('requestee_ml_id')
             ->unique();
@@ -101,9 +103,8 @@ class ExportReportV3Controller extends Controller
         });
 
         // 7. Combine both datasets
-        // $mergedLists = $allocationlists->values()->merge($unmatchedMasterlists->values());
-        $mergedLists = $unmatchedMasterlists->values()->merge($allocationlists->values());
-        // $mergedLists = $mergedLists->sortByDesc('created_at')->values();
+        $mergedLists = $allocationlists->values()->merge($unmatchedMasterlists->values());
+        // $mergedLists = $unmatchedMasterlists->values()->merge($allocationlists->values());
         // return $mergedLists;
 
         // 8. Route Codes
