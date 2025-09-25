@@ -180,7 +180,7 @@ class MasterlistController extends Controller
 
                         // if( $_SESSION['rapidx_department_id'] === 27){ // TODO:ESS Access only
                         // if (in_array($_SESSION['rapidx_department_id'], [27, 1], true)) { // TODO:ESS and ISS Access only
-                            $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" '.$disabled.' masterlist-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
+                            $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" '.$disabled.' masterlist-id="' . $row->id . '"  data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
                             $result .=          '<i class="fa fa-xl fa-edit"></i> ';
                             $result .=      '</button>';
 
@@ -188,11 +188,10 @@ class MasterlistController extends Controller
                                 $result .=      '<button type="button" class="btn btn-warning text-white btn-xs text-center actionEditMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-status="' . $row->masterlist_status . '" data-bs-toggle="modal" data-bs-target="#modalEditMasterlistStatus" title="Deactivate Masterlist">';
                                 $result .=          '<i class="fa-solid fa-xl fa-ban"></i>';
                                 $result .=      '</button>';
-
-                                if (in_array($_SESSION['rapidx_department_id'], [27, 1], true)) { // TODO:ESS and ISS Access only
-                                    $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionDeleteMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-is-deleted="' . $row->is_deleted . '" data-bs-toggle="modal" data-bs-target="#modalDeleteMasterlistStatus" title="Delete Masterlist">';
-                                    $result .=          '<i class="fa-solid fa-xl fa-trash"></i>';
-                                }
+                            }
+                            if (in_array($_SESSION['rapidx_department_id'], [27, 1], true)) { // TODO:ESS and ISS Access only
+                                $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionDeleteMasterlistStatus mr-1" masterlist-id="' . $row->id . '" masterlist-is-deleted="' . $row->is_deleted . '" data-bs-toggle="modal" data-bs-target="#modalDeleteMasterlistStatus" title="Delete Masterlist">';
+                                $result .=          '<i class="fa-solid fa-xl fa-trash"></i>';
                             }
                         // }
                         $result .=      '</button>';
