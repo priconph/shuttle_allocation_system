@@ -301,7 +301,7 @@ class AllocationController extends Controller
             //         $q->where('tbl_Section.pkid', $request->section); // or change to ID if needed
             //     });
             // })
-            ->where('created_by', $request->rapidXUserId)
+            // ->where('created_by', $request->rapidXUserId)
             ->get();
         }
         return DataTables::of($masterlistData)
