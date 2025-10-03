@@ -720,6 +720,18 @@ $(document).ready(function(){
         }else{
             $('#na_out_option').prop('disabled', false);
         }
+
+        if(selectedValue == '7:30AM'){
+            $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', true);
+        }else{
+            $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', false);
+        }
+
+        if(selectedValue == '7:30PM'){
+            $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
+        }else{
+            $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', false);
+        }
     });
 
     $('#txtAllocOutgoing').on('change', function() {
@@ -728,6 +740,18 @@ $(document).ready(function(){
             $('#na_in_option').prop('disabled', true);
         }else{
             $('#na_in_option').prop('disabled', false);
+        }
+
+        if(selectedValue == '7:30AM'){
+            $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', true);
+        }else{
+            $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', false);
+        }
+
+        if(selectedValue == '7:30PM'){
+            $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', true);
+        }else{
+            $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', false);
         }
     });
 
