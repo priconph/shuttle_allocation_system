@@ -499,15 +499,23 @@ class AllocationController extends Controller
 
             if($request->selectedIds[0] != 0){ //default value of selectIds, meaning empty array
                 foreach ($request->selectedIds as $key => $value){
+
                     $conflictingAllocations = Allocations::with(['request_ml_info.hris_info', 'request_ml_info.subcon_info', 'requestor_user_info'])
-                                                ->whereIn('requestee_ml_id', $request->selectedIds)
+                                                // ->whereIn('requestee_ml_id', $request->selectedIds)
+                                                ->where('requestee_ml_id', $value)
                                                 ->where('is_deleted', 0)
                                                 ->where('request_status', 0)
                                                 ->whereDate('alloc_date_start', '<=', $request->end_date) // starts before new ends
                                                 ->whereDate('alloc_date_end', '>=', $request->start_date) // ends after new starts
                                                 ->get(['control_number', 'requestee_ml_id', 'alloc_date_start', 'alloc_date_end', 'requested_by']);
 
-                    if ($conflictingAllocations->isNotEmpty() && $conflictingAllocations[0]->control_number != $request->request_control_no) {
+                    // ✅ Check if there's at least one conflicting allocation that isn't the same control number
+                    $hasConflict = $conflictingAllocations->contains(function ($alloc) use ($request) {
+                        return $alloc->control_number != $request->request_control_no;
+                    });
+
+                    // if ($conflictingAllocations->isNotEmpty() && $conflictingAllocations[0]->control_number != $request->request_control_no) {
+                    if($hasConflict){
                         return response()->json([
                             'hasExisted' => count($conflictingAllocations),
                             'error' => 'Some people already have allocations in the selected date range.',
@@ -519,6 +527,7 @@ class AllocationController extends Controller
                                 }
 
                                 return [
+                                    'control_number' => $item->control_number,
                                     'requestee_ml_id' => $item->requestee_ml_id,
                                     'start' => $item->alloc_date_start,
                                     'end' => $item->alloc_date_end,
