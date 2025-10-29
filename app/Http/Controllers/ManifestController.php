@@ -66,56 +66,46 @@ class ManifestController extends Controller
     }
 
     public function dt_get_inconsistent(Request $request){
-        $manifests = Manifest::with(['route_details'])
-        ->where('date_scanned', $request->date)
-        ->get();
+        $date = $request->date;
 
-
+        // Get all allocations and masterlist in one go, indexed by employee number
         $allocations = Allocations::with([
-            'request_ml_info',
-            'request_ml_info.routes_info',
-        ])
-        ->where('alloc_date_start', '<=', $request->date)
-        ->where('alloc_date_end', '>=', $request->date)
-        ->where('is_deleted', 0)
-        ->get();
+                'request_ml_info.routes_info'
+            ])
+            ->where('alloc_date_start', '<=', $date)
+            ->where('alloc_date_end', '>=', $date)
+            ->where('is_deleted', 0)
+            ->get();
 
-        // get all employee numbers that are already allocated
-        $allocatedEmployeeNumbers = Allocations::where('alloc_date_start', '<=', $request->date)
-        ->where('alloc_date_end', '>=', $request->date)
-        ->where('is_deleted', 0)
-        ->pluck('requestee_ml_id'); // employee numbers
+        $allocatedEmployeeNumbers = $allocations->pluck('requestee_ml_id')->all();
 
-        // remove them from masterlist
-        $masterlist_removed_data = Masterlist::with([
-            'routes_info'
-        ])
-        ->where('masterlist_status', 1)
-        ->where('is_deleted', 0)
-        ->whereNotIn('id', $allocatedEmployeeNumbers) // compare employee number
-        ->get();
+        $masterlist = Masterlist::with(['routes_info'])
+            ->where('masterlist_status', 1)
+            ->where('is_deleted', 0)
+            ->whereNotIn('id', $allocatedEmployeeNumbers)
+            ->get();
 
-        $merged = $allocations->merge($masterlist_removed_data); // merge the allocation and masterlist
+        // Build a lookup table for employee number => merged record
+        $merged = [];
+        foreach ($allocations as $a) {
+            $empNo = $a['request_ml_info']['masterlist_employee_number'] ?? null;
+            if ($empNo) $merged[$empNo] = $a;
+        }
+        foreach ($masterlist as $m) {
+            $empNo = $m['masterlist_employee_number'] ?? null;
+            if ($empNo && !isset($merged[$empNo])) $merged[$empNo] = $m;
+        }
 
-        /**
-         * Compare manifests against merged records.
-         *
-         * @var $result contains manifest records that DO NOT have
-         *              a matching employee number + route description
-         *              in the merged data.
-         * 
-         * Each record will include an extra field:
-         *   - expected_routeDesc → the route description from merged (if any)
-         */
+        // Get manifests for the date
+        $manifests = Manifest::with(['route_details'])
+            ->where('date_scanned', $date)
+            ->get();
+
+        // Prepare result
         $result = $manifests->map(function ($m) use ($merged) {
-            // find first merged record with same emp_no
-            $match = $merged->first(function ($mer) use ($m) {
-                $empNo = $mer['request_ml_info']['masterlist_employee_number']
-                    ?? $mer['masterlist_employee_number']
-                    ?? null;
-                return $m['emp_no'] == $empNo;
-            });
-            // expected routeDesc if emp_no matched
+            $empNo = $m['emp_no'];
+            $match = $merged[$empNo] ?? null;
+
             $routeDesc = $match['request_ml_info']['routes_info']['routes_description']
                 ?? $match['routes_info']['routes_description']
                 ?? null;
@@ -123,57 +113,29 @@ class ManifestController extends Controller
             $incoming = $match['alloc_incoming']
                 ?? $match['masterlist_incoming']
                 ?? null;
-            // attach expected_routeDesc to manifest
+
             $m['expected_routeDesc'] = $routeDesc;
             $m['expected_incoming'] = $incoming;
             return $m;
-        })
-        ->reject(function ($m) {
-            // reject if route matches
-            // return ($m['route_details']['routes_destination'] ?? null) === ($m['expected_routeDesc'] ?? null);
+        })->reject(function ($m) {
+            $routeMatch = ($m['route_details']['routes_destination'] ?? null) === ($m['expected_routeDesc'] ?? null);
 
             $timeScanned = $m['time_scanned'] ?? null;
             $expectedIncoming = $m['expected_incoming'] ?? null;
-
-            // default is keep
             $invalidTime = false;
 
             if ($timeScanned != null) {
-                // $ts = \Carbon\Carbon::createFromFormat('H:i:s', $timeScanned);
-
-                // if ($expectedIncoming === '7:30AM') {
-                //     // valid if 05:00:00–09:00:00
-                //     $invalidTime = !$ts->between(
-                //         \Carbon\Carbon::createFromTime(5, 0, 0),
-                //         \Carbon\Carbon::createFromTime(9, 0, 0)
-                //     );
-                // } elseif ($expectedIncoming === '7:30PM') {
-                //     // valid if 17:00:00–21:00:00
-                //     $invalidTime = !$ts->between(
-                //         \Carbon\Carbon::createFromTime(17, 0, 0),
-                //         \Carbon\Carbon::createFromTime(21, 0, 0)
-                //     );
-                // }
                 $ts = date('H:i:s', strtotime($timeScanned));
-                
                 if ($expectedIncoming === '7:30AM') {
-                    // valid if 05:00:00–09:00:00
                     $invalidTime = ($ts >= '05:00:00' && $ts <= '09:00:00');
                 } elseif ($expectedIncoming === '7:30PM') {
-                    // valid if 17:00:00–21:00:00
                     $invalidTime = ($ts >= '17:00:00' && $ts <= '21:00:00');
                 }
             }
 
-            return 
-                // reject if route matches
-                (($m['route_details']['routes_destination'] ?? null) === ($m['expected_routeDesc'] ?? null))
-                // OR reject if incoming matches time range invalid
-                && $invalidTime;
-        })
-        ->values(); // reindex
+            return $routeMatch && $invalidTime;
+        })->values();
 
-        return DataTables::of($result)
-        ->make(true);
+        return DataTables::of($result)->make(true);
     }
 }
