@@ -32,7 +32,12 @@ class ManifestController extends Controller
         DB::beginTransaction();
         try{
             $collections = Excel::toCollection(new ImportShuttleManifest, $request->file('manifest'));
-            // return count( $collections[0][0] );
+
+            $cleaned = $collections->map(function ($sheet) {
+                return $sheet->filter(function ($row) {
+                    return $row->filter()->isNotEmpty();
+                });
+            });
             if(count($collections[0][0]) != 5){
                 return response()->json([
                     'result' => false,
@@ -40,7 +45,7 @@ class ManifestController extends Controller
                 ], 422);
             }
 
-            foreach ($collections[0] as $value) {
+            foreach ($cleaned[0] as $value) {
                 Manifest::insert([
                     'emp_no' => $value[0],
                     'date_scanned' => $value[1],
