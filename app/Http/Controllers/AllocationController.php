@@ -498,6 +498,8 @@ class AllocationController extends Controller
              */
 
             if($request->selectedIds[0] != 0){ //default value of selectIds, meaning empty array
+                $allConflicts = collect(); // store all conflicts here
+
                 foreach ($request->selectedIds as $key => $value){
 
                     $conflictingAllocations = Allocations::with(['request_ml_info.hris_info', 'request_ml_info.subcon_info', 'requestor_user_info'])
@@ -509,34 +511,66 @@ class AllocationController extends Controller
                                                 ->whereDate('alloc_date_end', '>=', $request->start_date) // ends after new starts
                                                 ->get(['control_number', 'requestee_ml_id', 'alloc_date_start', 'alloc_date_end', 'requested_by']);
 
-                    // ✅ Check if there's at least one conflicting allocation that isn't the same control number
-                    $hasConflict = $conflictingAllocations->contains(function ($alloc) use ($request) {
+                    // ✅ Add only those that actually conflict (not same control number)
+                    $filtered = $conflictingAllocations->filter(function ($alloc) use ($request) {
                         return $alloc->control_number != $request->request_control_no;
                     });
 
-                    // if ($conflictingAllocations->isNotEmpty() && $conflictingAllocations[0]->control_number != $request->request_control_no) {
-                    if($hasConflict){
-                        return response()->json([
-                            'hasExisted' => count($conflictingAllocations),
-                            'error' => 'Some people already have allocations in the selected date range.',
-                            'conflicts' => $conflictingAllocations->map(function($item) {
-                                if($item->request_ml_info->hris_info != null){
-                                    $requested_emp = $item->request_ml_info->hris_info->FirstName.' '.$item->request_ml_info->hris_info->LastName;
-                                }else{
-                                    $requested_emp = $item->request_ml_info->subcon_info->FirstName.' '.$item->request_ml_info->subcon_info->LastName;
-                                }
+                    // ✅ Merge into main collection
+                    $allConflicts = $allConflicts->merge($filtered);
 
-                                return [
-                                    'control_number' => $item->control_number,
-                                    'requestee_ml_id' => $item->requestee_ml_id,
-                                    'start' => $item->alloc_date_start,
-                                    'end' => $item->alloc_date_end,
-                                    'requested_by' => $item->requestor_user_info->name,
-                                    'requested_emp' => $requested_emp
-                                ];
-                            })
-                        ]);
-                    }
+                    // old code 10/30/2025
+                    // // ✅ Check if there's at least one conflicting allocation that isn't the same control number
+                    // $hasConflict = $conflictingAllocations->contains(function ($alloc) use ($request) {
+                    //     return $alloc->control_number != $request->request_control_no;
+                    // });
+                }
+
+                // ✅ After loop, check if we collected any
+                // if ($conflictingAllocations->isNotEmpty() && $conflictingAllocations[0]->control_number != $request->request_control_no) {
+                // if($hasConflict){
+                if($allConflicts->isNotEmpty()){
+                    // return response()->json([
+                    //     'hasExisted' => count($conflictingAllocations),
+                    //     'error' => 'Some people already have allocations in the selected date range.',
+                    //     'conflicts' => $conflictingAllocations->map(function($item) {
+                    //         if($item->request_ml_info->hris_info != null){
+                    //             $requested_emp = $item->request_ml_info->hris_info->FirstName.' '.$item->request_ml_info->hris_info->LastName;
+                    //         }else{
+                    //             $requested_emp = $item->request_ml_info->subcon_info->FirstName.' '.$item->request_ml_info->subcon_info->LastName;
+                    //         }
+
+                    //         return [
+                    //             'control_number' => $item->control_number,
+                    //             'requestee_ml_id' => $item->requestee_ml_id,
+                    //             'start' => $item->alloc_date_start,
+                    //             'end' => $item->alloc_date_end,
+                    //             'requested_by' => $item->requestor_user_info->name,
+                    //             'requested_emp' => $requested_emp
+                    //         ];
+                    //     })
+                    // ]);
+
+                    return response()->json([
+                        'hasExisted' => $allConflicts->count(),
+                        'error' => 'Some people already have allocations in the selected date range.',
+                        'conflicts' => $allConflicts->map(function($item) {
+                            if ($item->request_ml_info->hris_info != null) {
+                                $requested_emp = $item->request_ml_info->hris_info->FirstName.' '.$item->request_ml_info->hris_info->LastName;
+                            } else {
+                                $requested_emp = $item->request_ml_info->subcon_info->FirstName.' '.$item->request_ml_info->subcon_info->LastName;
+                            }
+
+                            return [
+                                'control_number' => $item->control_number,
+                                'requestee_ml_id' => $item->requestee_ml_id,
+                                'start' => $item->alloc_date_start,
+                                'end' => $item->alloc_date_end,
+                                'requested_by' => $item->requestor_user_info->name,
+                                'requested_emp' => $requested_emp
+                            ];
+                        })
+                    ]);
                 }
             }
 
