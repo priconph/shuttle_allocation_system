@@ -263,7 +263,7 @@
                                 <label for="alloc_factory" class="form-label">Factory</label>
                                 <select class="form-control form-control-sm select2bs5 selectAllocFactory" type="text">
                                     <option value="" disabled selected>Select Factory</option>
-                                    {{-- <option value="ALL">ALL</option> --}}
+                                    <option value="ALL">ALL</option>
                                     <option value="F1">Factory 1</option>
                                     <option value="F3">Factory 3</option>
                                 </select>

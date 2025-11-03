@@ -206,185 +206,316 @@ class AllocationController extends Controller
         ->make(true);
     }
 
+    // public function viewMasterListForAllocation(Request $request){
+    //     $userData = User::where('rapidx_user_id', $request->rapidXUserId)->value('user_role_id');
+    //     $requestMlIds = '';
+    //     $isViewMode = $request->isViewMode;
+
+    //     if($request->requestControlNo){
+    //         $requestMlIds = Allocations::select('requestee_ml_id')->where('is_deleted', 0)->where('control_number', $request->requestControlNo)->get();
+    //     }
+
+    //     if($userData == 1){ // 1-Admin, 2-PIC, 3-Superior
+    //         $masterlistData = Masterlist::with([
+    //             'hris_info' => function ($q) use ($request) {
+    //                 $q->where('EmpStatus', 1)
+    //                 ->with([
+    //                     'position_info',
+    //                     'division_info',
+    //                     'department_info',
+    //                     'section_info',
+    //                 ]);
+    //             },
+    //             'subcon_info' => function ($q) {
+    //                 $q->where('EmpStatus', 1)
+    //                 ->with([
+    //                     'position_info',
+    //                     'division_info',
+    //                     'department_info',
+    //                     'section_info',
+    //                 ]);
+    //             },
+    //             'routes_info',
+    //             'rapidx_user_info',
+    //         ])
+    //         ->when($isViewMode != 2, function ($query){
+    //             $query->where('is_deleted', 0);
+    //         })
+    //         ->when($request->requestControlNo, function ($query) use ($requestMlIds) {
+    //             $query->whereIn('id', $requestMlIds);
+    //         })
+    //         // ->get();
+    //         // ->when(!empty($request->department), function ($query) use ($request) {
+    //         //     $query->whereHas('hris_info.department_info', function ($q) use ($request) {
+    //         //         $q->where('tbl_Department.pkid', $request->department); // or change to ID if needed
+    //         //     });
+    //         // })
+    //         // ->when(!empty($request->section), function ($query) use ($request) {
+    //         //     $query->whereHas('hris_info.section_info', function ($q) use ($request) {
+    //         //         $q->where('tbl_Section.pkid', $request->section); // or change to ID if needed
+    //         //     });
+    //         // })
+    //         ->get();
+    //     }else{
+    //         $masterlistData = Masterlist::with([
+    //             'hris_info' => function ($q) use ($request) {
+    //                 $q->where('EmpStatus', 1)
+    //                 ->with([
+    //                     'position_info',
+    //                     'division_info',
+    //                     'department_info',
+    //                     'section_info',
+    //                 ]);
+    //             },
+    //             'subcon_info' => function ($q) {
+    //                 $q->where('EmpStatus', 1)
+    //                 ->with([
+    //                     'position_info',
+    //                     'division_info',
+    //                     'department_info',
+    //                     'section_info',
+    //                 ]);
+    //             },
+    //             'routes_info',
+    //             'rapidx_user_info',
+    //         ])
+    //         ->when($isViewMode != 2, function ($query){
+    //             $query->where('is_deleted', 0);
+    //         })
+    //         ->when($request->requestControlNo, function ($query) use ($requestMlIds) {
+    //             $query->whereIn('id', $requestMlIds);
+    //         })
+    //         // ->whereHas('hris_info.department_info', function ($q) use ($request) {
+    //         //     $q->where('Department', $request->department); // or 'DepartmentID' if filtering by ID
+    //         // })
+    //         // ->whereHas('hris_info.section_info', function ($q) use ($request) {
+    //         //     $q->where('Section', $request->section); // or 'DepartmentID' if filtering by ID
+    //         // })
+    //         // ->when(!empty($request->department), function ($query) use ($request) {
+    //         //     $query->whereHas('hris_info.department_info', function ($q) use ($request) {
+    //         //         $q->where('tbl_Department.pkid', $request->department); // or change to ID if needed
+    //         //     });
+    //         // })
+    //         // ->when(!empty($request->section), function ($query) use ($request) {
+    //         //     $query->whereHas('hris_info.section_info', function ($q) use ($request) {
+    //         //         $q->where('tbl_Section.pkid', $request->section); // or change to ID if needed
+    //         //     });
+    //         // })
+    //         // ->where('created_by', $request->rapidXUserId)
+    //         ->get();
+    //     }
+    //     return DataTables::of($masterlistData)
+    //         ->addColumn('action', function($row) use ($requestMlIds){
+    //             $result = "";
+    //             if($requestMlIds != ''){
+    //                 $result .= "<center>";
+    //                     $result .= "<button class='btn btn-md btn-danger btnRemoveEmp' type='button' data-checkbox-id='$row->id'><i class='fa fa-times'></i></button>";
+    //                 $result .= "</center>";
+    //             }else{
+    //                 $result .= "<center>";
+    //                     $result .= "<input class='itemCheckbox' type='checkbox' data-checkbox-id='$row->id' style='width: 25px; height: 25px;  text-align: center;' id='checkBoxId' name='checkbox_id[]' value='".$row->id."'>";
+    //                 $result .= "</center>";
+    //             }
+
+    //             return $result;
+    //         })
+    //         ->addColumn('name', function($row){
+    //             $result = "";
+    //             if($row->hris_info != null){ // For Pricon
+    //                 $result .= '<center><span>'.$row->hris_info->FirstName .' '. $row->hris_info->LastName.'</span></center>';
+    //             }else if($row->subcon_info != null){ // For Subcon
+    //                 $result .= '<center><span>'.$row->subcon_info->FirstName .' '. $row->subcon_info->LastName.'</span></center>';
+    //             }else{
+    //                 $result .= '<center><span>Resigned</span></center>';
+    //             }
+    //             return $result;
+    //         })
+    //         ->addColumn('factory', function($row){
+    //             $result = "";
+    //             if($row->masterlist_factory != null){ //Existing Data
+    //                 $result .= '<center><span>'.$row->masterlist_factory.'</span></center>';
+    //             }else{
+    //                 $result .= '<center><span>-</span></center>';
+    //             }
+    //             return $result;
+    //         })
+    //         ->addColumn('department', function($row){
+    //             $result = "";
+    //             if($row->hris_info != null){ // For Pricon
+    //                 if($row->hris_info->department_info != null){
+    //                     $result .= '<center><span>'.$row->hris_info->department_info->Department .'</span></center>';
+    //                 }else{
+    //                     $result .= '<center><span>-</span></center>';
+    //                 }
+    //             }else if($row->subcon_info != null){ // For Subcon
+    //                 if($row->subcon_info->department_info != null){
+    //                     $result .= '<center><span>'.$row->subcon_info->department_info->Department .'</span></center>';
+    //                 }else{
+    //                     $result .= '<center><span>-</span></center>';
+    //                 }
+    //             }else{
+    //                 $result .= '<center><span>-</span></center>';
+    //             }
+    //             return $result;
+    //         })
+    //         ->addColumn('section', function($row){
+    //             $result = "";
+    //             if($row->hris_info != null){ // For Pricon
+    //                 if($row->hris_info->section_info != null){
+    //                     $result .= '<center><span>'.$row->hris_info->section_info->Section .'</span></center>';
+    //                 }else{
+    //                     $result .= '<center><span>-</span></center>';
+    //                 }
+    //             }else if($row->subcon_info != null){ // For Subcon
+    //                 if($row->subcon_info->section_info != null){
+    //                     $result .= '<center><span>'.$row->subcon_info->section_info->Section .'</span></center>';
+    //                 }else{
+    //                     $result .= '<center><span>-</span></center>';
+    //                 }
+    //             }else{
+    //                 $result .= '<center><span>Resigned</span></center>';
+    //             }
+    //             return $result;
+    //         })
+    //     ->rawColumns([
+    //         'action',
+    //         'name',
+    //         'factory',
+    //         'department',
+    //         'section',
+    //         ])
+    //     ->make(true);
+    // }
     public function viewMasterListForAllocation(Request $request){
         $userData = User::where('rapidx_user_id', $request->rapidXUserId)->value('user_role_id');
         $requestMlIds = '';
         $isViewMode = $request->isViewMode;
 
-        if($request->requestControlNo){
-            $requestMlIds = Allocations::select('requestee_ml_id')->where('is_deleted', 0)->where('control_number', $request->requestControlNo)->get();
+        if ($request->requestControlNo) {
+            $requestMlIds = Allocations::select('requestee_ml_id')
+                ->where('is_deleted', 0)
+                ->where('control_number', $request->requestControlNo)
+                ->pluck('requestee_ml_id')
+                ->toArray();
         }
 
-        if($userData == 1){ // 1-Admin, 2-PIC, 3-Superior
+        if ($userData == 1) { // 1 - Admin
             $masterlistData = Masterlist::with([
-                'hris_info' => function ($q) use ($request) {
-                    $q->where('EmpStatus', 1)
-                    ->with([
-                        'position_info',
-                        'division_info',
-                        'department_info',
-                        'section_info',
-                    ]);
-                },
-                'subcon_info' => function ($q) {
-                    $q->where('EmpStatus', 1)
-                    ->with([
-                        'position_info',
-                        'division_info',
-                        'department_info',
-                        'section_info',
-                    ]);
-                },
-                'routes_info',
-                'rapidx_user_info',
-            ])
-            ->when($isViewMode != 2, function ($query){
-                $query->where('is_deleted', 0);
-            })
-            ->when($request->requestControlNo, function ($query) use ($requestMlIds) {
-                $query->whereIn('id', $requestMlIds);
-            })
-            // ->get();
-            // ->when(!empty($request->department), function ($query) use ($request) {
-            //     $query->whereHas('hris_info.department_info', function ($q) use ($request) {
-            //         $q->where('tbl_Department.pkid', $request->department); // or change to ID if needed
-            //     });
-            // })
-            // ->when(!empty($request->section), function ($query) use ($request) {
-            //     $query->whereHas('hris_info.section_info', function ($q) use ($request) {
-            //         $q->where('tbl_Section.pkid', $request->section); // or change to ID if needed
-            //     });
-            // })
-            ->get();
-        }else{
+                    'hris_info' => function ($q) {
+                        $q->where('EmpStatus', 1)
+                            ->with([
+                                'position_info',
+                                'division_info',
+                                'department_info',
+                                'section_info',
+                            ]);
+                    },
+                    'subcon_info' => function ($q) {
+                        $q->where('EmpStatus', 1)
+                            ->with([
+                                'position_info',
+                                'division_info',
+                                'department_info',
+                                'section_info',
+                            ]);
+                    },
+                    'routes_info',
+                    'rapidx_user_info',
+                ])
+                ->when($isViewMode != 2, function ($q) {
+                    return $q->where('is_deleted', 0);
+                })
+                ->when($request->requestControlNo, function ($q) use ($requestMlIds) {
+                    return $q->whereIn('id', $requestMlIds);
+                })
+                ->get();
+        } else {
             $masterlistData = Masterlist::with([
-                'hris_info' => function ($q) use ($request) {
-                    $q->where('EmpStatus', 1)
-                    ->with([
-                        'position_info',
-                        'division_info',
-                        'department_info',
-                        'section_info',
-                    ]);
-                },
-                'subcon_info' => function ($q) {
-                    $q->where('EmpStatus', 1)
-                    ->with([
-                        'position_info',
-                        'division_info',
-                        'department_info',
-                        'section_info',
-                    ]);
-                },
-                'routes_info',
-                'rapidx_user_info',
-            ])
-            ->when($isViewMode != 2, function ($query){
-                $query->where('is_deleted', 0);
-            })
-            ->when($request->requestControlNo, function ($query) use ($requestMlIds) {
-                $query->whereIn('id', $requestMlIds);
-            })
-            // ->whereHas('hris_info.department_info', function ($q) use ($request) {
-            //     $q->where('Department', $request->department); // or 'DepartmentID' if filtering by ID
-            // })
-            // ->whereHas('hris_info.section_info', function ($q) use ($request) {
-            //     $q->where('Section', $request->section); // or 'DepartmentID' if filtering by ID
-            // })
-            // ->when(!empty($request->department), function ($query) use ($request) {
-            //     $query->whereHas('hris_info.department_info', function ($q) use ($request) {
-            //         $q->where('tbl_Department.pkid', $request->department); // or change to ID if needed
-            //     });
-            // })
-            // ->when(!empty($request->section), function ($query) use ($request) {
-            //     $query->whereHas('hris_info.section_info', function ($q) use ($request) {
-            //         $q->where('tbl_Section.pkid', $request->section); // or change to ID if needed
-            //     });
-            // })
-            // ->where('created_by', $request->rapidXUserId)
-            ->get();
+                    'hris_info' => function ($q) {
+                        $q->where('EmpStatus', 1)
+                            ->with([
+                                'position_info',
+                                'division_info',
+                                'department_info',
+                                'section_info',
+                            ]);
+                    },
+                    'subcon_info' => function ($q) {
+                        $q->where('EmpStatus', 1)
+                            ->with([
+                                'position_info',
+                                'division_info',
+                                'department_info',
+                                'section_info',
+                            ]);
+                    },
+                    'routes_info',
+                    'rapidx_user_info',
+                ])
+                ->when($isViewMode != 2, function ($q) {
+                    return $q->where('is_deleted', 0);
+                })
+                ->when($request->requestControlNo, function ($q) use ($requestMlIds) {
+                    return $q->whereIn('id', $requestMlIds);
+                })
+                ->get();
         }
+
+        // ✅ Sort so that selected IDs appear first
+        if (!empty($request->selectedIds)) {
+            $selectedIds = $request->selectedIds;
+            $masterlistData = $masterlistData->sortByDesc(function ($item) use ($selectedIds) {
+                return in_array($item->id, $selectedIds) ? 1 : 0;
+            })->values();
+        }
+
         return DataTables::of($masterlistData)
-            ->addColumn('action', function($row) use ($requestMlIds){
+            ->addColumn('action', function ($row) use ($requestMlIds) {
                 $result = "";
-                if($requestMlIds != ''){
+                if ($requestMlIds != '') {
                     $result .= "<center>";
-                        $result .= "<button class='btn btn-md btn-danger btnRemoveEmp' type='button' data-checkbox-id='$row->id'><i class='fa fa-times'></i></button>";
+                    $result .= "<button class='btn btn-md btn-danger btnRemoveEmp' type='button' data-checkbox-id='$row->id'><i class='fa fa-times'></i></button>";
                     $result .= "</center>";
-                }else{
+                } else {
                     $result .= "<center>";
-                        $result .= "<input class='itemCheckbox' type='checkbox' data-checkbox-id='$row->id' style='width: 25px; height: 25px;  text-align: center;' id='checkBoxId' name='checkbox_id[]' value='".$row->id."'>";
+                    $result .= "<input class='itemCheckbox' type='checkbox' data-checkbox-id='$row->id' style='width: 25px; height: 25px; text-align: center;' name='checkbox_id[]' value='" . $row->id . "'>";
                     $result .= "</center>";
                 }
 
                 return $result;
             })
-            ->addColumn('name', function($row){
+            ->addColumn('name', function ($row) {
                 $result = "";
-                if($row->hris_info != null){ // For Pricon
-                    $result .= '<center><span>'.$row->hris_info->FirstName .' '. $row->hris_info->LastName.'</span></center>';
-                }else if($row->subcon_info != null){ // For Subcon
-                    $result .= '<center><span>'.$row->subcon_info->FirstName .' '. $row->subcon_info->LastName.'</span></center>';
-                }else{
+                if ($row->hris_info != null) { // Pricon
+                    $result .= '<center><span>' . $row->hris_info->FirstName . ' ' . $row->hris_info->LastName . '</span></center>';
+                } else if ($row->subcon_info != null) { // Subcon
+                    $result .= '<center><span>' . $row->subcon_info->FirstName . ' ' . $row->subcon_info->LastName . '</span></center>';
+                } else {
                     $result .= '<center><span>Resigned</span></center>';
                 }
                 return $result;
             })
-            ->addColumn('factory', function($row){
-                $result = "";
-                if($row->masterlist_factory != null){ //Existing Data
-                    $result .= '<center><span>'.$row->masterlist_factory.'</span></center>';
-                }else{
-                    $result .= '<center><span>-</span></center>';
-                }
-                return $result;
+            ->addColumn('factory', function ($row) {
+                return '<center><span>' . ($row->masterlist_factory ?: '-') . '</span></center>';
             })
-            ->addColumn('department', function($row){
-                $result = "";
-                if($row->hris_info != null){ // For Pricon
-                    if($row->hris_info->department_info != null){
-                        $result .= '<center><span>'.$row->hris_info->department_info->Department .'</span></center>';
-                    }else{
-                        $result .= '<center><span>-</span></center>';
-                    }
-                }else if($row->subcon_info != null){ // For Subcon
-                    if($row->subcon_info->department_info != null){
-                        $result .= '<center><span>'.$row->subcon_info->department_info->Department .'</span></center>';
-                    }else{
-                        $result .= '<center><span>-</span></center>';
-                    }
-                }else{
-                    $result .= '<center><span>-</span></center>';
+            ->addColumn('department', function ($row) {
+                if ($row->hris_info && $row->hris_info->department_info) {
+                    return '<center><span>' . $row->hris_info->department_info->Department . '</span></center>';
+                } elseif ($row->subcon_info && $row->subcon_info->department_info) {
+                    return '<center><span>' . $row->subcon_info->department_info->Department . '</span></center>';
                 }
-                return $result;
+                return '<center><span>-</span></center>';
             })
-            ->addColumn('section', function($row){
-                $result = "";
-                if($row->hris_info != null){ // For Pricon
-                    if($row->hris_info->section_info != null){
-                        $result .= '<center><span>'.$row->hris_info->section_info->Section .'</span></center>';
-                    }else{
-                        $result .= '<center><span>-</span></center>';
-                    }
-                }else if($row->subcon_info != null){ // For Subcon
-                    if($row->subcon_info->section_info != null){
-                        $result .= '<center><span>'.$row->subcon_info->section_info->Section .'</span></center>';
-                    }else{
-                        $result .= '<center><span>-</span></center>';
-                    }
-                }else{
-                    $result .= '<center><span>Resigned</span></center>';
+            ->addColumn('section', function ($row) {
+                if ($row->hris_info && $row->hris_info->section_info) {
+                    return '<center><span>' . $row->hris_info->section_info->Section . '</span></center>';
+                } elseif ($row->subcon_info && $row->subcon_info->section_info) {
+                    return '<center><span>' . $row->subcon_info->section_info->Section . '</span></center>';
                 }
-                return $result;
+                return '<center><span>-</span></center>';
             })
-        ->rawColumns([
-            'action',
-            'name',
-            'factory',
-            'department',
-            'section',
-            ])
-        ->make(true);
+            ->rawColumns(['action', 'name', 'factory', 'department', 'section'])
+            ->make(true);
     }
 
     public function getUserInfo(Request $request){

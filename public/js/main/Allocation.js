@@ -165,7 +165,9 @@ $(document).ready(function(){
         },
     });
 
-    dtMasterListToAlloc = $("#tblMasterListToAlloc").DataTable({
+    let selectedIds = new Set();
+
+    let dtMasterListToAlloc = $("#tblMasterListToAlloc").DataTable({
         "processing" : false,
         "serverSide" : true,
         "responsive": true,
@@ -184,27 +186,31 @@ $(document).ready(function(){
                 param.rapidXUserId  = txtGlobalUserId;
                 param.requestControlNo = $('#formAddAllocation #txtRequestControlNo').val();
                 param.isViewMode = $('#formAddAllocation #txtIsViewMode').val();
+
+                // ✅ Add selected IDs so backend knows what to prioritize
+                param.selectedIds = Array.from(selectedIds);
             },
             beforeSend: function (jqXHR, settings){
                 // $("#divForTblMasterListToAllocThead").addClass('d-none');
                 $("#divForTblMasterListToAllocTbody").addClass('d-none');
-                $('#tblMasterListToAlloc').find('#actionTextTheadDiv').addClass('d-none');
-                $('#tblMasterListToAlloc').find('#actionCheckAllTheadDiv').addClass('d-none');
+                $('#tblMasterListToAlloc').find('#actionTextTheadDiv, #actionCheckAllTheadDiv').addClass('d-none');
+                // $('#tblMasterListToAlloc').find('#actionTextTheadDiv').addClass('d-none');
+                // $('#tblMasterListToAlloc').find('#actionCheckAllTheadDiv').addClass('d-none');
             },
             complete: function (){
                 // $("#divForTblMasterListToAllocThead").removeClass('d-none');
                 $("#divForTblMasterListToAllocTbody").removeClass('d-none');
                 if($('#formAddAllocation #txtIsViewMode').val() != 0){
                     $('#tblMasterListToAlloc').find('#actionTextTheadDiv').removeClass('d-none');
-                    console.log('txtIsViewMode', 'true');
+                    // console.log('txtIsViewMode', 'true');
                 }else{
                     $('#tblMasterListToAlloc').find('#actionCheckAllTheadDiv').removeClass('d-none');
-                    console.log('txtIsViewMode', 'false');
+                    // console.log('txtIsViewMode', 'false');
                 }
             }
         },
         "columns":[
-            { "data" : "action", width: '5%', orderable:true, searchable:false},
+            { "data" : "action", width: '5%', orderable:false, searchable:false},
             { "data" : "masterlist_employee_number", width: '5%'},
             { "data" : "name", width: '15%'},
             { "data" : "department", width: '10%'},
@@ -221,6 +227,70 @@ $(document).ready(function(){
             $('td', row).eq(5).css('white-space', 'normal');
         },
     });
+
+    // Handle individual row checkbox
+    $('#tblMasterListToAlloc').on('change', '.itemCheckbox', function () {
+        const id = $(this).val(); // Make sure each checkbox has a unique value (e.g., ID)
+        if ($(this).prop('checked')) {
+            selectedIds.add(id);
+
+            // ✅ Move the checked row to the top
+            // $(this).closest('tr').prependTo('#tblMasterListToAlloc tbody');
+        }else{
+            selectedIds.delete(id);
+
+            // ✅ Move the unchecked row to the bottom
+            // $(this).closest('tr').appendTo('#tblMasterListToAlloc tbody');
+        }
+
+        // ✅ Uncheck master checkbox if nothing is selected
+        if (selectedIds.size === 0) {
+            $('#chkAllItems').prop('checked', false);
+        }
+
+        // reorderCheckedRows();
+        console.log('selectedIds', selectedIds)
+    });
+
+    // ✅ On draw, restore checkbox states
+    dtMasterListToAlloc.on('draw.dt', function () {
+        $('#tblMasterListToAlloc .itemCheckbox').each(function () {
+            const id = $(this).val();
+            $(this).prop('checked', selectedIds.has(id));
+        });
+    });
+
+    // ✅ Reorder function
+    // function reorderCheckedRows() {
+    //     console.log('nag reorder ng rows');
+
+    //     const tbody = $('#tblMasterListToAlloc tbody');
+    //     const rows = tbody.find('tr');
+
+    //     const checkedRows = rows.filter(function () {
+    //         return $(this).find('.itemCheckbox').prop('checked');
+    //     });
+    //     const uncheckedRows = rows.filter(function () {
+    //         return !$(this).find('.itemCheckbox').prop('checked');
+    //     });
+
+    //     tbody.append(checkedRows).append(uncheckedRows);
+    // }
+
+    // // ✅ Reorder after every table redraw (search, paginate, sort)
+    // dtMasterListToAlloc.on('draw.dt', function (){
+    //     console.log('nag draw ng table');
+
+    //     // Restore checked state
+    //     $('#tblMasterListToAlloc .itemCheckbox').each(function () {
+    //         const id = $(this).val();
+    //         $(this).prop('checked', selectedIds.has(id));
+    //         console.log('nag run dito');
+    //     });
+
+    //     // Then reorder
+    //     reorderCheckedRows();
+    // });
 
     $('#btnAddAllocation').click(function (e) {
         e.preventDefault();
@@ -273,24 +343,6 @@ $(document).ready(function(){
         });
 
         // filterDataTable(false, false); //this will draw the table;
-    });
-
-    let selectedIds = new Set();
-
-    // Handle individual row checkbox
-    $('#tblMasterListToAlloc').on('change', '.itemCheckbox', function () {
-        const id = $(this).val(); // Make sure each checkbox has a unique value (e.g., ID)
-        if ($(this).prop('checked')) {
-            selectedIds.add(id);
-        } else {
-            selectedIds.delete(id);
-        }
-
-        // ✅ Uncheck master checkbox if nothing is selected
-        if (selectedIds.size === 0) {
-            $('#chkAllItems').prop('checked', false);
-        }
-        console.log('selectedIds', selectedIds)
     });
 
     $('#txtAllocFactory').on('change', function(){
@@ -464,25 +516,38 @@ $(document).ready(function(){
 
     // CHECK ALL ITEMS
     $("#tblMasterListToAlloc #chkAllItems").click(function(){
-        if($(this).prop('checked')) {
-            $(".itemCheckbox").prop('checked', true);//check all result
-        }else{
-            $(".itemCheckbox").prop('checked', false);
-            selectedIds.clear();
-        }
+        // if($(this).prop('checked')) {
+        //     $(".itemCheckbox").prop('checked', true);//check all result
+        // }else{
+        //     $(".itemCheckbox").prop('checked', false);
+        //     selectedIds.clear();
+        // }
 
         const isChecked = $(this).prop('checked');
-        $('.itemCheckbox').each(function () {
+
+        // Update all checkboxes visually
+        $("#tblMasterListToAlloc .itemCheckbox").each(function () {
+            $(this).prop("checked", isChecked); // visually check/uncheck
+
             const id = $(this).val();
-
-            $(this).prop('checked', isChecked);
-
-            if(isChecked){
+            if (isChecked) {
                 selectedIds.add(id);
-            }else{
+            } else {
                 selectedIds.delete(id);
             }
         });
+
+        // $('.itemCheckbox').each(function () {
+        //     const id = $(this).val();
+
+        //     $(this).prop('checked', isChecked);
+
+        //     if(isChecked){
+        //         selectedIds.add(id);
+        //     }else{
+        //         selectedIds.delete(id);
+        //     }
+        // });
         console.log('selectedIds', selectedIds)
     });
 
