@@ -587,6 +587,10 @@ $(document).ready(function(){
                 }, 3000);
                 if(response['validationHasError'] == 1){
                     toastr.error('Saving failed!, Please complete all required fields');
+                    if (response['error']['requestor_id'] === undefined) {
+                        toastr.error('Requestor ID is not found, please refresh your browser and try again');
+                    }
+
                     if (response['error']['type_of_request'] === undefined) {
                         $("#txtTypeOfRequest").removeClass('is-invalid');
                         $("#txtTypeOfRequest").attr('title', '');
