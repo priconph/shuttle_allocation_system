@@ -604,6 +604,7 @@ class AllocationController extends Controller
         // }
 
         $validate_array = [
+            'requestor_id'    => 'required',
             'type_of_request' => 'required',
             'start_date'      => 'required',
             'end_date'        => 'required',

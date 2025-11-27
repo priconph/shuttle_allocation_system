@@ -127,13 +127,26 @@ class OverAllSheetV3 implements FromView, ShouldAutoSize, WithEvents, WithTitle
                 $sheet->getStyle('A1:J3')->applyFromArray($border);
         
                 // Column widths
-                foreach (['A', 'B', 'E', 'H', 'I', 'J'] as $col) {
+                foreach (['B'] as $col) {
                     $sheet->getColumnDimension($col)->setWidth(30);
                 }
-                foreach (['C', 'D', 'F', 'G'] as $col) {
-                    $sheet->getColumnDimension($col)->setWidth(20);
+
+                foreach (['E'] as $col) {
+                    $sheet->getColumnDimension($col)->setWidth(45);
                 }
-        
+
+                foreach (['A', 'I'] as $col) {
+                    $sheet->getColumnDimension($col)->setWidth(35);
+                }
+
+                foreach (['C', 'D', 'G'] as $col) {
+                    $sheet->getColumnDimension($col)->setWidth(15);
+                }
+
+                foreach (['F', 'H', 'J'] as $col) {
+                    $sheet->getColumnDimension($col)->setWidth(25);
+                }
+
                 // Row heights
                 $sheet->getRowDimension(1)->setRowHeight(25);
                 $sheet->getRowDimension(3)->setRowHeight(25);
@@ -186,17 +199,21 @@ class OverAllSheetV3 implements FromView, ShouldAutoSize, WithEvents, WithTitle
                     ];
                     
                     $fixedName = strtr($name, $replacements);
-                    
+
                     // Set the value
-                    $sheet->setCellValue("B{$startRow}", $fixedName);
-                    $sheet->setCellValue("F{$startRow}", optional($person->position_info)->Position);
-                    $sheet->setCellValue("G{$startRow}", optional($person->division_info)->Division);
-                    $sheet->setCellValue("H{$startRow}", optional($person->department_info)->Department);
-                    $sheet->setCellValue("I{$startRow}", optional($person->section_info)->Section);
-        
+                    if($fixedName){
+                        $sheet->setCellValue("B{$startRow}", $fixedName);
+                    }else{
+                        $sheet->setCellValue("B{$startRow}", 'No record found');
+                    }
+                    $sheet->setCellValue("F{$startRow}", optional($person)->position_info->Position ?? 'No record found');
+                    $sheet->setCellValue("G{$startRow}", optional($person)->division_info->Division ?? 'No record found');
+                    $sheet->setCellValue("H{$startRow}", optional($person)->department_info->Department ?? 'No record found');
+                    $sheet->setCellValue("I{$startRow}", optional($person)->section_info->Section ?? 'No record found');
+
                     $user = $item->rapidx_user_info ?? $item->requestor_user_info;
                     $sheet->setCellValue("J{$startRow}", optional($user)->name);
-        
+
                     $startRow++;
                 }
             },

@@ -587,6 +587,10 @@ $(document).ready(function(){
                 }, 3000);
                 if(response['validationHasError'] == 1){
                     toastr.error('Saving failed!, Please complete all required fields');
+                    if (response['error']['requestor_id'] === undefined) {
+                        toastr.error('Requestor ID is not found, please refresh your browser and try again');
+                    }
+
                     if (response['error']['type_of_request'] === undefined) {
                         $("#txtTypeOfRequest").removeClass('is-invalid');
                         $("#txtTypeOfRequest").attr('title', '');
@@ -993,8 +997,8 @@ $(document).ready(function(){
                 $('#txtRequestControlNo', formAddAllocation).val(allocDetails[0].control_number);
                 $('#txtTypeOfRequest', formAddAllocation).val(allocDetails[0].request_type).trigger('change');
                 $('#txtAllocFactory', formAddAllocation).val(allocDetails[0].alloc_factory).trigger('change');
-                $('#txtAllocIncoming', formAddAllocation).val(allocDetails[0].alloc_incoming).trigger('change');
-                $('#txtAllocOutgoing', formAddAllocation).val(allocDetails[0].alloc_outgoing).trigger('change');
+                // $('#txtAllocIncoming', formAddAllocation).val(allocDetails[0].alloc_incoming).trigger('change');
+                // $('#txtAllocOutgoing', formAddAllocation).val(allocDetails[0].alloc_outgoing).trigger('change');
                 $('#txtStartDate', formAddAllocation).val(allocDetails[0].alloc_date_start);
                 $('#txtEndDate', formAddAllocation).val(allocDetails[0].alloc_date_end);
 
@@ -1007,6 +1011,7 @@ $(document).ready(function(){
                 });
                 console.log('selectedIds', selectedIds)
                 filterDataTable(true, true); //this will draw the table;
+                getSchedulesForFiltering(allocDetails[0].alloc_incoming, allocDetails[0].alloc_outgoing)
             }
         });
     });
