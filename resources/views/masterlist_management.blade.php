@@ -51,8 +51,13 @@
                                 {{-- <button class="btn float-right reload"><i class="fas fa-sync-alt"></i></button> --}}
                             </div>
                             <div class="card-body">
-                                <div class="text-right mt-4">
-                                    <button type="button" class="btn btn-primary mb-3" id="buttonAddMasterlist" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist"><i class="fa fa-plus fa-md"></i> Add New</button>
+                                <div class="row">
+                                    <div class="col-6 text-left mt-4">
+                                        <button type="button" class="btn btn-info mb-3" id="btnGetBatchDetails" data-bs-toggle="modal" data-bs-target="#modalGetBatchDetails"><i class="fa fa-edit fa-md"></i> Edit Batch Details</button>
+                                    </div>
+                                    <div class="col-6 text-right mt-4">
+                                        <button type="button" class="btn btn-primary mb-3" id="buttonAddMasterlist" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist"><i class="fa fa-plus fa-md"></i> Add New</button>
+                                    </div>
                                 </div>
                                 {{-- <div class="table-responsive"> --}}
                                     <table id="tableMasterlist" class="table table-responsive table-bordered table-hover nowrap" style="width: 100%;">
@@ -73,7 +78,6 @@
                                                 <th>Department</th>
                                                 <th>Section</th>
                                                 <th>Added by</th>
-
                                             </tr>
                                         </thead>
                                     </table>
@@ -85,6 +89,7 @@
             </div>
         </section>
     </div>
+
 
     <!-- Add Masterlist Modal Start -->
     <div class="modal fade" id="modalAddMasterlist" data-bs-keyboard="false" data-bs-backdrop="static">
@@ -255,6 +260,72 @@
             </div>
         </div>
     </div><!-- Delete Masterlist Status Modal End -->
+
+
+    <div class="modal fade" id="modalGetBatchDetails" data-bs-keyboard="false" data-bs-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="deleteMasterlistStatusTitle"><i class="fas fa-info-circle"></i> Get Employee</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="selectEmployeeType" class="form-label">Enter Employee Number<span class="text-danger" title="Required">*</span></label>
+                    <textarea class="form-control" name="getEmployeeNumber" placeholder="Masterlist Id" id="getEmployeeNumber">
+                    </textarea>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="btnSearchBatchDetails" class="btn btn-primary"><i id="iBtnAddMasterlistIcon" class="fa fa-check"></i> Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEditBatchDetails" data-bs-keyboard="false" data-bs-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <form id="frmEditBatchDetails">
+                    @csrf
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="deleteMasterlistStatusTitle"><i class="fas fa-info-circle"></i> Update Masterlist Details</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="txtGetCreatedBy" class="form-label">Created By<span class="text-danger" title="Required">*</span></label>
+                            <select class="form-select select2" id="txtGetCreatedBy"  name="created_by">
+                                <option value="0" disabled selected>Select One</option>
+                            </select>
+                        </div>
+                        <br> <br>
+                        <div class="mb-3 mt-5">
+                            <label for="txtGetAssignedSuperior" class="form-label">Select Assigned Superior<span class="text-danger" title="Required">*</span></label>
+                            <select class="form-select select2" id="txtGetAssignedSuperior"  name="assigned_superior">
+                                <option value="0" disabled selected>Select One</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" id="btnSearchBatchDetails" class="btn btn-primary"><i id="iBtnAddMasterlistIcon" class="fa fa-check"></i> Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Loading Spinner Modal --}}
+    <div class="modal" id="modal-loading" data-bs-keyboard="false" data-bs-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+            <div class="modal-body text-center">
+                <div class="loading-spinner mb-2"></div>
+                <div>Loading</div>
+            </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 <!--     {{-- JS CONTENT --}} -->
@@ -263,13 +334,62 @@
         $(document).ready(function () {
             let txtGlobalUserId = $('#txtGlobalUserId').val();
             console.log('txtGlobalUserId', txtGlobalUserId);
+            var arrEmployeeNumber = [];
+
+            $('#btnGetBatchDetails').click(function (e) {
+                e.preventDefault();
+                $('#getEmployeeNumber').val('');
+                arrEmployeeNumber = [];
+            });
+
+            $('#btnSearchBatchDetails').click(function (e) {
+                e.preventDefault();
+                let input = $('#getEmployeeNumber').val();
+                const joinEmployeeNumber = input
+                .split(/\r?\n/) // split lines
+                .map(line => line.replace(/^\d+\s*/, '').trim())
+                .join(' ');
+
+                arrEmployeeNumber = joinEmployeeNumber.split(' ').filter(item => item && item.trim() !== ""); // split by space
+                arrEmployeeNumber = [...new Set(arrEmployeeNumber)];
+                console.log(arrEmployeeNumber);
+                $('#modalGetBatchDetails').modal('hide');
+                $('#modalEditBatchDetails').modal('show');
+                dataTablesMasterlist.ajax.url('view_masterlist?uniqueArrayEmployeeNumber='+arrEmployeeNumber).draw();
+            });
+
+            $('#frmEditBatchDetails').submit(function (e) {
+                e.preventDefault();
+                if (confirm("Are you sure you want to continue?")) {
+                    console.log("User clicked Yes");
+                    console.log(arrEmployeeNumber);
+                    let data = {
+                        arrEmployeeNumber : arrEmployeeNumber
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "update_batch_masterlist_details",
+                        data: $.param(data) + '&' + $('#frmEditBatchDetails').serialize(),
+                        dataType: "json",
+                        beforeSend: function(){
+                            $('#modal-loading').modal('show');
+                        },
+                        success: function (response) {
+                            dataTablesMasterlist.ajax.url('view_masterlist?uniqueArrayEmployeeNumber='+arrEmployeeNumber).draw();
+                            $('#modal-loading').modal('hide');
+                            $('#modalGetBatchDetails').modal('hide');
+                            $('#modalEditBatchDetails').modal('hide');
+                        }
+                    });
+                }
+
+            });
 
             /**
              * Initialize Select2 Elements
             */
             $('.select2').select2({
                 theme: 'bootstrap-5',
-                dropdownParent: $('#modalAddMasterlist')
             });
 
             /**
@@ -470,8 +590,30 @@
                 deleteMasterlist();
             });
 
-            getRapidxUsers($('#txtAssignedSuperior'))
+            getRapidxUsers($('#txtAssignedSuperior'));
+            getRapidxUsers($('#txtGetCreatedBy'));
+            getRapidxUsers($('#txtGetAssignedSuperior'));
         });
     </script>
+    <style>
+        /* Loading Spinner */
+        .loading-spinner{
+            width:30px;
+            height:30px;
+            border:2px solid indigo;
+            border-radius:50%;
+            border-top-color:#0001;
+            display:inline-block;
+            animation:loadingspinner .7s linear infinite;
+        }
+        @keyframes loadingspinner{
+            0%{
+                transform:rotate(0deg)
+            }
+            100%{
+                transform:rotate(360deg)
+            }
+        }
+    </style>
 @endsection
 

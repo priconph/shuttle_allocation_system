@@ -102,42 +102,32 @@ class MasterlistController extends Controller
             ->where('created_by', $request->rapidXUserId);
         }
         $selectedFactory = $request->selectedFactory;
-        switch ($selectedFactory) {
-            case 'F1':
-                $masterlistData->where('masterlist_factory', $selectedFactory);
-                break;
-            case 'F3':
-                $masterlistData->where('masterlist_factory', $selectedFactory);
-                break;
-            case 'All':
-                $masterlistData;
-                break;
-            default:
-                $masterlistData->where('masterlist_factory', 'ALL');
-                //no filter factory
-                break;
-        }
-        $masterlistData->get();
+        $uniqueArrayEmployeeNumber = explode(',',$request->uniqueArrayEmployeeNumber);
 
-        $selectedFactory = $request->selectedFactory;
-        switch ($selectedFactory) {
-            case 'F1':
-                $masterlistData->where('masterlist_factory', $selectedFactory);
-                break;
-            case 'F3':
-                $masterlistData->where('masterlist_factory', $selectedFactory);
-                break;
-            case 'All':
-                $masterlistData;
-                break;
-            default:
-                $masterlistData->where('masterlist_factory', 'ALL');
-                //no filter factory
-                break;
+        if($uniqueArrayEmployeeNumber[0] === ""){
+            switch ($selectedFactory) {
+                case 'F1':
+                    $masterlistData->where('masterlist_factory', $selectedFactory);
+                    break;
+                case 'F3':
+                    $masterlistData->where('masterlist_factory', $selectedFactory);
+                    break;
+                case 'All':
+                    $masterlistData;
+                    break;
+                default:
+                    $masterlistData->where('masterlist_factory', 'ALL');
+                    //no filter factory
+                    break;
+            }
+        }
+
+        if($uniqueArrayEmployeeNumber[0] != ""){
+            $toUpperArrEmployeeNo = array_map('strtoupper', $uniqueArrayEmployeeNumber);
+            $masterlistData->whereIn('masterlist_employee_number',$toUpperArrEmployeeNo);
         }
         $masterlistData = $masterlistData->get();
         // return $masterlistData;
-
         return DataTables::of($masterlistData)
             ->addColumn('masterlist_status', function($row){
                 $result = "";

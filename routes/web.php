@@ -106,8 +106,9 @@ Route::get('/import_shuttle_manifest', function () {
  * USER CONTROLLER
  * Note: always use snake case(underscore separator) naming convention to route & route name and camel case to the method for best practice
  */
-Route::get('/view_users', [UserController::class, 'viewUsers'])->name('view_users');
+Route::post('/update_batch_masterlist_details', [UserController::class, 'updateBatchMasterlistDetails'])->name('update_batch_masterlist_details');
 Route::post('/add_user', [UserController::class, 'addUser'])->name('add_user');
+Route::get('/view_users', [UserController::class, 'viewUsers'])->name('view_users');
 Route::get('/get_rapidx_users', [UserController::class, 'getRapidxUsers'])->name('get_rapidx_users');
 Route::get('/get_user_roles', [UserController::class, 'getUserRoles'])->name('get_user_roles');
 Route::get('/get_user_by_id', [UserController::class, 'getUserById'])->name('get_user_by_id');

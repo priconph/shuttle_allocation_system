@@ -300,4 +300,29 @@ class UserController extends Controller
         $userDetails = User::with('user_roles')->where('rapidx_user_id', $request->userId)->first();
         return response()->json(['userDetails' => $userDetails]);
     }
+
+    public function updateBatchMasterlistDetails(Request $request){
+        try {
+            date_default_timezone_set('Asia/Manila');
+            DB::beginTransaction();
+            $toUpperArrEmployeeNo =array_map('strtoupper', $request->arrEmployeeNumber);
+
+            $data = $request->only(['created_by', 'assigned_superior']);
+            // Remove all null values
+            // Remove all null values (PHP 7 compatible)
+            $requestValidated = array_filter($data, function ($value) {
+                return !is_null($value);
+            });
+
+            Masterlist::
+            whereIn('masterlist_employee_number',$toUpperArrEmployeeNo)
+            ->where('is_deleted',0)
+            ->update($requestValidated);
+            DB::commit();
+            return response()->json(['is_success' => 'true']);
+        } catch (Exception $e) {
+            DB::rollback();
+            throw $e;
+        }
+    }
 }
