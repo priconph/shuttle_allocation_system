@@ -276,7 +276,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
-                    <button type="button" id="btnSearchBatchDetails" class="btn btn-primary"><i id="iBtnAddMasterlistIcon" class="fa fa-check"></i> Save</button>
+                    <button type="button" id="btnSearchBatchDetails" class="btn btn-primary"><i id="iBtnAddMasterlistIcon" class="fa fa-check"></i> Search</button>
                 </div>
             </div>
         </div>
