@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -45,6 +46,12 @@ class AllocationController extends Controller
             ->where('is_deleted', 0)
             ->when($request->Status != 'ALL', function ($query) use ($request) {
                 $query->where('request_status', $request->Status); // or change to ID if needed
+            })
+            ->when($request->Month != 'ALL', function ($query) use ($request) {
+                $query->whereMonth('created_at', $request->Month);
+            })
+            ->when($request->Year != 'ALL', function ($query) use ($request) {
+                $query->whereYear('created_at', $request->Year);
             })
             ->when(!empty($request->RequestType), function ($query) use ($request) {
                 $query->where('request_type', $request->RequestType); // or change to ID if needed
@@ -92,27 +99,280 @@ class AllocationController extends Controller
             ->get();
         }
 
-        return DataTables::of($allocationData)
-            ->addColumn('action', function($row) use ($userData) {
-                date_default_timezone_set('Asia/Manila');
-                $disabled = '';
-                // $today = Carbon::today()->toDateString();
-                // $currentHour = date('H'); // 24-hour format
-                // Disable after 3 PM
-                // if($currentHour >= 15 && $userData != 1 && $row->alloc_date_end <= $today){
-                //     $disabled = 'disabled';
-                // }
-                //clark comment 08/14/2025
+        // --- 🔹 Load all cutoffs once (avoid repetitive DB calls) ---
+        $cutoffTimes = CutoffTime::where('is_deleted', 0)->get();
+        // $today = Carbon::today();
 
+        // --- 🔹 Pass cutoffTimes and today into DataTables closure
+        return DataTables::of($allocationData)
+            // ->addColumn('action', function($row) use ($userData, $cutoffTimes, $today){
+            //     date_default_timezone_set('Asia/Manila');
+            //     $disabled = '';
+
+            //     $allocDate = Carbon::parse($allocationDate)->startOfDay();
+
+            //     // --- Cutoff Lock Logic Start ---
+            //     $allocStart = Carbon::parse($row->alloc_date_start)->startOfDay();
+            //     $allocEnd   = Carbon::parse($row->alloc_date_end)->endOfDay();
+
+            //     // Normalize factory and schedule
+            //     $allocFactory  = preg_replace('/\D/', '', (string) $row->alloc_factory);
+            //     $allocSchedule = strtoupper(trim((string) $row->alloc_outgoing));
+
+            //     $isLocked = false;
+
+            //     // ✅ CASE 1: alloc_outgoing has a schedule (NOT "N/A" or null)
+            //     if (!empty($allocSchedule) && $allocSchedule !== 'N/A') {
+
+            //         // Find cutoff record for same factory + schedule
+            //         $cutoffMatch = $cutoffTimes->first(function($cutoff) use ($allocFactory, $allocSchedule) {
+            //             $cutoffFactory  = preg_replace('/\D/', '', (string) $cutoff->factory);
+            //             $cutoffSchedule = strtoupper(trim((string) $cutoff->schedule));
+            //             return $cutoffFactory == $allocFactory && $cutoffSchedule == $allocSchedule;
+            //         });
+
+            //         if ($cutoffMatch && (int) $cutoffMatch->status === 0){
+
+            //             // 🔹 Rule 1: lock today's allocations
+            //             if ($today->between($allocStart, $allocEnd)) {
+            //                 $isLocked = true;
+            //             }
+
+            //             // 🔹 Rule 2: 7:30AM — lock future allocations (tomorrow and onward)
+            //             if ($allocStart->gt($today)) {
+            //                 $isLocked = true;
+            //             }
+            //         }
+            //     }
+            //     // ✅ CASE 2: today is between the allocation date AND alloc_outgoing is "N/A"
+            //     else {
+            //         // CASE 2.1: today is between the allocation date AND alloc_outgoing is "N/A"
+            //         if ($today->between($allocStart, $allocEnd) && $allocSchedule == 'N/A') {
+            //             // Check if any cutoff for this factory (today) is locked, except 7:30AM
+            //             $hasLockedCutoff = $cutoffTimes->contains(function($cutoff) use ($allocFactory) {
+            //                 $cutoffFactory  = preg_replace('/\D/', '', (string) $cutoff->factory);
+            //                 $cutoffSchedule = strtoupper(trim((string) $cutoff->schedule));
+            //                 $isLocked       = ((int) $cutoff->status === 0);
+
+            //                 return $cutoffFactory == $allocFactory && $isLocked && $cutoffSchedule !== '7:30AM';
+            //             });
+
+            //             if ($hasLockedCutoff) {
+            //                 $isLocked = true;
+            //             }
+            //         }// ✅ CASE 2.2: today is between the allocation date AND alloc_outgoing is empty/null
+            //         else if ($today->between($allocStart, $allocEnd) && empty($allocSchedule)){
+            //             // Check if any cutoff for today is locked, except 7:30AM
+            //             $hasLockedCutoff = $cutoffTimes->contains(function($cutoff) {
+            //                 $cutoffSchedule = strtoupper(trim((string) $cutoff->schedule));
+            //                 $isLocked       = ((int) $cutoff->status === 0);
+
+            //                 return $isLocked && $cutoffSchedule !== '7:30AM';
+            //             });
+
+            //             if ($hasLockedCutoff) {
+            //                 $isLocked = true;
+            //             }
+            //         }
+            //         // ✅ CASE 2.3: allocation date is in the future (start > today)
+            //         // else if ($allocStart->gte($tomorrow) && (empty($allocSchedule) || $allocSchedule == 'N/A')) {
+            //         else if ($allocStart->gt($today) && (empty($allocSchedule) || $allocSchedule == 'N/A')) {
+            //             // Check if any cutoff for this factory (future lock) is locked, except 7:30AM
+            //             $hasLockedCutoff = $cutoffTimes->contains(function($cutoff) use ($allocFactory) {
+            //                 $cutoffFactory  = preg_replace('/\D/', '', (string) $cutoff->factory);
+            //                 $cutoffSchedule = strtoupper(trim((string) $cutoff->schedule));
+            //                 $isLocked       = ((int) $cutoff->status === 0);
+
+            //                 return $cutoffFactory == $allocFactory && $isLocked && $cutoffSchedule !== '7:30AM';
+            //             });
+
+            //             if ($hasLockedCutoff) {
+            //                 $isLocked = true;
+            //             }
+            //         }
+            //     }
+
+            //     // // --- Find cutoff record for the same factory and schedule ---
+            //     // $cutoffMatch = $cutoffTimes->first(function($cutoff) use ($allocFactory, $allocSchedule) {
+            //     //     $cutoffFactory  = preg_replace('/\D/', '', (string) $cutoff->factory);
+            //     //     $cutoffSchedule = strtoupper(trim((string) $cutoff->schedule));
+
+            //     //     return $cutoffFactory == $allocFactory && $cutoffSchedule == $allocSchedule;
+            //     // });
+            //     // // return $cutoffMatch;
+
+            //     // if ($cutoffMatch && (int) $cutoffMatch->status === 0) {
+            //     //     // 🔹 Rule 1: All schedules except 7:30AM — lock today's allocations
+            //     //     if ($allocSchedule !== '7:30AM' && $today->between($allocStart, $allocEnd)) {
+            //     //         $isLocked = true;
+            //     //     }
+
+            //     //     // 🔹 Rule 2: 7:30AM — lock future allocations (tomorrow and onward)
+            //     //     if ($allocSchedule === '7:30AM' && $allocEnd->gte($tomorrow)){
+            //     //         $isLocked = true;
+            //     //     }
+            //     // }
+
+            //     if ($isLocked) {
+            //         $disabled = 'disabled';
+            //     }
+
+            //     // Admin bypass: admins (userData == 1) are not disabled
+            //     // if ($isLocked && $userData != 1) {
+            //     // if ($isLocked) {
+            //     //     $disabled = 'disabled title="Locked by cutoff"';
+            //     // }
+            //     // --- Cutoff Lock Logic End ---
+
+            //     // --- Button rendering logic ---
+            //     if($row->request_status == 0){
+            //         $result =   '<center>';
+            //             $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 editRequest" '.$disabled.' data-control_no="'.$row->control_number.'">';
+            //             $result .=          '<i class="fa-solid fa-pen-to-square fa-lg"></i> ';
+            //             $result .=      '</button>';
+
+            //             // $cutoffTimes = CutoffTime::where('is_deleted', 0)->where('cutoff_date', '>=', $row->alloc_date_end)->get();
+
+            //             $result .=      '<button type="button" class="btn btn-danger btn-sm text-center mr-1 updateRequestStatus" '.$disabled.' data-control_no="'.$row->control_number.'" data-status="'.$row->request_status.'">';
+            //             $result .=          '<i class="fa-solid fa-ban fa-lg"></i>';
+            //             $result .=      '</button>';
+
+            //         $result .=  '</center>';
+            //     }else if($row->request_status == 1){
+            //         $result =   '<center>';
+            //             $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 viewRequest" data-control_no="'.$row->control_number.'">';
+            //             $result .=          '<i class="fa-solid fa-eye fa-lg"></i> ';
+            //             $result .=      '</button>';
+
+            //             $result .=      '<button type="button" class="btn btn-success btn-sm text-center mr-1 updateRequestStatus" '.$disabled.' data-control_no="'.$row->control_number.'" data-status="'.$row->request_status.'">';
+            //             $result .=          '<i class="fa-solid fa-arrow-rotate-right fa-lg"></i>';
+            //             $result .=      '</button>';
+            //         $result .=  '</center>';
+            //     }else{
+            //         $result =   '<center>';
+            //             $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 viewRequest" data-control_no="'.$row->control_number.'">';
+            //             $result .=          '<i class="fa-solid fa-eye fa-lg"></i> ';
+            //             $result .=      '</button>';
+            //         $result .=  '</center>';
+            //     }
+            //     return $result;
+            // })
+            // ->addColumn('action', function($row) use ($userData, $cutoffTimes, $today){
+            ->addColumn('action', function($row) use ($userData, $cutoffTimes){
+                date_default_timezone_set('Asia/Manila');
+
+                $today = Carbon::today();
+                $allocStart = Carbon::parse($row->alloc_date_start)->startOfDay();
+                $allocEnd   = Carbon::parse($row->alloc_date_end)->endOfDay();
+
+                // Determine day type
+                if ($today->between($allocStart, $allocEnd)) {
+                    $dayType = 'today';
+                } else if ($today->lt($allocStart)) {
+                    $dayType = 'succeeding';
+                } else {
+                    $dayType = 'past'; // old allocations always locked
+                }
+                // // Normalize incoming/outgoing + factory
+                // $incoming = strtoupper(trim($row->alloc_incoming ?? ''));
+                // $outgoing = strtoupper(trim($row->alloc_outgoing ?? ''));
+
+                // Normalize values (no helper function)
+                $incoming = ($row->alloc_incoming === null || trim($row->alloc_incoming) === '' || $row->alloc_incoming === 'N/A') ? 'N/A' : $row->alloc_incoming;
+                $outgoing = ($row->alloc_outgoing === null || trim($row->alloc_outgoing) === '' || $row->alloc_outgoing === 'N/A') ? 'N/A' : $row->alloc_outgoing;
+                $factory  = preg_replace('/\D/', '', (string)($row->alloc_factory ?? ''));
+
+                // Build schedule list
+                if ($incoming !== 'N/A' && $outgoing !== 'N/A') {
+                    // $scheduleList = [$incoming, $outgoing];
+                    $scheduleList = [$outgoing];
+                }else if ($incoming === 'N/A' && $outgoing !== 'N/A') {
+                    $scheduleList = [$outgoing];
+                }else if ($incoming !== 'N/A' && $outgoing === 'N/A') {
+                    $scheduleList = [$incoming];
+                }else {
+                    // Both N/A — special: disabled only if ANY schedule for same factory is locked
+                    $scheduleList = [];
+                }
+                // return $scheduleList;
+                // Lock evaluator
+                $isLocked = false;
+
+                if (empty($scheduleList)) {
+                    // "Both N/A" → check ANY schedule of same factory
+                    $hasLocked = $cutoffTimes->contains(function($c) use ($dayType) {
+
+                        // $cFactory  = preg_replace('/\D/', '', (string)$c->factory);
+
+                        // if ($cFactory != $factory) {
+                        //     return false;
+                        // }
+                        if ($dayType === 'today'     && $c->status_today == 0) return true;
+                        if ($dayType === 'succeeding' && $c->status_succeeding == 0) return true;
+
+                        return false;
+                    });
+                    $isLocked = $hasLocked;
+                }else{
+                    // Regular (incoming/outgoing have valid schedules)
+                    foreach ($scheduleList as $sched){
+
+                        $cutoffMatch = $cutoffTimes->first(function($c) use ($factory, $sched) {
+
+                            $cFactory  = preg_replace('/\D/', '', (string)$c->factory);
+                            $cSchedule = strtoupper(trim($c->schedule));
+
+                            return ($cFactory == $factory && $cSchedule == $sched);
+                        });
+                        // return $dayType;
+                        // return $cutoffMatch->status_today;
+
+                        if (!$cutoffMatch) {
+                            // No schedule match = safest = locked
+                            $isLocked = false;
+                            return 'false today';
+                            break;
+                        }
+
+                        if ($dayType === 'today' && $cutoffMatch->status_today == 0) {
+                            $isLocked = true;
+                            // return 'true today';
+                            break;
+                        }
+
+                        if ($dayType === 'succeeding' && $cutoffMatch->status_succeeding == 0) {
+                            $isLocked = true;
+                            // return 'true succeeding';
+                            break;
+                        }
+
+                    }
+                }
+
+
+                // Admin bypass
+                // $disabled = ($isLocked && $userData != 1) ? "disabled" : "";
+                $disabled = $isLocked ? "disabled" : "";
+                
+                // NEW CONDITION: allocation date range check
+                if ($allocStart->lt($today)) {
+                    $disabled = "disabled";
+                }
+                /* -----------------------------
+                Render Buttons
+                ------------------------------*/
+
+                // --- Button rendering logic ---
                 if($row->request_status == 0){
                     $result =   '<center>';
-                        $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 editRequest" data-control_no="'.$row->control_number.'">';
+                        $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 editRequest" '.$disabled.' data-is-locked="'.$isLocked.'" data-control_no="'.$row->control_number.'">';
                         $result .=          '<i class="fa-solid fa-pen-to-square fa-lg"></i> ';
                         $result .=      '</button>';
 
-                        $result .=      '<button type="button" class="btn btn-danger btn-sm text-center mr-1 updateRequestStatus" '.$disabled.' data-control_no="'.$row->control_number.'" data-status="'.$row->request_status.'">';
+                        $result .=      '<button type="button" class="btn btn-danger btn-sm text-center mr-1 updateRequestStatus" '.$disabled.' data-is-locked="'.$isLocked.'" data-control_no="'.$row->control_number.'" data-status="'.$row->request_status.'">';
                         $result .=          '<i class="fa-solid fa-ban fa-lg"></i>';
                         $result .=      '</button>';
+
                     $result .=  '</center>';
                 }else if($row->request_status == 1){
                     $result =   '<center>';
@@ -120,7 +380,7 @@ class AllocationController extends Controller
                         $result .=          '<i class="fa-solid fa-eye fa-lg"></i> ';
                         $result .=      '</button>';
 
-                        $result .=      '<button type="button" class="btn btn-success btn-sm text-center mr-1 updateRequestStatus" '.$disabled.' data-control_no="'.$row->control_number.'" data-status="'.$row->request_status.'">';
+                        $result .=      '<button type="button" class="btn btn-success btn-sm text-center mr-1 updateRequestStatus" '.$disabled.' data-is-locked="'.$isLocked.'" data-control_no="'.$row->control_number.'" data-status="'.$row->request_status.'">';
                         $result .=          '<i class="fa-solid fa-arrow-rotate-right fa-lg"></i>';
                         $result .=      '</button>';
                     $result .=  '</center>';

@@ -45,7 +45,7 @@
                                     <div class="col-sm-1">
                                         <label class="form-label">Filter Status</label>
                                         <div class="input-group input-group-sm mb-3">
-                                            <select class="form-control select2bs5" id="filterStatus">
+                                            <select class="form-control select2Allocations" id="filterStatus">
                                                 <option value="ALL">ALL</option>
                                                 <option value="0" selected>Active</option>
                                                 <option value="1">Inactive</option>
@@ -54,10 +54,39 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-sm-1">
+                                        <label class="form-label">Filter Year</label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" id="filterYear" title="<?php echo date('Y'); ?>" value="<?php echo date('Y'); ?>">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-2">
+                                        <label class="form-label">Filter Month</label>
+                                        <div class="input-group input-group-sm mb-3">
+                                            <select class="form-control" id="filterMonth">
+                                                <option value="<?php echo date('m'); ?>" selected ><?php echo date('F'); ?></option>
+                                                <option value="">All</option>
+                                                <option value="1">January</option>
+                                                <option value="2">February</option>
+                                                <option value="3">March</option>
+                                                <option value="4">April</option>
+                                                <option value="5">May</option>
+                                                <option value="6">June</option>
+                                                <option value="7">July</option>
+                                                <option value="8">August</option>
+                                                <option value="9">September</option>
+                                                <option value="10">October</option>
+                                                <option value="11">November</option>
+                                                <option value="12">December</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
                                     <div class="col-sm-2">
                                         <label class="form-label">Filter Request Type</label>
                                         <div class="input-group input-group-sm mb-3">
-                                            <select class="form-control select2bs5" id="filterRequestType">
+                                            <select class="form-control select2Allocations" id="filterRequestType">
                                                 <option value="0" disabled selected>Select Category</option>
                                                 <option value="1">Change Schedule</option>
                                                 <option value="2">Not Riding Shuttle</option>
@@ -68,7 +97,7 @@
                                     <div class="col-sm-2">
                                         <label class="form-label">Filter Factory</label>
                                         <div class="input-group input-group-sm mb-3">
-                                            <select class="form-control select2bs5" id="filterFactory">
+                                            <select class="form-control select2Allocations" id="filterFactory">
                                                 <option value="0" disabled selected>Select Factory</option>
                                                 <option value="ALL">ALL</option>
                                                 <option value="F1">F1</option>
@@ -107,12 +136,12 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card" style="margin-bottom: 80px">
-                            <div class="card-header">
+                            <div class="card-header d-none">
                                 <h3 class="card-title" style="margin-top: 8px;">Allocations</h3>
                             </div>
                             <div class="card-body">
-                                <div class="text-right mt-4">
-                                    <button type="button" class="btn btn-primary mb-3" id="btnAddAllocation" data-bs-toggle="modal" data-bs-target="#modalAddAllocation"><i class="fa fa-plus fa-md"></i> Request New Allocation</button>
+                                <div class="text-right">
+                                    <button type="button" class="btn btn-primary mb-2" id="btnAddAllocation" data-bs-toggle="modal" data-bs-target="#modalAddAllocation"><i class="fa fa-plus fa-md"></i> Request New Allocation</button>
                                 </div>
                                 <div class="table-responsive">
                                     <table id="tblAllocation" class="table-sm table-bordered table-hover nowrap" style="width:100%;">
@@ -196,7 +225,7 @@
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <label for="type_of_request" class="form-label">Type of Request</label>
-                                            <select class="form-control select2bs5" type="text" name="type_of_request" id="txtTypeOfRequest" required>
+                                            <select class="form-control select2Allocations" type="text" name="type_of_request" id="txtTypeOfRequest" required>
                                                 <option value="0" disabled selected>Select Category</option>
                                                 <option value="1">Change Schedule</option>
                                                 <option value="2">Not Riding Shuttle</option>
@@ -205,7 +234,7 @@
 
                                         <div class="col-sm-6">
                                             <label for="alloc_factory" class="form-label">Allocate to Factory</label>
-                                            <select class="form-control select2bs5" type="text" name="alloc_factory" id="txtAllocFactory">
+                                            <select class="form-control select2Allocations" type="text" name="alloc_factory" id="txtAllocFactory">
                                                 <option value="" disabled selected>Select Factory</option>
                                                 {{-- <option value="ALL">ALL</option> --}}
                                                 <option value="F1">Factory 1</option>
@@ -234,7 +263,7 @@
                                         <div class="col-sm-6">
                                             <label for="alloc_incoming" class="form-label">Allocate Incoming</label>
                                             {{-- <input type="time" class="form-control" name="alloc_incoming" id="txtAllocIncoming"> --}}
-                                            <select class="form-control form-control-sm select2bs5 SelectAllocIncoming" type="text" name="alloc_incoming" id="txtAllocIncoming" disabled>
+                                            <select class="form-control form-control-sm select2Allocations SelectAllocIncoming" name="alloc_incoming" id="txtAllocIncoming" disabled>
                                                 <option value="" disabled selected>Select Incoming</option>
                                             </select>
                                         </div>
@@ -242,7 +271,7 @@
                                         <div class="col-sm-6">
                                             <label for="alloc_outgoing" class="form-label">Allocate Outgoing</label>
                                             {{-- <input type="time" class="form-control" name="alloc_outgoing" id="txtAllocOutgoing"> --}}
-                                            <select class="form-control form-control-sm select2bs5 SelectAllocOutgoing" type="text" name="alloc_outgoing" id="txtAllocOutgoing" disabled>
+                                            <select class="form-control form-control-sm select2Allocations SelectAllocOutgoing" name="alloc_outgoing" id="txtAllocOutgoing" disabled>
                                                 <option value="" disabled selected>Select Outgoing</option>
                                             </select>
                                         </div>
@@ -261,7 +290,7 @@
                         <div class="row mb-3">
                             <div class="col-sm-4">
                                 <label for="alloc_factory" class="form-label">Factory</label>
-                                <select class="form-control form-control-sm select2bs5 selectAllocFactory" type="text">
+                                <select class="form-control form-control-sm select2Allocations selectAllocFactory" type="text">
                                     <option value="" disabled selected>Select Factory</option>
                                     <option value="ALL">ALL</option>
                                     <option value="F1">Factory 1</option>
@@ -271,14 +300,14 @@
 
                             <div class="col-sm-4">
                                 <label for="alloc_department" class="form-label">Department</label>
-                                <select class="form-control form-control-sm select2bs5 selectAllocDepartment" type="text">
+                                <select class="form-control form-control-sm select2Allocations selectAllocDepartment" type="text">
                                     <option value="" disabled selected>Select Department</option>
                                 </select>
                             </div>
 
                             <div class="col-sm-4">
                                 <label for="alloc_section" class="form-label">Section</label>
-                                <select class="form-control form-control-sm select2bs5 selectAllocSection" type="text">
+                                <select class="form-control form-control-sm select2Allocations selectAllocSection" type="text">
                                     <option value="" disabled selected>Select Section</option>
                                 </select>
                             </div>

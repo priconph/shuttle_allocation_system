@@ -65,6 +65,16 @@ $(document).ready(function(){
         dtAllocation.draw();
     });
 
+    $("#filterYear").on('change', function(e){
+        e.preventDefault();
+        dtAllocation.draw();
+    });
+
+    $("#filterMonth").on('change', function(e){
+        e.preventDefault();
+        dtAllocation.draw();
+    });
+
     $('#filterRequestType').change(function (e) {
         e.preventDefault();
         if($(this).val() == 1){
@@ -91,9 +101,15 @@ $(document).ready(function(){
         dtAllocation.draw();
     });
 
-    $('.select2bs5').select2({
+    $('.select2Allocations').select2({
         width: '100%',
         theme: 'bootstrap-5'
+    });
+
+    $('#filterMonth').select2({
+        width: '100%',
+        theme: 'bootstrap-5',
+        placeholder: 'Select month'
     });
 
     // When start date changes
@@ -111,7 +127,7 @@ $(document).ready(function(){
         //     $('#txtAllocOutgoing').prop('disabled', true);
         // }
         buttonDisablingForInOut()
-        getSchedulesForFiltering('', '')
+        getSchedulesForFiltering()
     });
 
     // When end date changes
@@ -145,6 +161,8 @@ $(document).ready(function(){
             data: function (param){
                 param.rapidXUserId          = txtGlobalUserId;
                 param.Status                = $('#filterStatus').find(':selected').val();
+                param.Year                  = $('#filterYear').val();
+                param.Month                 = $('#filterMonth').find(':selected').val();
                 param.RequestType           = $('#filterRequestType').find(':selected').val();
                 param.Factory               = $('#filterFactory').find(':selected').val();
                 param.AllocationStartDate   = $('#filterStartDate').val();
@@ -350,66 +368,6 @@ $(document).ready(function(){
         getSchedulesForFiltering()
     })
 
-    //     getSchedulesForFiltering()
-        // let txtFactory = $(this).val();
-        // if(txtFactory == 'F1'){
-        //     txtFactory = 1;
-        // }else if(txtFactory == 'F3'){
-        //     txtFactory = 3;
-        // }else{
-        //     txtFactory = null;
-        // }
-
-        // $.ajax({
-        //     url: "get_cutoff_time",
-        //     method: "get",
-        //     data:{
-        //         factory : txtFactory,
-        //     },
-        //     dataType: "json",
-        //     beforeSend: function(){
-        //     },
-        //     success: function(response){
-        //         // if(txtFactory != null){
-        //         //     $('#txtAllocIncoming').prop('disabled', false);
-        //         //     $('#txtAllocOutgoing').prop('disabled', false);
-        //         // }
-
-        //         let scheduleDetails = response['scheduleDetails'];
-        //         let disabled = '';
-
-        //         if(scheduleDetails != null){
-        //             result_out_schedule = '<option value="" disabled selected> Select Outgoing </option>';
-        //             result_in_schedule = '<option value="" disabled selected> Select Incoming </option>';
-
-        //             result_out_schedule += '<option value="N/A">N/A</option>';
-        //             result_in_schedule += '<option value="N/A">N/A</option>';
-
-        //             for (let c = 0; c < scheduleDetails.length; c++){
-        //                 if(scheduleDetails[c].status == 0){//Not Active
-        //                     disabled = 'disabled';
-        //                 }else{
-        //                     disabled = '';
-        //                 }
-
-        //                 if(scheduleDetails[c].category > 0){ //1 or 2 Incoming  & Outgoing
-        //                     result_out_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
-        //                 }
-
-        //                 if(scheduleDetails[c].category == 2){ //1 Outgoing
-        //                     result_in_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
-        //                 }
-        //             }
-        //             $('.SelectAllocOutgoing').html(result_out_schedule);
-        //             $('.SelectAllocIncoming').html(result_in_schedule);
-        //         }
-        //     },
-        //     error: function(data, xhr, status){
-        //         toastr.error('An error occured!\n' + 'Data: ' + data + "\n" + "XHR: " + xhr + "\n" + "Status: " + status);
-        //     },
-        // });
-    // });
-
     function buttonDisablingForInOut(){
         let RequestTypeVal = formAddAllocation.find('#txtTypeOfRequest').val();
         let FactoryVal = formAddAllocation.find('#txtAllocFactory').val();
@@ -425,7 +383,85 @@ $(document).ready(function(){
         }
     }
 
-    function getSchedulesForFiltering(AllocIncomingVal, AllocOutgoingVal){
+    // function getSchedulesForFiltering(AllocIncomingVal, AllocOutgoingVal){
+    //     const today = new Date();
+    //     let yyyy = today.getFullYear();
+    //     let mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0
+    //     let dd = String(today.getDate()).padStart(2, '0');
+    //     let formattedDate = `${yyyy}-${mm}-${dd}`;
+
+    //     let txtFactory = $('#formAddAllocation').find('#txtAllocFactory').val();
+    //     let txtStartDate = $('#formAddAllocation').find('#txtStartDate').val();
+
+    //     if(txtFactory == 'F1'){
+    //         txtFactory = 1;
+    //     }else if(txtFactory == 'F3'){
+    //         txtFactory = 3;
+    //     }else{
+    //         txtFactory = null;
+    //     }
+
+    //     $.ajax({
+    //         url: "get_cutoff_time",
+    //         method: "get",
+    //         data:{
+    //             param_factory : txtFactory,
+    //             // param_start_date : txtStartDate,
+    //         },
+    //         dataType: "json",
+    //         beforeSend: function(){
+
+    //         },
+    //         success: function(response){
+    //             let scheduleDetails = response['scheduleDetails'];
+    //             let disabled = '';
+
+    //             if(scheduleDetails != null){
+    //                 result_out_schedule = '<option value="" disabled selected> Select Outgoing </option>';
+    //                 result_in_schedule = '<option value="" disabled selected> Select Incoming </option>';
+
+    //                 result_out_schedule += '<option value="N/A" id="na_out_option">N/A</option>';
+    //                 result_in_schedule += '<option value="N/A" id="na_in_option">N/A</option>';
+
+    //                 for(let c = 0; c < scheduleDetails.length; c++){
+    //                     if(scheduleDetails[c].status == 0){//Locked
+    //                         if(scheduleDetails[c].schedule != '7:30AM' && txtStartDate == formattedDate){//SUCCEEDING DAYS
+    //                             disabled = 'disabled';
+    //                         }else if(scheduleDetails[c].schedule == '7:30AM' && txtStartDate > formattedDate){//TODAY
+    //                             disabled = 'disabled';
+    //                         }
+    //                     }else{
+    //                         disabled = '';
+    //                     }
+
+    //                     if(scheduleDetails[c].category > 0){ //1 or 2 Incoming  & Outgoing
+    //                         result_out_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
+    //                     }
+
+    //                     if(scheduleDetails[c].category == 2){ //1 Outgoing
+    //                         result_in_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
+    //                     }
+    //                 }
+
+    //                 $('.SelectAllocOutgoing').html(result_out_schedule);
+    //                 $('.SelectAllocIncoming').html(result_in_schedule);
+
+    //                 if(AllocIncomingVal != null){
+    //                     $('#txtAllocIncoming').val(AllocIncomingVal).trigger('change');
+    //                 }
+
+    //                 if(AllocOutgoingVal != null){
+    //                     $('#txtAllocOutgoing').val(AllocOutgoingVal).trigger('change');
+    //                 }
+    //             }
+    //         },
+    //         error: function(data, xhr, status){
+    //             toastr.error('An error occured!\n' + 'Data: ' + data + "\n" + "XHR: " + xhr + "\n" + "Status: " + status);
+    //         },
+    //     });
+    // }
+
+    function getSchedulesForFiltering(AllocIncomingVal = null, AllocOutgoingVal = null) {
         const today = new Date();
         let yyyy = today.getFullYear();
         let mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0
@@ -434,6 +470,9 @@ $(document).ready(function(){
 
         let txtFactory = $('#formAddAllocation').find('#txtAllocFactory').val();
         let txtStartDate = $('#formAddAllocation').find('#txtStartDate').val();
+
+        const date_start = new Date(txtStartDate);
+        const date_today = new Date(formattedDate);
 
         if(txtFactory == 'F1'){
             txtFactory = 1;
@@ -448,51 +487,170 @@ $(document).ready(function(){
             method: "get",
             data:{
                 param_factory : txtFactory,
-                // param_start_date : txtStartDate,
             },
             dataType: "json",
-            beforeSend: function(){
-
-            },
             success: function(response){
                 let scheduleDetails = response['scheduleDetails'];
                 let disabled = '';
 
                 if(scheduleDetails != null){
+
                     result_out_schedule = '<option value="" disabled selected> Select Outgoing </option>';
-                    result_in_schedule = '<option value="" disabled selected> Select Incoming </option>';
+                    result_in_schedule  = '<option value="" disabled selected> Select Incoming </option>';
 
                     result_out_schedule += '<option value="N/A" id="na_out_option">N/A</option>';
-                    result_in_schedule += '<option value="N/A" id="na_in_option">N/A</option>';
+                    result_in_schedule  += '<option value="N/A" id="na_in_option">N/A</option>';
 
-                    for(let c = 0; c < scheduleDetails.length; c++){
-                        if(scheduleDetails[c].status == 0){//Locked
-                            if(scheduleDetails[c].schedule != '7:30AM' && txtStartDate == formattedDate){//SUCCEEDING DAYS
-                                disabled = 'disabled';
-                            }else if(scheduleDetails[c].schedule == '7:30AM' && txtStartDate > formattedDate){//TODAY
-                                disabled = 'disabled';
+                    // for (let c = 0; c < scheduleDetails.length; c++) {
+                    //     // if(scheduleDetails[c].status_today == 0){//Locked
+                    //     //     if(scheduleDetails[c].schedule != '7:30AM' && txtStartDate == formattedDate){//SUCCEEDING DAYS
+                    //     //         disabled = 'disabled';
+                    //     //     }else if(scheduleDetails[c].schedule == '7:30AM' && txtStartDate > formattedDate){//TODAY
+                    //     //         disabled = 'disabled';
+                    //     //     }
+                    //     // }else{
+                    //     //     disabled = '';
+                    //     // }
+
+                    //     // if(scheduleDetails[c].category > 0){ //1 or 2 Incoming  & Outgoing
+                    //     //     result_out_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
+                    //     // }
+
+                    //     // if(scheduleDetails[c].category == 2){ //1 Outgoing
+                    //     //     result_in_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
+                    //     // }
+
+                    //     // =============== TODAY ===============
+                    //     if (txtStartDate == formattedDate) {
+                    //         // console.log('logs', formattedDate, txtStartDate, scheduleDetails[c].status_today, scheduleDetails[c].factory, scheduleDetails[c].schedule);
+
+                    //         if (scheduleDetails[c].status_today == 0) {
+                    //             // if (scheduleDetails[c].schedule !== '7:30AM'){
+                    //                 disabled = 'disabled';
+                    //                 console.log('result', disabled, scheduleDetails[c].schedule, scheduleDetails[c].factory);
+
+                    //             // }
+                    //         }else{
+                    //             disabled = '';
+                    //         }
+                    //     }
+
+                    //     // =========== SUCCEEDING DAYS ===========
+                    //     else if (txtStartDate > formattedDate) {
+                    //         // console.log('logs', formattedDate, txtStartDate, scheduleDetails[c].status_today, scheduleDetails[c].schedule);
+                    //         if (scheduleDetails[c].status_succeeding == 0) {
+                    //             // if (scheduleDetails[c].schedule === '7:30AM') {
+                    //                 disabled = 'disabled';
+                    //                 console.log('result', disabled, scheduleDetails[c].schedule, scheduleDetails[c].factory);
+                    //             // }
+                    //         }else{
+                    //             disabled = '';
+                    //         }
+                    //     }else{
+                    //         disabled = '';
+                    //     }
+
+                    //     // OUTGOING
+                    //     if (scheduleDetails[c].category > 0) {
+                    //         console.log('options 1 logs', disabled, scheduleDetails[c].schedule);
+
+                    //         result_out_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'
+                    //                                         +scheduleDetails[c].schedule+
+                    //                                 '</option>';
+                    //     }
+
+                    //     // INCOMING
+                    //     if (scheduleDetails[c].category == 2) {
+                    //         console.log('option 2 logs', disabled, scheduleDetails[c].schedule);
+
+                    //         result_in_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'
+                    //                                     +scheduleDetails[c].schedule+
+                    //                               '</option>';
+                    //     }
+
+                    //     // let sched = scheduleDetails[c].schedule;
+                    //     // let isTodayLocked = (scheduleDetails[c].status_today == 0);
+                    //     // let isSucceedLocked = (scheduleDetails[c].status_succeeding == 0);
+
+                    //     // // Compute disabled PER LOOP — not global
+                    //     // let disabledAttr = "";
+
+                    //     // if (txtStartDate == formattedDate) {
+                    //     //     // TODAY
+                    //     //     if (isTodayLocked) disabledAttr = " disabled";
+                    //     // } else if (txtStartDate > formattedDate) {
+                    //     //     // SUCCEEDING DAYS
+                    //     //     if (isSucceedLocked) disabledAttr = " disabled";
+                    //     // }
+
+                    //     // // OUTGOING schedules (category 1 or 2)
+                    //     // if (scheduleDetails[c].category > 0) {
+                    //     //     result_out_schedule += `<option value="${sched}"${disabledAttr}>${sched}</option>`;
+                    //     // }
+
+                    //     // // INCOMING only (category 2)
+                    //     // if (scheduleDetails[c].category == 2) {
+                    //     //     result_in_schedule += `<option value="${sched}"${disabledAttr}>${sched}</option>`;
+                    //     // }
+                    // }
+
+                    for (let c = 0; c < scheduleDetails.length; c++) {
+
+                        let sched = scheduleDetails[c].schedule;
+                        let disabledAttr = "";
+
+                        console.log(
+                        sched,
+                        "CAT:", scheduleDetails[c].category,
+                        "TODAY:", scheduleDetails[c].status_today,
+                        "SUCC:", scheduleDetails[c].status_succeeding
+                        );
+
+                        // =============== TODAY =================
+                        if (txtStartDate == formattedDate) {
+                        // if (date_start.getTime() === date_today.getTime()) {
+                            if (scheduleDetails[c].status_today == 0) {
+                                disabledAttr = 'disabled';
+                                console.log('attribute', disabledAttr, sched);
                             }
-                        }else{
-                            disabled = '';
                         }
 
-                        if(scheduleDetails[c].category > 0){ //1 or 2 Incoming  & Outgoing
-                            result_out_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
+                        // ========= SUCCEEDING DAYS =============
+                        else if (txtStartDate > formattedDate) {
+                        // else if (date_start.getTime() > date_today.getTime()) {
+                            if (scheduleDetails[c].status_succeeding == 0) {
+                                disabledAttr = 'disabled';
+                                console.log('attribute', disabledAttr, sched);
+                            }
+                        }else {
+                            // if allocation date is in the past → ALWAYS DISABLE
+                            disabledAttr = "";
+                            console.log('attribute', disabledAttr, sched);
                         }
 
-                        if(scheduleDetails[c].category == 2){ //1 Outgoing
-                            result_in_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
+                        // INCOMING & OUTGOING
+                        if (scheduleDetails[c].category == 2) {
+                            // result_in_schedule += `<option value="${sched}" ${disabledAttr}>${sched}</option>`;
+                            result_in_schedule += `<option value="${sched}">${sched}</option>`;
+                        }
+
+                        // OUTGOING
+                        if (scheduleDetails[c].category > 0) {
+                            result_out_schedule += `<option value="${sched}" ${disabledAttr}>${sched}</option>`;
+                            // result_out_schedule += `<option value="${sched}" >${sched}</option>`;
                         }
                     }
 
-                    $('.SelectAllocOutgoing').html(result_out_schedule);
-                    $('.SelectAllocIncoming').html(result_in_schedule);
+                    $('#txtAllocOutgoing').html(result_out_schedule);
+                    $('#txtAllocIncoming').html(result_in_schedule);
 
-                    if(AllocIncomingVal != null){
+                    if (AllocIncomingVal != null) {
+                        console.log('AllocIncomingVal not NULL');
                         $('#txtAllocIncoming').val(AllocIncomingVal).trigger('change');
                     }
 
-                    if(AllocOutgoingVal != null){
+                    if (AllocOutgoingVal != null) {
+                        console.log('txtAllocOutgoing not NULL');
                         $('#txtAllocOutgoing').val(AllocOutgoingVal).trigger('change');
                     }
                 }
@@ -772,7 +930,7 @@ $(document).ready(function(){
         // }
     }
 
-    $('#txtTypeOfRequest').on('change', function() {
+    $('#txtTypeOfRequest').on('change', function(){
         const selectedValue = $(this).val();
         if (selectedValue == 2) {
             $('#txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', true);
@@ -790,16 +948,12 @@ $(document).ready(function(){
             $('#na_out_option').prop('disabled', false);
         }
 
-        if(selectedValue == '7:30AM'){
+        if(selectedValue == '7:30AM' && !$('#txtAllocOutgoing option[value="7:30AM"]').is(':disabled') ){
             $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', true);
-        }else{
-            $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', false);
         }
 
-        if(selectedValue == '7:30PM'){
+        if(selectedValue == '7:30PM' && !$('#txtAllocOutgoing option[value="7:30PM"]').is(':disabled')){
             $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
-        }else{
-            $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', false);
         }
     });
 
@@ -906,68 +1060,71 @@ $(document).ready(function(){
     });
 
     $('#tblAllocation').on('click', '.editRequest', function (e){
-        e.preventDefault();
-        $('#allocationRequestChangeTitle').html('<i class="fas fa-info-circle"></i>&nbsp; Edit Employee/s Allocation Request');
-        $('#formAddAllocation #txtIsViewMode').val(2);
-        $('.selectAllocFactory').val('').trigger('change');
-        $('.selectAllocDepartment').val('').trigger('change');
-        $('.selectAllocSection').val('').trigger('change');
+        if($(this).data('is-locked') == 1){
+            toastr.error('This allocation is already locked!, Umay Sayo');
+        }else{
+            e.preventDefault();
+            $('#allocationRequestChangeTitle').html('<i class="fas fa-info-circle"></i>&nbsp; Edit Employee/s Allocation Request');
+            $('#formAddAllocation #txtIsViewMode').val(2);
+            $('.selectAllocFactory').val('').trigger('change');
+            $('.selectAllocDepartment').val('').trigger('change');
+            $('.selectAllocSection').val('').trigger('change');
 
-        $('.selectAllocFactory').prop('disabled', true);
-        $('.selectAllocDepartment').prop('disabled', true);
-        $('.selectAllocSection').prop('disabled', true);
+            $('.selectAllocFactory').prop('disabled', true);
+            $('.selectAllocDepartment').prop('disabled', true);
+            $('.selectAllocSection').prop('disabled', true);
 
-        $('#formAddAllocation').find('input').prop('disabled', false)
-        $('#txtTypeOfRequest, #txtAllocIncoming, #txtOAllocutgoing, #txtAllocFactory').prop('disabled', false);
+            $('#formAddAllocation').find('input').prop('disabled', false)
+            $('#txtTypeOfRequest, #txtAllocIncoming, #txtOAllocutgoing, #txtAllocFactory').prop('disabled', false);
 
-        $('#modalAddAllocation').modal('show');
-        let control_number = $(this).data('control_no');
+            $('#modalAddAllocation').modal('show');
+            let control_number = $(this).data('control_no');
 
-        $.ajax({
-            type: "get",
-            url: "get_allocation_data",
-            data: {
-                userId : txtGlobalUserId,
-                control_number : control_number,
-            },
-            dataType: "json",
-            success: function (response) {
-                let allocDetails = response['allocationDetails'];
-                let userDetails = response['userDetails'];
+            $.ajax({
+                type: "get",
+                url: "get_allocation_data",
+                data: {
+                    userId : txtGlobalUserId,
+                    control_number : control_number,
+                },
+                dataType: "json",
+                success: function (response) {
+                    let allocDetails = response['allocationDetails'];
+                    let userDetails = response['userDetails'];
 
-                if(userDetails != null){
-                    $('#txtEmployeeNumber', formAddAllocation).val(userDetails.rapidx_user_info.employee_number);
-                    $('#txtRequestorId', formAddAllocation).val(userDetails.rapidx_user_id);
-                    $('#txtRequestor', formAddAllocation).val(userDetails.name);
-                    $('#txtDepartmentSection', formAddAllocation).val(userDetails.department);
-                }else{
-                    toastr.warning('No record found!');
+                    if(userDetails != null){
+                        $('#txtEmployeeNumber', formAddAllocation).val(userDetails.rapidx_user_info.employee_number);
+                        $('#txtRequestorId', formAddAllocation).val(userDetails.rapidx_user_id);
+                        $('#txtRequestor', formAddAllocation).val(userDetails.name);
+                        $('#txtDepartmentSection', formAddAllocation).val(userDetails.department);
+                    }else{
+                        toastr.warning('No record found!');
+                    }
+
+                    $('#txtRequestControlNo', formAddAllocation).val(allocDetails[0].control_number);
+                    $('#txtTypeOfRequest', formAddAllocation).val(allocDetails[0].request_type).trigger('change');
+                    $('#txtAllocFactory', formAddAllocation).val(allocDetails[0].alloc_factory).trigger('change');
+
+                    // $('#txtAllocIncoming', formAddAllocation).val(allocDetails[0].alloc_incoming).trigger('change');
+                    // $('#txtAllocOutgoing', formAddAllocation).val(allocDetails[0].alloc_outgoing).trigger('change');
+
+                    $('#txtStartDate', formAddAllocation).val(allocDetails[0].alloc_date_start);
+                    $('#txtEndDate', formAddAllocation).val(allocDetails[0].alloc_date_end);
+
+                    allocDetails.forEach(function(id) {
+                        selectedIds.add(id.requestee_ml_id);
+                    });
+                    console.log('selectedIds', selectedIds)
+
+                    filterDataTable(true, false); //this will draw the table;
+                    getSchedulesForFiltering(allocDetails[0].alloc_incoming, allocDetails[0].alloc_outgoing)
                 }
-
-                $('#txtRequestControlNo', formAddAllocation).val(allocDetails[0].control_number);
-                $('#txtTypeOfRequest', formAddAllocation).val(allocDetails[0].request_type).trigger('change');
-                $('#txtAllocFactory', formAddAllocation).val(allocDetails[0].alloc_factory).trigger('change');
-
-                // $('#txtAllocIncoming', formAddAllocation).val(allocDetails[0].alloc_incoming).trigger('change');
-                // $('#txtAllocOutgoing', formAddAllocation).val(allocDetails[0].alloc_outgoing).trigger('change');
-
-                $('#txtStartDate', formAddAllocation).val(allocDetails[0].alloc_date_start);
-                $('#txtEndDate', formAddAllocation).val(allocDetails[0].alloc_date_end);
-
-                allocDetails.forEach(function(id) {
-                    selectedIds.add(id.requestee_ml_id);
-                });
-                console.log('selectedIds', selectedIds)
-
-                filterDataTable(true, false); //this will draw the table;
-                getSchedulesForFiltering(allocDetails[0].alloc_incoming, allocDetails[0].alloc_outgoing)
-            }
-        });
+            });
+        }
     });
 
     $('#tblAllocation').on('click', '.viewRequest', function (e){
         e.preventDefault();
-
         $('#allocationRequestChangeTitle').html('<i class="fas fa-info-circle"></i>&nbsp; View Employee/s Allocation Request');
         $('#formAddAllocation #txtIsViewMode').val(1);
         $('#modalAddAllocation').modal('show');
@@ -1024,30 +1181,34 @@ $(document).ready(function(){
     });
 
     $('#tblAllocation').on('click', '.updateRequestStatus', function () {
-        let deleteControlNo = $(this).data('control_no');
-        let requestStatus = $(this).data('status');
-        if(requestStatus == 0){
-            $('#changeStatusChangeDivModalHeader').addClass('bg-danger');
-            $('#changeStatusChangeDivModalHeader').removeClass('bg-success');
-            $('#changeStatusChangeTitle').html('<i class="fa-solid fa-ban"></i>&nbsp;&nbsp; Cancel Request?');
-            $('#changeStatusChangeLabel').html('Are you sure you want to cancel this request?');
-            $('#btnDeleteRequest').addClass('btn-danger');
-            $('#btnDeleteRequest').removeClass('btn-success');
-            $('#btnDeleteRequest').html('<i class="fa fa-arrow-rotate-right"></i> Cancel Allocation Request');
+        if($(this).data('is-locked') == 1){
+            toastr.error('This allocation is already locked!, Umay Sayo');
         }else{
-            $('#changeStatusChangeDivModalHeader').addClass('bg-success');
-            $('#changeStatusChangeDivModalHeader').removeClass('bg-danger');
-            $('#changeStatusChangeTitle').html('<i class="fa-solid fa-arrow-rotate-right"></i>&nbsp;&nbsp; Activate Request?');
-            $('#changeStatusChangeLabel').html('Are you sure you want to activate this request?');
-            $('#btnDeleteRequest').removeClass('btn-danger');
-            $('#btnDeleteRequest').addClass('btn-success');
-            $('#btnDeleteRequest').html('<i class="fa fa-arrow-rotate-right"></i> Activate Allocation Request');
+            let deleteControlNo = $(this).data('control_no');
+            let requestStatus = $(this).data('status');
+            if(requestStatus == 0){
+                $('#changeStatusChangeDivModalHeader').addClass('bg-danger');
+                $('#changeStatusChangeDivModalHeader').removeClass('bg-success');
+                $('#changeStatusChangeTitle').html('<i class="fa-solid fa-ban"></i>&nbsp;&nbsp; Cancel Request?');
+                $('#changeStatusChangeLabel').html('Are you sure you want to cancel this request?');
+                $('#btnDeleteRequest').addClass('btn-danger');
+                $('#btnDeleteRequest').removeClass('btn-success');
+                $('#btnDeleteRequest').html('<i class="fa fa-arrow-rotate-right"></i> Cancel Allocation Request');
+            }else{
+                $('#changeStatusChangeDivModalHeader').addClass('bg-success');
+                $('#changeStatusChangeDivModalHeader').removeClass('bg-danger');
+                $('#changeStatusChangeTitle').html('<i class="fa-solid fa-arrow-rotate-right"></i>&nbsp;&nbsp; Activate Request?');
+                $('#changeStatusChangeLabel').html('Are you sure you want to activate this request?');
+                $('#btnDeleteRequest').removeClass('btn-danger');
+                $('#btnDeleteRequest').addClass('btn-success');
+                $('#btnDeleteRequest').html('<i class="fa fa-arrow-rotate-right"></i> Activate Allocation Request');
 
+            }
+
+            $('#modalDeleteRequest').modal('show')
+            $('#modalDeleteRequest').find('#deleteFrmControlNumber').val(deleteControlNo);
+            $('#modalDeleteRequest').find('#deleteFrmRequestStatus').val(requestStatus);
         }
-
-        $('#modalDeleteRequest').modal('show')
-        $('#modalDeleteRequest').find('#deleteFrmControlNumber').val(deleteControlNo);
-        $('#modalDeleteRequest').find('#deleteFrmRequestStatus').val(requestStatus);
     });
 
     $('#FrmChangeStatusAllocation').submit(function (e) {

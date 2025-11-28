@@ -40,6 +40,7 @@
                                                 <th>Status</th>
                                                 <th>Factory</th>
                                                 <th>Schedule</th>
+                                                <th>Time</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -123,6 +124,7 @@
                         <p id="paragraphEditCutoffTimeStatus"></p>
                         <input type="hidden" name="cutoff_time_id" placeholder="Cutoff Time Id" id="textEditCutoffTimeStatusCutoffTimeId">
                         <input type="hidden" name="status" placeholder="Cutoff Time Status" id="textEditCutoffTimeStatus">
+                        <input type="hidden" name="cutoff_time_type" placeholder="Cutoff Time Type" id="textEditCutoffTimeType">
                     </div>
 
                     <div class="modal-footer justify-content-between">
@@ -160,37 +162,53 @@
                     url: "view_cutoff_time",
                 },
                 "columns":[
-                    { "data" : "action", orderable:false, searchable:false},
-                    { "data" : "status"},
+                    { "data" : "action", orderable:false, searchable:false, width: "15%"},
+                    { "data" : "status", width: "20%"},
                     { "data" : "factory",
                         "defaultContent": 'N/A',
                         "name": 'user_level',
                         "orderable": true,
                         "searchable": true,
+                        "width": "15%",
                         "render": function (data, type, row) {
                             if(row.factory == 1){
-                                return "Factory 1";
+                                return "<div class='text-center'>Factory 1</div>";
                             }else{
-                                return "Factory 3";
+                                return "<div class='text-center'>Factory 3</div>";
                             }
                         },
                     },
-                    { "data" : "schedule",
+                    { "data" : "category",
                         "defaultContent": 'N/A',
+                        "width": "15%",
                         "render": function (data, type, row) {
-                            if(row.schedule == '3:30PM'){
-                                return "OUTGOING 3:30PM";
-                            }else if(row.schedule == '4:30PM'){
-                                return "OUTGOING 4:30PM";
-                            }else if(row.schedule == '7:30PM'){
-                                return "OUTGOING 7:30PM";
-                            }else if(row.schedule == '7:30AM'){
-                                return "SUCCEEDING DAYS (INCOMING & OUTGOING 7:30AM)";
+                            if(row.category == 1){
+                                return "<div class='text-center'>OUTGOING</div>";
+                            }else if(row.category == 2){
+                                return "<div class='text-center'>INCOMING & OUTGOING</div>";
                             }else{
                                 return "---";
                             }
                         },
                     },
+                    { "data" : "schedule" },
+                    // Old code clark commented out 11/20/2025
+                    // { "data" : "schedule",
+                    //     "defaultContent": 'N/A',
+                    //     "render": function (data, type, row) {
+                    //         if(row.schedule == '3:30PM'){
+                    //             return "3:30PM";
+                    //         }else if(row.schedule == '4:30PM'){
+                    //             return "4:30PM";
+                    //         }else if(row.schedule == '7:30PM'){
+                    //             return "INCOMING & 7:30PM";
+                    //         }else if(row.schedule == '7:30AM'){
+                    //             return "INCOMING & 7:30AM";
+                    //         }else{
+                    //             return "---";
+                    //         }
+                    //     },
+                    // },
                 ],
             });
 
@@ -207,7 +225,6 @@
 
             $(document).on('click', '.actionEditCutoffTime', function(){
                 let id = $(this).attr('pickup-time-id');
-                console.log('id ',id);
                 $("input[name='cutoff_time_id'", $("#formAddCutoffTime")).val(id);
                 getCutoffTimeById(id);
             });
@@ -215,11 +232,11 @@
             $(document).on('click', '.actionEditCutoffTimeStatus', function(){
                 let cutoffTimeId = $(this).attr('pickup-time-id');
                 let cutoffTimeStatus = $(this).attr('pickup-time-status');
-                console.log('cutoffTimeId', cutoffTimeId);
-                console.log('cutoffTimeStatus', cutoffTimeStatus);
+                let cutoffTimeType = $(this).attr('pickup-time-type');
 
                 $("#textEditCutoffTimeStatusCutoffTimeId").val(cutoffTimeId);
                 $("#textEditCutoffTimeStatus").val(cutoffTimeStatus);
+                $("#textEditCutoffTimeType").val(cutoffTimeType);
 
                 if(cutoffTimeStatus == 1){
                     $("#paragraphEditCutoffTimeStatus").text('Are you sure to lock masterlist?');

@@ -77,16 +77,15 @@ function editCutoffTimeStatus(){
         beforeSend: function(){
         },
         success: function(response){
-            if(response['validationHasError'] == 1){
+            if(response['hasError'] == 1){
                 toastr.error('Edit status failed!');
             }else{
                 if(response['hasError'] == 0){
                     if(response['status'] == 0){
-                        toastr.success('Masterlist successfully locked!');
+                        toastr.success('Successfully locked!');
                         dataTablesCutoffTime.draw();
-                    }
-                    else{
-                        toastr.success('Masterlist successfully unlocked!');
+                    }else{
+                        toastr.success('Successfully unlocked!');
                         dataTablesCutoffTime.draw();
                     }
                 }
