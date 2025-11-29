@@ -16,7 +16,9 @@ class CreateCutoffTimesTable extends Migration
         Schema::create('cutoff_times', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->time('cutoff_time');
-            $table->string('status')->nullable()->default(1)->comment = '0-Not Active, 1-Active';
+            $table->string('status')->nullable()->default(1)->comment = '0 - Locked, 1 - Unlocked';
+            $table->string('status_today')->nullable()->default(1)->comment = '0 - Locked, 1 - Unlocked';
+            $table->string('status_succeeding')->nullable()->default(1)->comment = '0 - Locked, 1 - Unlocked';
 
            // Defaults
             $table->unsignedBigInteger('created_by')->nullable();

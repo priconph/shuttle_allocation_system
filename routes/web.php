@@ -166,7 +166,7 @@ Route::get('/view_cutoff_time', [CutoffTimeController::class, 'viewCutoffTime'])
 Route::post('/add_cutoff_time', [CutoffTimeController::class, 'addCutoffTime'])->name('add_cutoff_time');
 Route::get('/get_cutoff_time_by_id', [CutoffTimeController::class, 'getCutoffTimeById'])->name('get_cutoff_time_by_id');
 Route::post('/edit_status', [CutoffTimeController::class, 'editCutoffTimeStatus'])->name('edit_status');
-Route::get('/get_cutoff_time', [CutoffTimeController::class, 'getCutoffTime'])->name('get_masterlist');
+// Route::get('/get_cutoff_time', [CutoffTimeController::class, 'getCutoffTime'])->name('get_masterlist');
 
 /**
  * SYSTEMONE CONTROLLER

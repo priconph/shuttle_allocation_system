@@ -1154,8 +1154,8 @@ $(document).ready(function(){
                 $('#txtRequestControlNo', formAddAllocation).val(allocDetails[0].control_number);
                 $('#txtTypeOfRequest', formAddAllocation).val(allocDetails[0].request_type).trigger('change');
                 $('#txtAllocFactory', formAddAllocation).val(allocDetails[0].alloc_factory).trigger('change');
-                // $('#txtAllocIncoming', formAddAllocation).val(allocDetails[0].alloc_incoming).trigger('change');
-                // $('#txtAllocOutgoing', formAddAllocation).val(allocDetails[0].alloc_outgoing).trigger('change');
+                $('#txtAllocIncoming', formAddAllocation).val(allocDetails[0].alloc_incoming).trigger('change');
+                $('#txtAllocOutgoing', formAddAllocation).val(allocDetails[0].alloc_outgoing).trigger('change');
                 $('#txtStartDate', formAddAllocation).val(allocDetails[0].alloc_date_start);
                 $('#txtEndDate', formAddAllocation).val(allocDetails[0].alloc_date_end);
 
@@ -1168,7 +1168,6 @@ $(document).ready(function(){
                 });
                 console.log('selectedIds', selectedIds)
                 filterDataTable(true, true); //this will draw the table;
-                getSchedulesForFiltering(allocDetails[0].alloc_incoming, allocDetails[0].alloc_outgoing)
             }
         });
     });
