@@ -114,10 +114,21 @@ $(document).ready(function(){
 
     // When start date changes
     $('#formAddAllocation #txtStartDate').on('change', function(){
-        let startDate = $(this).val();
-        $('#formAddAllocation #txtEndDate').attr('min', startDate); // end date cannot be before start date
-        console.log('startval', startDate);
-        console.log('endval', $('#formAddAllocation #txtEndDate').val());
+        let start = new Date($(this).val());
+        if (isNaN(start)) return;
+
+        start.setDate(start.getDate() + 7);
+        let endDate = start.toISOString().split('T')[0];
+
+        $('#formAddAllocation #txtEndDate').attr('min', start); // end date cannot be before start date
+        $('#formAddAllocation #txtEndDate').attr('max', endDate); // end date cannot be before start date
+        $('#formAddAllocation #txtEndDate').val(endDate);
+
+        // OLD code clark comment 11/29/2025
+        // let startDate = $(this).val();
+        // $('#formAddAllocation #txtEndDate').attr('min', startDate); // end date cannot be before start date
+        // console.log('startval', startDate);
+        // console.log('endval', $('#formAddAllocation #txtEndDate').val());
 
         // if($('#formAddAllocation #txtTypeOfRequest').val() == 1 && startDate != '' && $('#formAddAllocation #txtEndDate').val() != ''){
         //     $('#txtAllocIncoming').prop('disabled', false);

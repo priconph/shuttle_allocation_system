@@ -349,18 +349,24 @@ class AllocationController extends Controller
                     }
                 }
 
-                // Admin bypass
-                // $disabled = ($isLocked && $userData != 1) ? "disabled" : "";
-                $disabled = $isLocked ? "disabled" : "";
-
-                // NEW CONDITION: allocation date range check
-                if ($allocStart->lt($today)) {
-                    $disabled = "disabled";
-                    $isLocked = true;
-                }
                 /* -----------------------------
-                Render Buttons
+                Admin Bypass
                 ------------------------------*/
+                $disabled = ($isLocked && $userData != 1) ? "disabled" : "";
+                /* -----------------------------
+                All Action Button Disabled
+                ------------------------------*/
+                $disabled = "disabled";
+                // $disabled = $isLocked ? "disabled" : "";
+
+                /* -----------------------------
+                NEW CONDITION: allocation date range check
+                ------------------------------*/
+                // if ($allocStart->lt($today)) {
+                //     $disabled = "disabled";
+                //     $isLocked = true;
+                // }
+
 
                 // --- Button rendering logic ---
                 if($row->request_status == 0){
