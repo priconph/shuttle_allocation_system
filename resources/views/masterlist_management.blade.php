@@ -276,7 +276,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
-                    <button type="button" id="btnSearchBatchDetails" class="btn btn-primary"><i id="iBtnAddMasterlistIcon" class="fa fa-check"></i> Save</button>
+                    <button type="button" id="btnSearchBatchDetails" class="btn btn-primary"><i id="iBtnAddMasterlistIcon" class="fa fa-check"></i> Search</button>
                 </div>
             </div>
         </div>
@@ -345,14 +345,10 @@
             $('#btnSearchBatchDetails').click(function (e) {
                 e.preventDefault();
                 let input = $('#getEmployeeNumber').val();
-                const joinEmployeeNumber = input
-                .split(/\r?\n/) // split lines
-                .map(line => line.replace(/^\d+\s*/, '').trim())
-                .join(' ');
-
-                arrEmployeeNumber = joinEmployeeNumber.split(' ').filter(item => item && item.trim() !== ""); // split by space
-                arrEmployeeNumber = [...new Set(arrEmployeeNumber)];
-                console.log(arrEmployeeNumber);
+                arrEmployeeNumber = input
+                    .split(/\r?\n/)                   // split by newline
+                    .map(x => x.trim())               // remove spaces
+                    .filter(x => x !== "");
                 $('#modalGetBatchDetails').modal('hide');
                 $('#modalEditBatchDetails').modal('show');
                 dataTablesMasterlist.ajax.url('view_masterlist?uniqueArrayEmployeeNumber='+arrEmployeeNumber).draw();
