@@ -29,7 +29,7 @@
                                 <h3 class="card-title" style="margin-top: 8px;">Pickup Time Management</h3>
                             </div>
                             <div class="card-body">
-                                <div class="text-right mt-4">                   
+                                <div class="text-right mt-4">
                                     <button type="button" class="btn btn-primary mb-3" id="buttonAddPickupTime" data-bs-toggle="modal" data-bs-target="#modalAddPickupTime"><i class="fa fa-plus fa-md"></i> New Pickup Time</button>
                                 </div>
                                 <div class="table-responsive">
@@ -39,7 +39,7 @@
                                                 <th>Action</th>
                                                 <th>Status</th>
                                                 <th>Pickup Time</th>
-                                            </tr>   
+                                            </tr>
                                         </thead>
                                     </table>
                                 </div>
@@ -50,7 +50,7 @@
             </div>
         </section>
     </div>
-    
+
     <!-- Add Pickup Time Modal Start -->
     <div class="modal fade" id="modalAddPickupTime" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg">
@@ -67,7 +67,7 @@
                                 <div class="card-body">
                                     <!-- For Pickup Time Id -->
                                     <input type="text" class="form-control" style="display: none" name="pickup_time_id" id="pickupTimeId">
-                                    
+
                                     <div class="mb-3">
                                         <label for="username" class="form-label">Pickup Time</label>
                                         <input type="time" class="form-control" name="pickup_time" id="textPickupTime" placeholder="Pickup Time">
@@ -76,7 +76,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="btnAddPickupTime" class="btn btn-primary"><i id="iBtnAddPickupTimeIcon" class="fa fa-check"></i> Save</button>
@@ -85,7 +85,7 @@
             </div>
         </div>
     </div><!-- Add Pickup Time Modal End -->
-    
+
     <!-- Edit Pickup Time Status Modal Start -->
     <div class="modal fade" id="modalEditPickupTimeStatus" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-md">
@@ -101,7 +101,7 @@
                         <input type="hidden" name="pickup_time_id" placeholder="Pickup Time Id" id="textEditPickupTimeStatusPickupTimeId">
                         <input type="hidden" name="pickup_time_status" placeholder="Pickup Time Status" id="textEditPickupTimeStatus">
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="buttonEditPickupTimeStatus" class="btn btn-primary"><i id="iBtnAddPickupTimeIcon" class="fa fa-check"></i> Save</button>
@@ -116,11 +116,12 @@
 @section('js_content')
     <script type="text/javascript">
         $(document).ready(function () {
-            /**
-             * Initialize Select2 Elements
-            */
-            $('.select2').select2({
-                theme: 'bootstrap-5'
+            /* Select 2 Attr */
+            $('.select2').each(function () {
+                $(this).select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: $(this).parent(),
+                });
             });
 
             dataTablesPickupTime = $("#tablePickupTime").DataTable({
@@ -159,7 +160,7 @@
                 let pickupTimeStatus = $(this).attr('pickup-time-status');
                 console.log('pickupTimeId', pickupTimeId);
                 console.log('pickupTimeStatus', pickupTimeStatus);
-                
+
                 $("#textEditPickupTimeStatusPickupTimeId").val(pickupTimeId);
                 $("#textEditPickupTimeStatus").val(pickupTimeStatus);
 

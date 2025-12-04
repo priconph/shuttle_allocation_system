@@ -170,7 +170,7 @@ class MasterlistController extends Controller
 
                         // if( $_SESSION['rapidx_department_id'] === 27){ // TODO:ESS Access only
                         // if (in_array($_SESSION['rapidx_department_id'], [27, 1], true)) { // TODO:ESS and ISS Access only
-                            $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" '.$disabled.' masterlist-id="' . $row->id . '"  data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
+                            $result .= '<button type="button" class="btn btn-primary btn-xs text-center actionEditMasterlist mr-1" '.$disabled.' masterlist-id="' . $row->id . '"  data-bs-toggle="modal" data-bs-target="#modalAddMasterlist" title="Edit Masterlist Details">';
                             $result .=          '<i class="fa fa-xl fa-edit"></i> ';
                             $result .=      '</button>';
 

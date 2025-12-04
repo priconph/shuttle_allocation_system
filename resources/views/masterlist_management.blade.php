@@ -53,7 +53,9 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-6 text-left mt-4">
-                                        <button type="button" class="btn btn-info mb-3" id="btnGetBatchDetails" data-bs-toggle="modal" data-bs-target="#modalGetBatchDetails"><i class="fa fa-edit fa-md"></i> Edit Batch Details</button>
+                                        @php session_start(); if (in_array($_SESSION['rapidx_department_id'], [27, 1], true)) {
+                                            echo '<button  type="button" class="btn btn-info mb-3" id="btnGetBatchDetails" data-bs-toggle="modal" data-bs-target="#modalGetBatchDetails"><i class="fa fa-edit fa-md"></i> Edit Batch Details</button>';
+                                        } @endphp
                                     </div>
                                     <div class="col-6 text-right mt-4">
                                         <button type="button" class="btn btn-primary mb-3" id="buttonAddMasterlist" data-bs-toggle="modal" data-bs-target="#modalAddMasterlist"><i class="fa fa-plus fa-md"></i> Add New</button>
@@ -331,7 +333,16 @@
 <!--     {{-- JS CONTENT --}} -->
 @section('js_content')
     <script type="text/javascript">
+
+
         $(document).ready(function () {
+            /* Select 2 Attr */
+            $('.select2').each(function () {
+                $(this).select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: $(this).parent(),
+                });
+            });
             let txtGlobalUserId = $('#txtGlobalUserId').val();
             console.log('txtGlobalUserId', txtGlobalUserId);
             var arrEmployeeNumber = [];
@@ -381,12 +392,7 @@
 
             });
 
-            /**
-             * Initialize Select2 Elements
-            */
-            $('.select2').select2({
-                theme: 'bootstrap-5',
-            });
+
 
             /**
              * Disable typing in datetimepicker

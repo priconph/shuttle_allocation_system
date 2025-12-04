@@ -106,6 +106,16 @@ $(document).ready(function(){
         theme: 'bootstrap-5'
     });
 
+    $('#txtTypeOfRequest').select2({
+        width: '100%',
+        theme: 'bootstrap-5'
+    });
+
+    $('#txtAllocFactory').select2({
+        width: '100%',
+        theme: 'bootstrap-5'
+    });
+
     $('#filterMonth').select2({
         width: '100%',
         theme: 'bootstrap-5',
@@ -195,8 +205,10 @@ $(document).ready(function(){
     });
 
     let selectedIds = new Set();
+    let removedIds = new Set();
 
     let dtMasterListToAlloc = $("#tblMasterListToAlloc").DataTable({
+        "destroy": true,
         "processing" : false,
         "serverSide" : true,
         "responsive": true,
@@ -217,24 +229,35 @@ $(document).ready(function(){
                 param.isViewMode = $('#formAddAllocation #txtIsViewMode').val();
 
                 // ✅ Add selected IDs so backend knows what to prioritize
-                param.selectedIds = Array.from(selectedIds);
+                // param.selectedIds = Array.from(selectedIds);
+                param.selectedIds = JSON.stringify([...selectedIds]);
+                param.removedIds  = JSON.stringify([...removedIds]);
+            },
+            dataSrc: function(json){
+                //FILTER THE SELECTED IDS
+                json.data.forEach(row => {
+                    if (row.is_selected) {
+                        if (!removedIds.has(row.id)) {
+                            selectedIds.add(row.id);
+                        }
+                    }
+                });
+
+                // remove the rows the user previously removed
+                json.data = json.data.filter(row => !removedIds.has(row.id));
+
+                return json.data;
             },
             beforeSend: function (jqXHR, settings){
-                // $("#divForTblMasterListToAllocThead").addClass('d-none');
                 $("#divForTblMasterListToAllocTbody").addClass('d-none');
                 $('#tblMasterListToAlloc').find('#actionTextTheadDiv, #actionCheckAllTheadDiv').addClass('d-none');
-                // $('#tblMasterListToAlloc').find('#actionTextTheadDiv').addClass('d-none');
-                // $('#tblMasterListToAlloc').find('#actionCheckAllTheadDiv').addClass('d-none');
             },
             complete: function (){
-                // $("#divForTblMasterListToAllocThead").removeClass('d-none');
                 $("#divForTblMasterListToAllocTbody").removeClass('d-none');
                 if($('#formAddAllocation #txtIsViewMode').val() != 0){
                     $('#tblMasterListToAlloc').find('#actionTextTheadDiv').removeClass('d-none');
-                    // console.log('txtIsViewMode', 'true');
                 }else{
                     $('#tblMasterListToAlloc').find('#actionCheckAllTheadDiv').removeClass('d-none');
-                    // console.log('txtIsViewMode', 'false');
                 }
             }
         },
@@ -249,8 +272,6 @@ $(document).ready(function(){
             { "data" : "masterlist_incoming"},
             { "data" : "masterlist_outgoing"},
             { "data": "rapidx_user_info.name"},
-
-            // { "data" : "ml_route", orderable:false, searchable:false},
         ],
         "createdRow": function(row, data, index) {
             $('td', row).eq(5).css('white-space', 'normal');
@@ -278,7 +299,7 @@ $(document).ready(function(){
         }
 
         // reorderCheckedRows();
-        console.log('selectedIds', selectedIds)
+        // console.log('selectedIds', selectedIds)
     });
 
     // ✅ On draw, restore checkbox states
@@ -329,6 +350,23 @@ $(document).ready(function(){
         let dd = String(today.getDate()).padStart(2, '0');
         let formattedDate = `${yyyy}-${mm}-${dd}`;
         console.log(formattedDate);
+
+        // Clark new code 12/01/2025
+        // Off readonly for input fields
+        $('#txtStartDate, #txtEndDate, #txtAllocIncoming, #txtAllocOutgoing').prop('readonly', false);
+
+        // Remove d-none class for filters
+        $('#divForSelectAllocationsFilters').removeClass('d-none');
+
+        // Enable Buttons for select, Remove Readonly Style
+        $('#txtTypeOfRequest').off('select2:opening.readonly');
+        let $container1 = $('#txtTypeOfRequest').data('select2').$container;
+            $container1.removeClass('select2-readonly');
+
+        $('#txtAllocFactory').off('select2:opening.readonly');
+        let $container2 = $('#txtAllocFactory').data('select2').$container;
+            $container2.removeClass('select2-readonly');
+        // Clark new code 12/01/2025
 
         $('#formAddAllocation #txtRequestControlNo').val('');
         $('#allocationRequestChangeTitle').html('<i class="fas fa-info-circle"></i>&nbsp; Add Employee/s Allocation Request');
@@ -680,7 +718,9 @@ $(document).ready(function(){
                 $(this).prop('checked', true);
             }
         });
-        console.log('selectedIds', selectedIds)
+
+        $('#tblMasterListToAlloc').find('.btnRemoveEmp').prop('disabled', selectedIds.size === 1);
+        // console.log('selectedIds', selectedIds)
     });
 
     // CHECK ALL ITEMS
@@ -717,7 +757,7 @@ $(document).ready(function(){
         //         selectedIds.delete(id);
         //     }
         // });
-        console.log('selectedIds', selectedIds)
+        // console.log('selectedIds', selectedIds)
     });
 
     $('#btnSaveNewAllocation').click(function (e){
@@ -737,6 +777,7 @@ $(document).ready(function(){
             selectedIds.forEach(id => {
                 formDataAddAllocation.append('selectedIds[]', id);
             });
+            // formDataAddAllocation.append('selectedIds', JSON.stringify([...selectedIds]));
         }else{
             toastr.error('No Selected Employee to be Allocated, Please Select First');
         }
@@ -959,12 +1000,30 @@ $(document).ready(function(){
             $('#na_out_option').prop('disabled', false);
         }
 
+        // IF SELECTED TIME IS 7:30AM AND ENABLED IN CUTOFFTIME, DISABLE THE BUTTON
         if(selectedValue == '7:30AM' && !$('#txtAllocOutgoing option[value="7:30AM"]').is(':disabled') ){
             $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', true);
         }
+        // IF SELECTED TIME IS 7:30AM AND ALREADY DISABLED BY CUTOFFTIME, KEEP IT DISABLED
+        else if(selectedValue == '7:30AM' && $('#txtAllocOutgoing option[value="7:30AM"]').is(':disabled')){
+            $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', true);
+        }
+        // IF SELECTED TIME IS NOT 7:30AM, ENABLE THE BUTTON
+        else{
+            $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', false);
+        }
 
+        // IF SELECTED TIME IS 7:30PM AND ENABLED IN CUTOFFTIME, DISABLE THE BUTTON
         if(selectedValue == '7:30PM' && !$('#txtAllocOutgoing option[value="7:30PM"]').is(':disabled')){
             $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
+        }
+        // IF SELECTED TIME IS 7:30PM AND ALREADY DISABLED BY CUTOFFTIME, KEEP IT DISABLED
+        else if(selectedValue == '7:30PM' && $('#txtAllocOutgoing option[value="7:30PM"]').is(':disabled')){
+            $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
+        }
+        // IF SELECTED TIME IS NOT 7:30PM, ENABLE THE BUTTON
+        else{
+            $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', false);
         }
     });
 
@@ -976,17 +1035,17 @@ $(document).ready(function(){
             $('#na_in_option').prop('disabled', false);
         }
 
-        if(selectedValue == '7:30AM'){
-            $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', true);
-        }else{
-            $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', false);
-        }
+        // if(selectedValue == '7:30AM'){
+        //     $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', true);
+        // }else{
+        //     $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', false);
+        // }
 
-        if(selectedValue == '7:30PM'){
-            $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', true);
-        }else{
-            $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', false);
-        }
+        // if(selectedValue == '7:30PM'){
+        //     $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', true);
+        // }else{
+        //     $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', false);
+        // }
     });
 
     $('.selectAllocFactory').on('change', function() {
@@ -1075,7 +1134,8 @@ $(document).ready(function(){
             toastr.error('This allocation is already locked!, Umay Sayo');
         }else{
             e.preventDefault();
-            $('#allocationRequestChangeTitle').html('<i class="fas fa-info-circle"></i>&nbsp; Edit Employee/s Allocation Request');
+            $('#btnSaveNewAllocation').prop({'hidden': false, 'disabled': false});
+            $('#allocationRequestChangeTitle').html('<i class="fas fa-info-circle"></i>&nbsp; Update Employee/s List');
             $('#formAddAllocation #txtIsViewMode').val(2);
             $('.selectAllocFactory').val('').trigger('change');
             $('.selectAllocDepartment').val('').trigger('change');
@@ -1085,8 +1145,8 @@ $(document).ready(function(){
             $('.selectAllocDepartment').prop('disabled', true);
             $('.selectAllocSection').prop('disabled', true);
 
-            $('#formAddAllocation').find('input').prop('disabled', false)
-            $('#txtTypeOfRequest, #txtAllocIncoming, #txtOAllocutgoing, #txtAllocFactory').prop('disabled', false);
+            // $('#formAddAllocation').find('input').prop('disabled', false)
+            // $('#txtTypeOfRequest, #txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', false);
 
             $('#modalAddAllocation').modal('show');
             let control_number = $(this).data('control_no');
@@ -1116,6 +1176,32 @@ $(document).ready(function(){
                     $('#txtTypeOfRequest', formAddAllocation).val(allocDetails[0].request_type).trigger('change');
                     $('#txtAllocFactory', formAddAllocation).val(allocDetails[0].alloc_factory).trigger('change');
 
+                    // Clark new code 12/01/2025
+                    // make fields readonly
+                    $('#txtStartDate, #txtEndDate, #txtAllocIncoming, #txtAllocOutgoing').prop('readonly', true);
+
+                    // hide allocation filters
+                    $('#divForSelectAllocationsFilters').addClass('d-none');
+
+                    // make readonly: prevent opening
+                    $('#txtTypeOfRequest').on('select2:opening.readonly', function(e){
+                        e.preventDefault();
+                    });
+
+                    // optional — add a visual "readonly" class to container
+                    let $container1 = $('#txtTypeOfRequest').data('select2').$container;
+                        $container1.addClass('select2-readonly');
+
+                    // make readonly: prevent opening
+                    $('#txtAllocFactory').on('select2:opening.readonly', function(e){
+                        e.preventDefault();
+                    });
+
+                    // optional — add a visual "readonly" class to container
+                    let $container2 = $('#txtAllocFactory').data('select2').$container;
+                        $container2.addClass('select2-readonly');
+                    // Clark new code 12/01/2025
+
                     // $('#txtAllocIncoming', formAddAllocation).val(allocDetails[0].alloc_incoming).trigger('change');
                     // $('#txtAllocOutgoing', formAddAllocation).val(allocDetails[0].alloc_outgoing).trigger('change');
 
@@ -1125,7 +1211,7 @@ $(document).ready(function(){
                     allocDetails.forEach(function(id) {
                         selectedIds.add(id.requestee_ml_id);
                     });
-                    console.log('selectedIds', selectedIds)
+                    console.log('selectedIdsSize', selectedIds.size === 1)
 
                     filterDataTable(true, false); //this will draw the table;
                     getSchedulesForFiltering(allocDetails[0].alloc_incoming, allocDetails[0].alloc_outgoing)
@@ -1138,6 +1224,7 @@ $(document).ready(function(){
         e.preventDefault();
         $('#allocationRequestChangeTitle').html('<i class="fas fa-info-circle"></i>&nbsp; View Employee/s Allocation Request');
         $('#formAddAllocation #txtIsViewMode').val(1);
+        $('#btnSaveNewAllocation').prop({'hidden': true, 'disabled': true});
         $('#modalAddAllocation').modal('show');
         let control_number = $(this).data('control_no');
 
@@ -1170,9 +1257,10 @@ $(document).ready(function(){
                 $('#txtStartDate', formAddAllocation).val(allocDetails[0].alloc_date_start);
                 $('#txtEndDate', formAddAllocation).val(allocDetails[0].alloc_date_end);
 
-
                 $('#formAddAllocation').find('select').prop('disabled', true)
                 $('#txtStartDate, #txtEndDate, #txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', true);
+
+                $('#divForSelectAllocationsFilters').addClass('d-none');
 
                 allocDetails.forEach(function(id) {
                     selectedIds.add(id.requestee_ml_id);
@@ -1188,7 +1276,9 @@ $(document).ready(function(){
         let id = $(this).data('checkbox-id'); // get the ID from the button
         $(this).closest('tr').remove();
         selectedIds.delete(id);
-        console.log('selectedIds', selectedIds)
+        removedIds.add(id);
+        // console.log('selectedIds', selectedIds)
+        $('#tblMasterListToAlloc').find('.btnRemoveEmp').prop('disabled', selectedIds.size === 1);
     });
 
     $('#tblAllocation').on('click', '.updateRequestStatus', function () {

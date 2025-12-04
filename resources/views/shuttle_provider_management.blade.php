@@ -30,7 +30,7 @@
                                 {{-- <button class="btn float-right reload"><i class="fas fa-sync-alt"></i></button> --}}
                             </div>
                             <div class="card-body">
-                                <div class="text-right mt-4">                   
+                                <div class="text-right mt-4">
                                     <button type="button" class="btn btn-primary mb-3" id="buttonAddShuttleProvider" data-bs-toggle="modal" data-bs-target="#modalAddShuttleProvider"><i class="fa fa-plus fa-md"></i> New Shuttle Provider</button>
                                 </div>
                                 <div class="table-responsive">
@@ -52,7 +52,7 @@
             </div>
         </section>
     </div>
-    
+
     <!-- Add Shuttle Provider Modal Start -->
     <div class="modal fade" id="modalAddShuttleProvider" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg">
@@ -69,7 +69,7 @@
                                 <div class="card-body">
                                     <!-- For Shuttle Provider Id -->
                                     <input type="text" class="form-control" style="display: none" name="shuttle_provider_id" id="shuttleProviderId">
-                                    
+
                                     <div class="mb-3">
                                         <label for="username" class="form-label">Shuttle Provider Name</label>
                                         <input type="text" class="form-control" name="shuttle_provider_name" id="textShuttleProviderName" placeholder="Shuttle Provider Name">
@@ -83,7 +83,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="btnAddShuttleProvider" class="btn btn-primary"><i id="iBtnAddShuttleProviderIcon" class="fa fa-check"></i> Save</button>
@@ -92,7 +92,7 @@
             </div>
         </div>
     </div><!-- Add Shuttle Provider Modal End -->
-    
+
     <!-- Edit Shuttle Provider Status Modal Start -->
     <div class="modal fade" id="modalEditShuttleProviderStatus" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-md">
@@ -108,7 +108,7 @@
                         <input type="hidden" name="shuttle_provider_id" placeholder="Shuttle Provider Id" id="textEditShuttleProviderStatusShuttleProviderId">
                         <input type="hidden" name="shuttle_provider_status" placeholder="Shuttle Provider Status" id="textEditShuttleProviderStatus">
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="buttonEditShuttleProviderStatus" class="btn btn-primary"><i id="iBtnAddShuttleProviderIcon" class="fa fa-check"></i> Save</button>
@@ -123,11 +123,12 @@
 @section('js_content')
     <script type="text/javascript">
         $(document).ready(function () {
-            /**
-             * Initialize Select2 Elements
-            */
-            $('.select2').select2({
-                theme: 'bootstrap-5'
+            /* Select 2 Attr */
+            $('.select2').each(function () {
+                $(this).select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: $(this).parent(),
+                });
             });
 
             dataTablesShuttleProvider = $("#tableShuttleProvider").DataTable({
@@ -167,7 +168,7 @@
                 let shuttleProviderStatus = $(this).attr('shuttle-provider-status');
                 console.log('shuttleProviderId', shuttleProviderId);
                 console.log('shuttleProviderStatus', shuttleProviderStatus);
-                
+
                 $("#textEditShuttleProviderStatusShuttleProviderId").val(shuttleProviderId);
                 $("#textEditShuttleProviderStatus").val(shuttleProviderStatus);
 

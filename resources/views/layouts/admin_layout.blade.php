@@ -23,7 +23,6 @@
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link rel="shortcut icon" type="image/png" href="">
             <meta name="csrf-token" content="{{ csrf_token() }}">
-
             <!-- CSS LINKS -->
             @include('shared.css_links.css_links')
             <style>
@@ -32,7 +31,7 @@
                     min-width: 90% !important;
                 } */
 
-                
+
 
                 table.dataTable.display tbody tr.odd>.sorting_1, table.dataTable.order-column.stripe tbody tr.odd>.sorting_1 {
                     background-color: none !important;
@@ -115,8 +114,6 @@
 
                     });
                 });
-
-
             </script>
         </body>
     </html>

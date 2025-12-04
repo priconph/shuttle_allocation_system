@@ -137,13 +137,13 @@
 @section('js_content')
     <script type="text/javascript">
         $(document).ready(function () {
-            /**
-             * Initialize Select2 Elements
-            */
-            $('.select2').select2({
-                theme: 'bootstrap-5'
+            /* Select 2 Attr */
+            $('.select2').each(function () {
+                $(this).select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: $(this).parent(),
+                });
             });
-
             /**
              * Auto generated for select tag
             */

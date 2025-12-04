@@ -19,8 +19,8 @@
 {{-- <script src="{{ asset('public/template/datatables/js/dataTables.bootstrap5.min.js') }}"></script> --}} <!-- For deployment -->
 
 <!-- Select2 -->
+ <!-- Select2 JS -->
 <script src="{{ asset('public/template/select2/js/select2.min.js') }}"></script>
-{{-- <script src="{{ asset('public/template/select2/js/select2.min.js') }}"></script>--}} <!-- For deployment -->
 
 <!-- Toastr -->
 <script src="{{ asset('public/template/toastr/js/toastr.min.js') }}"></script>

@@ -30,7 +30,7 @@
                                 {{-- <button class="btn float-right reload"><i class="fas fa-sync-alt"></i></button> --}}
                             </div>
                             <div class="card-body">
-                                <div class="text-right mt-4">                   
+                                <div class="text-right mt-4">
                                     <button type="button" class="btn btn-primary mb-3" id="buttonAddUser" data-bs-toggle="modal" data-bs-target="#modalAddUser"><i class="fa fa-plus fa-md"></i> New User</button>
                                 </div>
                                 <div class="table-responsive">
@@ -55,7 +55,7 @@
             </div>
         </section>
     </div>
-    
+
     <!-- Add User Modal Start -->
     <div class="modal fade" id="modalAddUser" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg">
@@ -72,13 +72,13 @@
                                 <div class="card-body">
                                     <!-- For User Id -->
                                     <input type="text" class="form-control" style="display: none" name="user_id" id="userId">
-                                    
+
                                     <!-- For RapidX User Id -->
                                     <input type="text" class="form-control" style="display: none" name="rapidx_user_id" id="rapidxUserId">
 
                                     <!-- For Name -->
                                     <input type="text" class="form-control" readonly style="display: none" name="name" id="textName" placeholder="Name">
-                                    
+
                                     <div class="mb-3">
                                         <label for="rapidx_user" class="form-label">Name<span class="text-danger" title="Required">*</span></label>
                                         <select class="form-select select2" id="rapidxUsers" name="rapidx_user">
@@ -107,7 +107,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="btnAddUser" class="btn btn-primary"><i id="iBtnAddUserIcon" class="fa fa-check"></i> Save</button>
@@ -116,7 +116,7 @@
             </div>
         </div>
     </div><!-- Add User Modal End -->
-    
+
     <!-- Edit User Status Modal Start -->
     <div class="modal fade" id="modalEditUserStatus" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-md">
@@ -132,7 +132,7 @@
                         <input type="hidden" name="user_id" placeholder="User Id" id="textEditUserStatusUserId">
                         <input type="hidden" name="status" placeholder="Status" id="textEditUserStatus">
                     </div>
-                    
+
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="buttonEditUserStatus" class="btn btn-primary"><i id="iBtnAddUserIcon" class="fa fa-check"></i> Save</button>
@@ -147,11 +147,12 @@
 @section('js_content')
     <script type="text/javascript">
         $(document).ready(function () {
-            /**
-             * Initialize Select2 Elements
-            */
-            $('.select2').select2({
-                theme: 'bootstrap-5'
+            /* Select 2 Attr */
+            $('.select2').each(function () {
+                $(this).select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: $(this).parent(),
+                });
             });
 
             /**

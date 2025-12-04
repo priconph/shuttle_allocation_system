@@ -352,13 +352,19 @@ class AllocationController extends Controller
                 /* -----------------------------
                 Admin Bypass
                 ------------------------------*/
-                $disabled = ($isLocked && $userData != 1) ? "disabled" : "";
+                // $isLocked = 'true';
+                // $disabled = $isLocked ? "disabled" : "";
+                // $disabled = ($isLocked && $userData != 1) ? "disabled" : "";
                 /* -----------------------------
                 All Action Button Disabled
                 ------------------------------*/
-                $disabled = "disabled";
+                // $disabled = "disabled";
                 // $disabled = $isLocked ? "disabled" : "";
-
+                /* -----------------------------
+                All Action Button Enabled
+                ------------------------------*/
+                $disabled = "";
+                $isLocked = 0;
                 /* -----------------------------
                 NEW CONDITION: allocation date range check
                 ------------------------------*/
@@ -367,15 +373,20 @@ class AllocationController extends Controller
                 //     $isLocked = true;
                 // }
 
-
                 // --- Button rendering logic ---
                 if($row->request_status == 0){
                     $result =   '<center>';
+                        // $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 editRequest" '.$disabled.' data-is-locked="'.$isLocked.'" data-control_no="'.$row->control_number.'">';
                         $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 editRequest" '.$disabled.' data-is-locked="'.$isLocked.'" data-control_no="'.$row->control_number.'">';
                         $result .=          '<i class="fa-solid fa-pen-to-square fa-lg"></i> ';
                         $result .=      '</button>';
 
-                        $result .=      '<button type="button" class="btn btn-danger btn-sm text-center mr-1 updateRequestStatus" '.$disabled.' data-is-locked="'.$isLocked.'" data-control_no="'.$row->control_number.'" data-status="'.$row->request_status.'">';
+                        $result .=      '<button type="button" class="btn btn-primary btn-sm text-center mr-1 viewRequest" data-control_no="'.$row->control_number.'">';
+                        $result .=          '<i class="fa-solid fa-eye fa-lg"></i> ';
+                        $result .=      '</button>';
+
+                        // $result .=      '<button type="button" class="btn btn-danger btn-sm text-center mr-1 updateRequestStatus" '.$disabled.' data-is-locked="'.$isLocked.'" data-control_no="'.$row->control_number.'" data-status="'.$row->request_status.'">';
+                        $result .=      '<button type="button" class="btn btn-danger btn-sm text-center mr-1 updateRequestStatus" data-control_no="'.$row->control_number.'" data-status="'.$row->request_status.'">';
                         $result .=          '<i class="fa-solid fa-ban fa-lg"></i>';
                         $result .=      '</button>';
 
@@ -386,7 +397,8 @@ class AllocationController extends Controller
                         $result .=          '<i class="fa-solid fa-eye fa-lg"></i> ';
                         $result .=      '</button>';
 
-                        $result .=      '<button type="button" class="btn btn-success btn-sm text-center mr-1 updateRequestStatus" '.$disabled.' data-is-locked="'.$isLocked.'" data-control_no="'.$row->control_number.'" data-status="'.$row->request_status.'">';
+                        // $result .=      '<button type="button" class="btn btn-success btn-sm text-center mr-1 updateRequestStatus" '.$disabled.' data-is-locked="'.$isLocked.'" data-control_no="'.$row->control_number.'" data-status="'.$row->request_status.'">';
+                        $result .=      '<button type="button" class="btn btn-success btn-sm text-center mr-1 updateRequestStatus" data-control_no="'.$row->control_number.'" data-status="'.$row->request_status.'">';
                         $result .=          '<i class="fa-solid fa-arrow-rotate-right fa-lg"></i>';
                         $result .=      '</button>';
                     $result .=  '</center>';
@@ -726,10 +738,19 @@ class AllocationController extends Controller
                 })
                 ->get();
         }
+        // $selectedIds = json_decode($request->selectedIds, true);
 
         // ✅ Sort so that selected IDs appear first
+        // if (!empty($request->selectedIds)) {
+        //     $selectedIds = $request->selectedIds;
+        //     $masterlistData = $masterlistData->sortByDesc(function ($item) use ($selectedIds) {
+        //         return in_array($item->id, $selectedIds) ? 1 : 0;
+        //     })->values();
+        // }
         if (!empty($request->selectedIds)) {
-            $selectedIds = $request->selectedIds;
+            // decode JSON string to array
+            $selectedIds = json_decode($request->selectedIds, true);
+
             $masterlistData = $masterlistData->sortByDesc(function ($item) use ($selectedIds) {
                 return in_array($item->id, $selectedIds) ? 1 : 0;
             })->values();

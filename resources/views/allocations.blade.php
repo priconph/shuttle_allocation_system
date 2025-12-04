@@ -16,6 +16,12 @@
         table.dataTable tr.conflict-row {
             background-color: #ffb3b3 !important; /* light red */
         }
+
+        .select2-readonly .select2-selection {
+            background-color: #e9ecef !important;
+            color: #495057 !important;
+            cursor: default;
+        }
     </style>
     <div class="content-wrapper">
         <!-- Main content -->
@@ -225,7 +231,7 @@
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <label for="type_of_request" class="form-label">Type of Request</label>
-                                            <select class="form-control select2Allocations" type="text" name="type_of_request" id="txtTypeOfRequest" required>
+                                            <select class="form-control" type="text" name="type_of_request" id="txtTypeOfRequest" required>
                                                 <option value="0" disabled selected>Select Category</option>
                                                 <option value="1">Change Schedule</option>
                                                 <option value="2">Not Riding Shuttle</option>
@@ -234,7 +240,7 @@
 
                                         <div class="col-sm-6">
                                             <label for="alloc_factory" class="form-label">Allocate to Factory</label>
-                                            <select class="form-control select2Allocations" type="text" name="alloc_factory" id="txtAllocFactory">
+                                            <select class="form-control" type="text" name="alloc_factory" id="txtAllocFactory">
                                                 <option value="" disabled selected>Select Factory</option>
                                                 {{-- <option value="ALL">ALL</option> --}}
                                                 <option value="F1">Factory 1</option>
@@ -287,7 +293,7 @@
                             </div>
                         </div> --}}
                         <hr>
-                        <div class="row mb-3">
+                        <div class="row mb-3" id="divForSelectAllocationsFilters">
                             <div class="col-sm-4">
                                 <label for="alloc_factory" class="form-label">Factory</label>
                                 <select class="form-control form-control-sm select2Allocations selectAllocFactory" type="text">
