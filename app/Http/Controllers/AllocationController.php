@@ -884,11 +884,6 @@ class AllocationController extends Controller
         $data = $request->all();
         $currentHour = date('H'); // 24-hour format
         $userData = User::where('rapidx_user_id', $request->requestor_id)->value('user_role_id');
-        // $cutoffTimeData = CutoffTime::where('id', $request->cutoffTimeId)->get();
-
-        // if ($currentHour >= 15 && $userData != 1 && $request->start_date == date('Y-m-d')){
-        //     return response()->json(['hasError' => 1, 'result' => 0, 'message' => 'Allocation for TODAY is already closed.']);
-        // }
 
         $validate_array = [
             'requestor_id'    => 'required',
@@ -945,30 +940,7 @@ class AllocationController extends Controller
                     // });
                 }
 
-                // ✅ After loop, check if we collected any
-                // if ($conflictingAllocations->isNotEmpty() && $conflictingAllocations[0]->control_number != $request->request_control_no) {
-                // if($hasConflict){
                 if($allConflicts->isNotEmpty()){
-                    // return response()->json([
-                    //     'hasExisted' => count($conflictingAllocations),
-                    //     'error' => 'Some people already have allocations in the selected date range.',
-                    //     'conflicts' => $conflictingAllocations->map(function($item) {
-                    //         if($item->request_ml_info->hris_info != null){
-                    //             $requested_emp = $item->request_ml_info->hris_info->FirstName.' '.$item->request_ml_info->hris_info->LastName;
-                    //         }else{
-                    //             $requested_emp = $item->request_ml_info->subcon_info->FirstName.' '.$item->request_ml_info->subcon_info->LastName;
-                    //         }
-
-                    //         return [
-                    //             'control_number' => $item->control_number,
-                    //             'requestee_ml_id' => $item->requestee_ml_id,
-                    //             'start' => $item->alloc_date_start,
-                    //             'end' => $item->alloc_date_end,
-                    //             'requested_by' => $item->requestor_user_info->name,
-                    //             'requested_emp' => $requested_emp
-                    //         ];
-                    //     })
-                    // ]);
 
                     return response()->json([
                         'hasExisted' => $allConflicts->count(),
@@ -995,50 +967,115 @@ class AllocationController extends Controller
 
             DB::beginTransaction();
             try {
-                // return 'true';
                 if(isset($request->request_control_no)){
                     //🔴 Delete existing data
                     Allocations::where('control_number', $request->request_control_no)->delete();
                 }
 
+                //old code clark 02/06/2026
                 //Control No. Generation
-                $lastest_control_no = Allocations::where('is_deleted', 0)->latest('id')->first();
+                // $lastest_control_no = Allocations::where('is_deleted', 0)->latest('id')->first();
 
-                if(is_null($lastest_control_no)){
-                    $control_no_counter = 1;
+                // if(is_null($lastest_control_no)){
+                //     $control_no_counter = 1;
+                // }else{
+                //     $control_no = $lastest_control_no->control_number;
+                //     $control_no_ymd = substr($control_no, 0, 6);
+                //     $control_no_counter = substr($control_no, 7);
+
+                //     // CONDITION TO RESET COUNTER, commented out (Disabled to avoid resetting the counter)
+                //     if($control_no_ymd == date('ymd')){ //Reset when New Year
+                //         $control_no_counter++; //increment the 2nd index
+                //     }else{
+                //         $control_no_counter = 1;
+                //     }
+                // }
+
+                // if(strlen($control_no_counter) == 1){
+                //     $digit_prefix = '000';
+                // }else if(strlen($control_no_counter) == 2){
+                //     $digit_prefix = '00';
+                // }else if(strlen($control_no_counter) == 3){
+                //     $digit_prefix = '0';
+                // }
+
+                // $control_no_concat_value = date('ymd').'-'.$digit_prefix.$control_no_counter;
+                //old code clark 02/06/2026
+
+                // 🔐 SAFE Control Number Generator
+                $date_prefix = date('ymd');
+                $now = date('Y-m-d H:i:s');
+
+                // create row first if not exists
+                DB::statement("
+                    INSERT INTO allocation_control_sequences (date_prefix, last_counter, created_at, updated_at)
+                    VALUES (?, 0, ?, ?)
+                    ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)
+                ", [$date_prefix, $now, $now]);
+
+                // now lock safely
+                $sequence = DB::table('allocation_control_sequences')
+                    ->where('date_prefix', $date_prefix)
+                    ->lockForUpdate()
+                    ->first();
+
+                if(!$sequence){
+                    DB::table('allocation_control_sequences')->insert([
+                        'date_prefix' => $date_prefix,
+                        'last_counter' => 1,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    ]);
+                    $counter = 1;
                 }else{
-                    $control_no = $lastest_control_no->control_number;
-                    $control_no_ymd = substr($control_no, 0, 6);
-                    $control_no_counter = substr($control_no, 7);
-
-                    // CONDITION TO RESET COUNTER, commented out (Disabled to avoid resetting the counter)
-                    if($control_no_ymd == date('ymd')){ //Reset when New Year
-                        $control_no_counter++; //increment the 2nd index
-                    }else{
-                        $control_no_counter = 1;
-                    }
+                    $counter = $sequence->last_counter + 1;
+                    DB::table('allocation_control_sequences')
+                        ->where('id', $sequence->id)
+                        ->update([
+                            'last_counter' => $counter,
+                            'updated_at' => date('Y-m-d H:i:s'),
+                        ]);
                 }
 
-                if(strlen($control_no_counter) == 1){
-                    $digit_prefix = '000';
-                }else if(strlen($control_no_counter) == 2){
-                    $digit_prefix = '00';
-                }else if(strlen($control_no_counter) == 3){
-                    $digit_prefix = '0';
-                }
+                // Final Control Number
+                $control_no_concat_value = $date_prefix . '-' . str_pad($counter, 4, '0', STR_PAD_LEFT);
 
-                $control_no_concat_value = date('ymd').'-'.$digit_prefix.$control_no_counter;
+                //old code clark 02/06/2026
+                // if($request->selectedIds[0] != 0){ //default value of selectIds, meaning empty array
+                //     foreach ($request->selectedIds as $key => $value) {
+                //         Allocations::insert([
+                //             'control_number'   => $control_no_concat_value,
+                //             'request_type'     => $request->type_of_request,
+                //             'date_requested'   => $request->date_requested,
+                //             'alloc_date_start' => $request->start_date,
+                //             'alloc_date_end'   => $request->end_date,
+                //             'requestee_ml_id'  => $request->selectedIds[$key],
+                //             'alloc_factory'    => $request->alloc_factory,
+                //             'alloc_incoming'   => $request->alloc_incoming,
+                //             'alloc_outgoing'   => $request->alloc_outgoing,
+                //             'requested_by'     => $request->requestor_id,
+                //             'created_by'       => $request->requestor_id,
+                //             'last_updated_by'  => $request->requestor_id,
+                //             'created_at'       => date('Y-m-d H:i:s'),
+                //             'updated_at'       => date('Y-m-d H:i:s'),
+                //         ]);
+                //     }
+                // }else{
+                //     return response()->json(['hasError' => 1, 'result' => 0, 'message' => 'No Employee Selected']);
+                // }
+                //old code clark 02/06/2026
 
-                if($request->selectedIds[0] != 0){ //default value of selectIds, meaning empty array
+                if(!empty($request->selectedIds) && $request->selectedIds[0] != 0){
+                    $insertData = [];
+                    foreach ($request->selectedIds as $value) {
 
-                    foreach ($request->selectedIds as $key => $value) {
-                        Allocations::insert([
+                        $insertData[] = [
                             'control_number'   => $control_no_concat_value,
                             'request_type'     => $request->type_of_request,
                             'date_requested'   => $request->date_requested,
                             'alloc_date_start' => $request->start_date,
                             'alloc_date_end'   => $request->end_date,
-                            'requestee_ml_id'  => $request->selectedIds[$key],
+                            'requestee_ml_id'  => $value,
                             'alloc_factory'    => $request->alloc_factory,
                             'alloc_incoming'   => $request->alloc_incoming,
                             'alloc_outgoing'   => $request->alloc_outgoing,
@@ -1047,10 +1084,16 @@ class AllocationController extends Controller
                             'last_updated_by'  => $request->requestor_id,
                             'created_at'       => date('Y-m-d H:i:s'),
                             'updated_at'       => date('Y-m-d H:i:s'),
-                        ]);
+                        ];
                     }
+
+                    Allocations::insert($insertData);
                 }else{
-                    return response()->json(['hasError' => 1, 'result' => 0, 'message' => 'No Employee Selected']);
+                    return response()->json([
+                        'hasError' => 1,
+                        'result' => 0,
+                        'message' => 'No Employee Selected'
+                    ]);
                 }
 
                 DB::commit();
