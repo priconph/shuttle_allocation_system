@@ -108,7 +108,7 @@
                 </li>
 
                 <li class="nav-header font-weight-bold">&nbsp;REPORT</li>
-                <li class="nav-item has-treeview">
+                <!-- <li class="nav-item has-treeview">
                     <a href="{{ route('export_report_v2')}}" class="nav-link">
                         <i class="nav-icon fa-solid fa-file-excel"></i>
                         <p>Reports</p></p>
@@ -120,7 +120,19 @@
                         <i class="nav-icon fa-solid fa-file-excel"></i>
                         <p>Reports - Overall</p></p>
                     </a>
-                </li>
+                </li> -->
+
+                @if(isset($_SESSION['rapidx_department_id']))
+                    @if (in_array($_SESSION['rapidx_department_id'], ['27', '1']))
+                        <li class="nav-item has-treeview">
+                            <a href="{{ route('export_report_v4') }}" class="nav-link">
+                                <i class="nav-icon fa-solid fa-file-excel"></i>
+                                <p>Reports - Allocation</p>
+                            </a>
+                        </li>
+                    @endif
+                @endif
+                {{-- {{ ucwords($_SESSION["rapidx_department_id"]) }} --}}
 
             </ul>
         </nav>

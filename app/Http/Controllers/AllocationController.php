@@ -906,6 +906,14 @@ class AllocationController extends Controller
         if ($validator->fails()){
             return response()->json(['validationHasError' => 1, 'error' => $validator->messages()]);
         }else{
+            // $startDate = Carbon::parse($request->start_date);
+            // if ($startDate->toDateString() < Carbon::today()->toDateString()) {
+            //     return response()->json([
+            //         'hasError' => 1,
+            //         'result' => 0,
+            //         'message' => 'Start date cannot be in the past.'
+            //     ]);
+            // }
 
             /**
              * Validation for existing employee
@@ -1065,7 +1073,25 @@ class AllocationController extends Controller
                 // }
                 //old code clark 02/06/2026
 
+                $isToday = Carbon::parse($request->start_date)->isToday();
+                $factory = str_replace('F', '', $request->alloc_factory);
+                $cutoffLocked  = CutoffTime::where('factory', $factory)
+                                  ->where('schedule', $request->alloc_outgoing)
+                                  ->where('is_deleted', 0)
+                                  ->where($isToday ? 'status_today' : 'status_succeeding', 0) // 0 = locked
+                                  ->exists();
+
+                if($cutoffLocked){
+                   return response()->json([
+                       'hasError' => 1,
+                       'result' => 0,
+                       'message' => 'Schedule is already locked. Allocation cannot be saved.'
+                   ]);
+                }
+
                 if(!empty($request->selectedIds) && $request->selectedIds[0] != 0){
+                    //🔴 Bulk Insert Preparation
+                    // Instead of inserting one by one in the loop, we prepare an array of data and insert all at once after the loop
                     $insertData = [];
                     foreach ($request->selectedIds as $value) {
 

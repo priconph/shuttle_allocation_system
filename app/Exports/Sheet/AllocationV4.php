@@ -13,7 +13,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Maatwebsite\Excel\Concerns\Exportable;
 
-class AllocationV3 implements FromView, ShouldAutoSize, WithEvents, WithTitle
+class AllocationV4 implements FromView, ShouldAutoSize, WithEvents, WithTitle
 {
     use Exportable;
 
@@ -284,7 +284,7 @@ class AllocationV3 implements FromView, ShouldAutoSize, WithEvents, WithTitle
                         $startRow = $endRow + 1;
                     }
         
-                    return $startRow - 1; 
+                    return $startRow - 1;
                 };
         
                 // First row (side by side)

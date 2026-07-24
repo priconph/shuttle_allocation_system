@@ -17,6 +17,7 @@ use App\Http\Controllers\PickupTimeController;
 use App\Http\Controllers\ExportReportController;
 use App\Http\Controllers\ExportReportV2Controller;
 use App\Http\Controllers\ExportReportV3Controller;
+use App\Http\Controllers\ExportReportV4Controller;
 use App\Http\Controllers\ShuttleProviderController;
 
 /*
@@ -85,6 +86,10 @@ Route::get('/export_report_v3', function () {
     return view('export_report_v3');
 })->name('export_report_v3');
 
+Route::get('/export_report_v4', function () {
+    return view('export_report_v4');
+})->name('export_report_v4');
+
 Route::get('/cutoff_time_management', function () {
     return view('cutoff_time_management');
 })->name('cutoff_time_management');
@@ -101,11 +106,11 @@ Route::get('/import_shuttle_manifest', function () {
     return view('import_shuttle_manifest');
 })->name('import_shuttle_manifest');
 
-
 /**
  * USER CONTROLLER
  * Note: always use snake case(underscore separator) naming convention to route & route name and camel case to the method for best practice
  */
+
 Route::post('/update_batch_masterlist_details', [UserController::class, 'updateBatchMasterlistDetails'])->name('update_batch_masterlist_details');
 Route::post('/add_user', [UserController::class, 'addUser'])->name('add_user');
 Route::get('/view_users', [UserController::class, 'viewUsers'])->name('view_users');
@@ -204,6 +209,9 @@ Route::get('/export_v2/{factory}/{url_route}/{incoming}/{outgoing}/{from}/{to}',
 
 // EXPORT DATA v3
 Route::get('/export_v3/{factory}/{from}/{to}', [ExportReportV3Controller::class, 'export_v3']);
+
+// EXPORT DATA v4
+Route::get('/export_v4/{factory}/{from}/{to}', [ExportReportV4Controller::class, 'export_v4']);
 
 // IMPORT MANIFEST
 Route::get('/dt_get_manifest', [ManifestController::class, 'dt_get_manifest'])->name('dt_get_manifest');

@@ -134,6 +134,16 @@ $(document).ready(function(){
         $('#formAddAllocation #txtEndDate').attr('max', endDate); // end date cannot be before start date
         $('#formAddAllocation #txtEndDate').val(endDate);
 
+        let today = new Date();
+            today = today.toISOString().split('T')[0];
+        let startDate = new Date($(this).val());
+            startDate = startDate.toISOString().split('T')[0];
+
+        if (startDate < today) {
+            alert("Past dates are not allowed.");
+            $(this).val(""); // clear invalid input
+        }
+
         // OLD code clark comment 11/29/2025
         // let startDate = $(this).val();
         // $('#formAddAllocation #txtEndDate').attr('min', startDate); // end date cannot be before start date
@@ -218,7 +228,7 @@ $(document).ready(function(){
             "lengthMenu": "Show _MENU_ employee records",
         },
         "pagingType": "full_numbers",
-        "lengthMenu": [10, 30, 50, 100, 500],
+        "lengthMenu": [10, 30, 50, 100, 500, 700, 1000],
         "pageLength": 30,
         // "lengthMenu": [[-1], ["All"]], // remove other options, only show "All"
         "ajax" : {
@@ -354,6 +364,8 @@ $(document).ready(function(){
         // Clark new code 12/01/2025
         // Off readonly for input fields
         $('#txtStartDate, #txtEndDate, #txtAllocIncoming, #txtAllocOutgoing').prop('readonly', false);
+        $('#txtTypeOfRequest').prop('disabled', false);
+        $('#btnSaveNewAllocation').prop({'hidden': false, 'disabled': false});
 
         // Remove d-none class for filters
         $('#divForSelectAllocationsFilters').removeClass('d-none');
@@ -1137,6 +1149,7 @@ $(document).ready(function(){
             $('#btnSaveNewAllocation').prop({'hidden': false, 'disabled': false});
             $('#allocationRequestChangeTitle').html('<i class="fas fa-info-circle"></i>&nbsp; Update Employee/s List');
             $('#formAddAllocation #txtIsViewMode').val(2);
+
             $('.selectAllocFactory').val('').trigger('change');
             $('.selectAllocDepartment').val('').trigger('change');
             $('.selectAllocSection').val('').trigger('change');
