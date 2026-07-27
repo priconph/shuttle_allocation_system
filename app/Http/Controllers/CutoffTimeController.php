@@ -59,161 +59,191 @@ class CutoffTimeController extends Controller
                 // --- Combine badges centered ---
                 return '<center>' . implode(' ', $statuses) . '</center>';
             })
-            ->addColumn('action', function($row){
-                $result =   '<center>';
-                // $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditCutoffTime mr-1" pickup-time-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddCutoffTime" title="Edit Shuttle Provider Details">';
-                // $result .=          '<i class="fa fa-xl fa-edit"></i> ';
-                // $result .=      '</button>';
-
-                //ORIGINAL CODE - TOGGLE LOCK/UNLOCK BUTTON
-                // if($row->status == 1){
-                //     $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
-                //     $result .=          '<i class="fa-solid fa-xl fa-lock"></i> Lock';
-                //     $result .=      '</button>';
-                // }else{
-                //     $result .=      '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
-                //     $result .=          '<i class="fa-solid fa-xl fa-unlock"></i> Unlock';
-                //     $result .=      '</button>';
-                // }
-
-                // Helper that generates the button HTML
-                $buildButton = function($id, $status, $typeLabel) {
-
-                    $isUnlocked = ($status == 1);
-
-                    $btnClass = $isUnlocked ? 'btn-outline-danger' : 'btn-outline-success';
-                    $icon     = $isUnlocked ? 'fa-lock' : 'fa-unlock';
-                    $label    = $isUnlocked ? 'Lock' : 'Unlock';
-                    $title    = $isUnlocked ? "Lock $typeLabel" : "Unlock $typeLabel";
-
-                    return '
-                        <button type="button"
-                                class="btn '.$btnClass.' btn-sm text-center actionEditCutoffTimeStatus mr-1 mb-2"
-                                pickup-time-id="'.$id.'"
-                                pickup-time-status="'.$status.'"
-                                pickup-time-type="'.$typeLabel.'"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modalEditCutoffTimeStatus"
-                                title="'.$title.'">
-                            <i class="fa-solid fa-xl '.$icon.'"></i> '.$label.' '.$typeLabel.'
-                        </button>
-                    ';
-                };
-
-                $result = '<div class="text-center">';
-
-                // Always show TODAY button for all categories
-                $result .= $buildButton($row->id, $row->status_today, "Today");
-
-                // Only category 2 gets a SUCCEEDING button
-                if ($row->category == 2) {
-                    $result .= '<br>';
-                    $result .= $buildButton($row->id, $row->status_succeeding, "Succeeding");
+            ->addColumn('today_label', function($row) {
+                $result = '<center>';
+                if($row->status_today == 1){ //UNLOCKED
+                    $result .= '<button type="button" class="btn btn-success btn-sm text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status_today . '" pickup-time-type="Today" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Available">';
+                    $result .=   '<span class="badge rounded-pill bg-success"><i class="fa-solid fa-xl fa-lock-open"></i> Available </span>';
+                    $result .= '</button>';
+                }else{ //LOCKED
+                    $result .= '<button type="button" class="btn btn-danger btn-sm text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status_today . '" pickup-time-type="Today" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
+                    $result .=    '<span class="badge rounded-pill bg-danger"><i class="fa-solid fa-xl fa-lock"></i> Closed </span>';
+                    $result .= '</button>';
                 }
+                $result .= '</center>';
 
-                $result .= '</div>';
-
-                // if($row->status_today == 1){
-                //     $result .= '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
-                //     $result .=   '<i class="fa-solid fa-xl fa-lock"></i> Lock Today';
-                //     $result .= '</button>';
-                // }else{
-                //     $result .= '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
-                //     $result .=    '<i class="fa-solid fa-xl fa-unlock"></i> Unlock Today';
-                //     $result .= '</button>';
-                // }
-
-                // if($row->status_succeeding == 1){
-                //     $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
-                //     $result .=          '<i class="fa-solid fa-xl fa-lock"></i> Lock Succeeding';
-                //     $result .=      '</button>';
-                // }else{
-                //     $result .=      '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
-                //     $result .=          '<i class="fa-solid fa-xl fa-unlock"></i> Unlock Succeeding';
-                //     $result .=      '</button>';
-                // }
-
-                $result .=  '</center>';
                 return $result;
             })
-            ->addColumn('action', function($row){
-                $result =   '<center>';
-                // $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditCutoffTime mr-1" pickup-time-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddCutoffTime" title="Edit Shuttle Provider Details">';
-                // $result .=          '<i class="fa fa-xl fa-edit"></i> ';
-                // $result .=      '</button>';
-
-                //ORIGINAL CODE - TOGGLE LOCK/UNLOCK BUTTON
-                // if($row->status == 1){
-                //     $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
-                //     $result .=          '<i class="fa-solid fa-xl fa-lock"></i> Lock';
-                //     $result .=      '</button>';
-                // }else{
-                //     $result .=      '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
-                //     $result .=          '<i class="fa-solid fa-xl fa-unlock"></i> Unlock';
-                //     $result .=      '</button>';
-                // }
-
-                // Helper that generates the button HTML
-                $buildButton = function($id, $status, $typeLabel) {
-
-                    $isUnlocked = ($status == 1);
-
-                    $btnClass = $isUnlocked ? 'btn-outline-danger' : 'btn-outline-success';
-                    $icon     = $isUnlocked ? 'fa-lock' : 'fa-unlock';
-                    $label    = $isUnlocked ? 'Lock' : 'Unlock';
-                    $title    = $isUnlocked ? "Lock $typeLabel" : "Unlock $typeLabel";
-
-                    return '
-                        <button type="button"
-                                class="btn '.$btnClass.' btn-sm text-center actionEditCutoffTimeStatus mr-1 mb-2"
-                                pickup-time-id="'.$id.'"
-                                pickup-time-status="'.$status.'"
-                                pickup-time-type="'.$typeLabel.'"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modalEditCutoffTimeStatus"
-                                title="'.$title.'">
-                            <i class="fa-solid fa-xl '.$icon.'"></i> '.$label.' '.$typeLabel.'
-                        </button>
-                    ';
-                };
-
-                $result = '<div class="text-center">';
-
-                // Always show TODAY button for all categories
-                $result .= $buildButton($row->id, $row->status_today, "Today");
-
-                // Only category 2 gets a SUCCEEDING button
-                if ($row->category == 2) {
-                    $result .= '<br>';
-                    $result .= $buildButton($row->id, $row->status_succeeding, "Succeeding");
+            ->addColumn('succeeding_label', function($row) {
+                $result = '<center>';
+                if($row->status_succeeding == 1){
+                    $result .=      '<button type="button" class="btn btn-success btn-sm text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status_succeeding . '" pickup-time-type="Succeeding" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Available">';
+                    $result .=   '<span class="badge rounded-pill bg-success"><i class="fa-solid fa-xl fa-lock-open"></i> Available </span>';
+                    $result .=      '</button>';
+                }else{
+                    $result .=      '<button type="button" class="btn btn-danger btn-sm text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status_succeeding . '" pickup-time-type="Succeeding" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Closed">';
+                    $result .=    '<span class="badge rounded-pill bg-danger"><i class="fa-solid fa-xl fa-lock"></i> Closed </span>';
+                    $result .=      '</button>';
                 }
+                $result .= '</center>';
 
-                $result .= '</div>';
-
-                // if($row->status_today == 1){
-                //     $result .= '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
-                //     $result .=   '<i class="fa-solid fa-xl fa-lock"></i> Lock Today';
-                //     $result .= '</button>';
-                // }else{
-                //     $result .= '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
-                //     $result .=    '<i class="fa-solid fa-xl fa-unlock"></i> Unlock Today';
-                //     $result .= '</button>';
-                // }
-
-                // if($row->status_succeeding == 1){
-                //     $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
-                //     $result .=          '<i class="fa-solid fa-xl fa-lock"></i> Lock Succeeding';
-                //     $result .=      '</button>';
-                // }else{
-                //     $result .=      '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
-                //     $result .=          '<i class="fa-solid fa-xl fa-unlock"></i> Unlock Succeeding';
-                //     $result .=      '</button>';
-                // }
-
-                $result .=  '</center>';
                 return $result;
             })
-        ->rawColumns(['cutoff_time','status', 'action'])
+            // ->addColumn('action', function($row){
+            //     $result =   '<center>';
+            //     // $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditCutoffTime mr-1" pickup-time-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddCutoffTime" title="Edit Shuttle Provider Details">';
+            //     // $result .=          '<i class="fa fa-xl fa-edit"></i> ';
+            //     // $result .=      '</button>';
+
+            //     //ORIGINAL CODE - TOGGLE LOCK/UNLOCK BUTTON
+            //     // if($row->status == 1){
+            //     //     $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
+            //     //     $result .=          '<i class="fa-solid fa-xl fa-lock"></i> Lock';
+            //     //     $result .=      '</button>';
+            //     // }else{
+            //     //     $result .=      '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
+            //     //     $result .=          '<i class="fa-solid fa-xl fa-unlock"></i> Unlock';
+            //     //     $result .=      '</button>';
+            //     // }
+
+            //     // Helper that generates the button HTML
+            //     $buildButton = function($id, $status, $typeLabel) {
+
+            //         $isUnlocked = ($status == 1);
+
+            //         $btnClass = $isUnlocked ? 'btn-outline-danger' : 'btn-outline-success';
+            //         $icon     = $isUnlocked ? 'fa-lock' : 'fa-unlock';
+            //         $label    = $isUnlocked ? 'Lock' : 'Unlock';
+            //         $title    = $isUnlocked ? "Lock $typeLabel" : "Unlock $typeLabel";
+
+            //         return '
+            //             <button type="button"
+            //                     class="btn '.$btnClass.' btn-sm text-center actionEditCutoffTimeStatus mr-1 mb-2"
+            //                     pickup-time-id="'.$id.'"
+            //                     pickup-time-status="'.$status.'"
+            //                     pickup-time-type="'.$typeLabel.'"
+            //                     data-bs-toggle="modal"
+            //                     data-bs-target="#modalEditCutoffTimeStatus"
+            //                     title="'.$title.'">
+            //                 <i class="fa-solid fa-xl '.$icon.'"></i> '.$label.' '.$typeLabel.'
+            //             </button>
+            //         ';
+            //     };
+
+            //     $result = '<div class="text-center">';
+
+            //     // Always show TODAY button for all categories
+            //     $result .= $buildButton($row->id, $row->status_today, "Today");
+
+            //     // Only category 2 gets a SUCCEEDING button
+            //     if ($row->category == 2) {
+            //         $result .= '<br>';
+            //         $result .= $buildButton($row->id, $row->status_succeeding, "Succeeding");
+            //     }
+
+            //     $result .= '</div>';
+
+            //     // if($row->status_today == 1){
+            //     //     $result .= '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
+            //     //     $result .=   '<i class="fa-solid fa-xl fa-lock"></i> Lock Today';
+            //     //     $result .= '</button>';
+            //     // }else{
+            //     //     $result .= '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
+            //     //     $result .=    '<i class="fa-solid fa-xl fa-unlock"></i> Unlock Today';
+            //     //     $result .= '</button>';
+            //     // }
+
+            //     // if($row->status_succeeding == 1){
+            //     //     $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
+            //     //     $result .=          '<i class="fa-solid fa-xl fa-lock"></i> Lock Succeeding';
+            //     //     $result .=      '</button>';
+            //     // }else{
+            //     //     $result .=      '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
+            //     //     $result .=          '<i class="fa-solid fa-xl fa-unlock"></i> Unlock Succeeding';
+            //     //     $result .=      '</button>';
+            //     // }
+
+            //     $result .=  '</center>';
+            //     return $result;
+            // })
+            // ->addColumn('action', function($row){
+            //     $result =   '<center>';
+            //     // $result .=      '<button type="button" class="btn btn-primary btn-xs text-center actionEditCutoffTime mr-1" pickup-time-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalAddCutoffTime" title="Edit Shuttle Provider Details">';
+            //     // $result .=          '<i class="fa fa-xl fa-edit"></i> ';
+            //     // $result .=      '</button>';
+
+            //     //ORIGINAL CODE - TOGGLE LOCK/UNLOCK BUTTON
+            //     // if($row->status == 1){
+            //     //     $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
+            //     //     $result .=          '<i class="fa-solid fa-xl fa-lock"></i> Lock';
+            //     //     $result .=      '</button>';
+            //     // }else{
+            //     //     $result .=      '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
+            //     //     $result .=          '<i class="fa-solid fa-xl fa-unlock"></i> Unlock';
+            //     //     $result .=      '</button>';
+            //     // }
+
+            //     // Helper that generates the button HTML
+            //     $buildButton = function($id, $status, $typeLabel) {
+
+            //         $isUnlocked = ($status == 1);
+
+            //         $btnClass = $isUnlocked ? 'btn-outline-danger' : 'btn-outline-success';
+            //         $icon     = $isUnlocked ? 'fa-lock' : 'fa-unlock';
+            //         $label    = $isUnlocked ? 'Lock' : 'Unlock';
+            //         $title    = $isUnlocked ? "Lock $typeLabel" : "Unlock $typeLabel";
+
+            //         return '
+            //             <button type="button"
+            //                     class="btn '.$btnClass.' btn-sm text-center actionEditCutoffTimeStatus mr-1 mb-2"
+            //                     pickup-time-id="'.$id.'"
+            //                     pickup-time-status="'.$status.'"
+            //                     pickup-time-type="'.$typeLabel.'"
+            //                     data-bs-toggle="modal"
+            //                     data-bs-target="#modalEditCutoffTimeStatus"
+            //                     title="'.$title.'">
+            //                 <i class="fa-solid fa-xl '.$icon.'"></i> '.$label.' '.$typeLabel.'
+            //             </button>
+            //         ';
+            //     };
+
+            //     $result = '<div class="text-center">';
+
+            //     // Always show TODAY button for all categories
+            //     $result .= $buildButton($row->id, $row->status_today, "Today");
+
+            //     // Only category 2 gets a SUCCEEDING button
+            //     if ($row->category == 2) {
+            //         $result .= '<br>';
+            //         $result .= $buildButton($row->id, $row->status_succeeding, "Succeeding");
+            //     }
+
+            //     $result .= '</div>';
+
+            //     // if($row->status_today == 1){
+            //     //     $result .= '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
+            //     //     $result .=   '<i class="fa-solid fa-xl fa-lock"></i> Lock Today';
+            //     //     $result .= '</button>';
+            //     // }else{
+            //     //     $result .= '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
+            //     //     $result .=    '<i class="fa-solid fa-xl fa-unlock"></i> Unlock Today';
+            //     //     $result .= '</button>';
+            //     // }
+
+            //     // if($row->status_succeeding == 1){
+            //     //     $result .=      '<button type="button" class="btn btn-danger btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Lock Masterlist">';
+            //     //     $result .=          '<i class="fa-solid fa-xl fa-lock"></i> Lock Succeeding';
+            //     //     $result .=      '</button>';
+            //     // }else{
+            //     //     $result .=      '<button type="button" class="btn btn-success btn-xs text-center actionEditCutoffTimeStatus mr-1" pickup-time-id="' . $row->id . '" pickup-time-status="' . $row->status . '" data-bs-toggle="modal" data-bs-target="#modalEditCutoffTimeStatus" title="Unlock Masterlist">';
+            //     //     $result .=          '<i class="fa-solid fa-xl fa-unlock"></i> Unlock Succeeding';
+            //     //     $result .=      '</button>';
+            //     // }
+
+            //     $result .=  '</center>';
+            //     return $result;
+            // })
+        ->rawColumns(['cutoff_time','status', 'today_label', 'succeeding_label'])
         ->make(true);
     }
 
@@ -226,6 +256,7 @@ class CutoffTimeController extends Controller
         if(!isset($request->cutoff_time_id)){
             $validator = Validator::make($data, [
                 'factory' => 'required',
+                'category' => 'required',
                 'schedule' => 'required',
             ]);
 
@@ -238,6 +269,7 @@ class CutoffTimeController extends Controller
                     CutoffTime::insert([
                         'factory' => $request->factory,
                         'schedule' => $request->schedule,
+                        'category' => $request->category,
                         'created_by' => $_SESSION['rapidx_user_id'],
                         'created_at' => date('Y-m-d H:i:s'),
                         'is_deleted' => 0
@@ -254,6 +286,7 @@ class CutoffTimeController extends Controller
             $validator = Validator::make($data, [
                 'cutoff_time_id' => 'required',
                 'factory' => 'required',
+                'category' => 'required',
                 'schedule' => 'required',
             ]);
 
@@ -270,6 +303,7 @@ class CutoffTimeController extends Controller
                 try{
                     CutoffTime::where('id', $request->cutoff_time_id)->update([
                         'factory' => $request->factory,
+                        'category' => $request->category,
                         'schedule' => $request->schedule,
                         'last_updated_by' => $_SESSION['rapidx_user_id'],
                         'updated_at' => date('Y-m-d H:i:s'),

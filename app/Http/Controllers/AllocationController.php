@@ -811,7 +811,7 @@ class AllocationController extends Controller
     }
 
     public function getCutOffTime(Request $request){
-        $scheduleData = CutoffTime::where('is_deleted', 0)->where('factory', $request->param_factory)->get();
+        $scheduleData = CutoffTime::where('is_deleted', 0)->where('factory', $request->param_factory)->orderByRaw("STR_TO_DATE(schedule, '%h:%i%p')")->get();
         return response()->json(['scheduleDetails' => $scheduleData]);
     }
 

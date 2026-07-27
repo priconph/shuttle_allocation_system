@@ -17,6 +17,14 @@ function addCutoffTime(){
                     $("#txtFactory").attr('title', response['error']['factory']);
                 }
 
+                if(response['error']['category'] === undefined){
+                    $("#txtCategory").removeClass('is-invalid');
+                    $("#txtCategory").attr('title', '');
+                }else{
+                    $("#txtCategory").addClass('is-invalid');
+                    $("#txtCategory").attr('title', response['error']['category']);
+                }
+
                 if(response['error']['schedule'] === undefined) {
                     $("#txtSchedule").removeClass('is-invalid');
                     $("#txtSchedule").attr('title', '');

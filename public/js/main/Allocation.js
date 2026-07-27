@@ -1,64 +1,7 @@
 $(document).ready(function(){
     let txtGlobalUserId = $('#txtGlobalUserId').val();
     const formAddAllocation = $('#formAddAllocation');
-    // Run check every minute
-    // let currentSessionUserRole;
-    // checkButtonStatus(currentSessionUserRole);
     getDetailsForFiltering();
-    // getUsersAllowedAfterCutoff(txtGlobalUserId);
-
-    function getUsersAllowedAfterCutoff(txtGlobalUserId){
-        $.ajax({
-            url: "get_user_by_rapidx_id",
-            method: "get",
-            data: {
-                userId : txtGlobalUserId,
-            },
-            dataType: "json",
-            beforeSend: function(){
-
-            },
-            success: function(response){
-                let userDetails = response['userDetails'];
-                if(userDetails != null){
-                    if(userDetails.user_roles == 1){
-                        console.log('admin');
-                        currentSessionUserRole = 'admin';
-                    }else{
-                        console.log('not admin');
-                        currentSessionUserRole = 'user';
-                    }
-                }else{
-                    console.log('no data userDetails');
-                }
-            },
-            error: function(data, xhr, status){
-                toastr.error('An error occured!\n' + 'Data: ' + data + "\n" + "XHR: " + xhr + "\n" + "Status: " + status);
-            },
-        });
-    }
-
-    function checkButtonStatus(currentSessionUserRole){
-        const now = new Date();
-        const currentHour = now.getHours(); // 0–23
-        const currentMinute = now.getMinutes(); // 0–59
-
-        const targetHour = 14; // 2 PM
-        // const targetMinute = 00;
-        const addButton = $('#btnAddAllocation');
-
-        // Disable if current time is later than 2:00 PM
-        if(currentHour > targetHour) {
-            console.log('disabled');
-            if(currentSessionUserRole == 'admin'){
-                // addButton.prop('disabled', true); //clark comment
-                addButton.prop('disabled', false);
-            }
-        }else{
-            console.log('enabled');
-            addButton.prop('disabled', false);
-        }
-    }
 
     $('#filterStatus').change(function (e) {
         e.preventDefault();
@@ -144,19 +87,6 @@ $(document).ready(function(){
             $(this).val(""); // clear invalid input
         }
 
-        // OLD code clark comment 11/29/2025
-        // let startDate = $(this).val();
-        // $('#formAddAllocation #txtEndDate').attr('min', startDate); // end date cannot be before start date
-        // console.log('startval', startDate);
-        // console.log('endval', $('#formAddAllocation #txtEndDate').val());
-
-        // if($('#formAddAllocation #txtTypeOfRequest').val() == 1 && startDate != '' && $('#formAddAllocation #txtEndDate').val() != ''){
-        //     $('#txtAllocIncoming').prop('disabled', false);
-        //     $('#txtAllocOutgoing').prop('disabled', false);
-        // }else{
-        //     $('#txtAllocIncoming').prop('disabled', true);
-        //     $('#txtAllocOutgoing').prop('disabled', true);
-        // }
         buttonDisablingForInOut()
         getSchedulesForFiltering()
     });
@@ -165,14 +95,6 @@ $(document).ready(function(){
     $('#formAddAllocation #txtEndDate').on('change', function(){
         let endDate = $(this).val();
         $('#formAddAllocation #txtStartDate').attr('max', endDate); // start date cannot be after end date
-
-        // if($('#formAddAllocation #txtTypeOfRequest').val() == 1 && endDate != '' && $('#formAddAllocation #txtStartDate').val() != ''){
-        //     $('#txtAllocIncoming').prop('disabled', false);
-        //     $('#txtAllocOutgoing').prop('disabled', false);
-        // }else{
-        //     $('#txtAllocIncoming').prop('disabled', true);
-        //     $('#txtAllocOutgoing').prop('disabled', true);
-        // }
         buttonDisablingForInOut()
     });
 
@@ -293,23 +215,14 @@ $(document).ready(function(){
         const id = $(this).val(); // Make sure each checkbox has a unique value (e.g., ID)
         if ($(this).prop('checked')) {
             selectedIds.add(id);
-
-            // ✅ Move the checked row to the top
-            // $(this).closest('tr').prependTo('#tblMasterListToAlloc tbody');
         }else{
             selectedIds.delete(id);
-
-            // ✅ Move the unchecked row to the bottom
-            // $(this).closest('tr').appendTo('#tblMasterListToAlloc tbody');
         }
 
         // ✅ Uncheck master checkbox if nothing is selected
         if (selectedIds.size === 0) {
             $('#chkAllItems').prop('checked', false);
         }
-
-        // reorderCheckedRows();
-        // console.log('selectedIds', selectedIds)
     });
 
     // ✅ On draw, restore checkbox states
@@ -319,38 +232,6 @@ $(document).ready(function(){
             $(this).prop('checked', selectedIds.has(id));
         });
     });
-
-    // ✅ Reorder function
-    // function reorderCheckedRows() {
-    //     console.log('nag reorder ng rows');
-
-    //     const tbody = $('#tblMasterListToAlloc tbody');
-    //     const rows = tbody.find('tr');
-
-    //     const checkedRows = rows.filter(function () {
-    //         return $(this).find('.itemCheckbox').prop('checked');
-    //     });
-    //     const uncheckedRows = rows.filter(function () {
-    //         return !$(this).find('.itemCheckbox').prop('checked');
-    //     });
-
-    //     tbody.append(checkedRows).append(uncheckedRows);
-    // }
-
-    // // ✅ Reorder after every table redraw (search, paginate, sort)
-    // dtMasterListToAlloc.on('draw.dt', function (){
-    //     console.log('nag draw ng table');
-
-    //     // Restore checked state
-    //     $('#tblMasterListToAlloc .itemCheckbox').each(function () {
-    //         const id = $(this).val();
-    //         $(this).prop('checked', selectedIds.has(id));
-    //         console.log('nag run dito');
-    //     });
-
-    //     // Then reorder
-    //     reorderCheckedRows();
-    // });
 
     $('#btnAddAllocation').click(function (e) {
         e.preventDefault();
@@ -444,84 +325,6 @@ $(document).ready(function(){
         }
     }
 
-    // function getSchedulesForFiltering(AllocIncomingVal, AllocOutgoingVal){
-    //     const today = new Date();
-    //     let yyyy = today.getFullYear();
-    //     let mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0
-    //     let dd = String(today.getDate()).padStart(2, '0');
-    //     let formattedDate = `${yyyy}-${mm}-${dd}`;
-
-    //     let txtFactory = $('#formAddAllocation').find('#txtAllocFactory').val();
-    //     let txtStartDate = $('#formAddAllocation').find('#txtStartDate').val();
-
-    //     if(txtFactory == 'F1'){
-    //         txtFactory = 1;
-    //     }else if(txtFactory == 'F3'){
-    //         txtFactory = 3;
-    //     }else{
-    //         txtFactory = null;
-    //     }
-
-    //     $.ajax({
-    //         url: "get_cutoff_time",
-    //         method: "get",
-    //         data:{
-    //             param_factory : txtFactory,
-    //             // param_start_date : txtStartDate,
-    //         },
-    //         dataType: "json",
-    //         beforeSend: function(){
-
-    //         },
-    //         success: function(response){
-    //             let scheduleDetails = response['scheduleDetails'];
-    //             let disabled = '';
-
-    //             if(scheduleDetails != null){
-    //                 result_out_schedule = '<option value="" disabled selected> Select Outgoing </option>';
-    //                 result_in_schedule = '<option value="" disabled selected> Select Incoming </option>';
-
-    //                 result_out_schedule += '<option value="N/A" id="na_out_option">N/A</option>';
-    //                 result_in_schedule += '<option value="N/A" id="na_in_option">N/A</option>';
-
-    //                 for(let c = 0; c < scheduleDetails.length; c++){
-    //                     if(scheduleDetails[c].status == 0){//Locked
-    //                         if(scheduleDetails[c].schedule != '7:30AM' && txtStartDate == formattedDate){//SUCCEEDING DAYS
-    //                             disabled = 'disabled';
-    //                         }else if(scheduleDetails[c].schedule == '7:30AM' && txtStartDate > formattedDate){//TODAY
-    //                             disabled = 'disabled';
-    //                         }
-    //                     }else{
-    //                         disabled = '';
-    //                     }
-
-    //                     if(scheduleDetails[c].category > 0){ //1 or 2 Incoming  & Outgoing
-    //                         result_out_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
-    //                     }
-
-    //                     if(scheduleDetails[c].category == 2){ //1 Outgoing
-    //                         result_in_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
-    //                     }
-    //                 }
-
-    //                 $('.SelectAllocOutgoing').html(result_out_schedule);
-    //                 $('.SelectAllocIncoming').html(result_in_schedule);
-
-    //                 if(AllocIncomingVal != null){
-    //                     $('#txtAllocIncoming').val(AllocIncomingVal).trigger('change');
-    //                 }
-
-    //                 if(AllocOutgoingVal != null){
-    //                     $('#txtAllocOutgoing').val(AllocOutgoingVal).trigger('change');
-    //                 }
-    //             }
-    //         },
-    //         error: function(data, xhr, status){
-    //             toastr.error('An error occured!\n' + 'Data: ' + data + "\n" + "XHR: " + xhr + "\n" + "Status: " + status);
-    //         },
-    //     });
-    // }
-
     function getSchedulesForFiltering(AllocIncomingVal = null, AllocOutgoingVal = null) {
         const today = new Date();
         let yyyy = today.getFullYear();
@@ -562,141 +365,36 @@ $(document).ready(function(){
                     result_out_schedule += '<option value="N/A" id="na_out_option">N/A</option>';
                     result_in_schedule  += '<option value="N/A" id="na_in_option">N/A</option>';
 
-                    // for (let c = 0; c < scheduleDetails.length; c++) {
-                    //     // if(scheduleDetails[c].status_today == 0){//Locked
-                    //     //     if(scheduleDetails[c].schedule != '7:30AM' && txtStartDate == formattedDate){//SUCCEEDING DAYS
-                    //     //         disabled = 'disabled';
-                    //     //     }else if(scheduleDetails[c].schedule == '7:30AM' && txtStartDate > formattedDate){//TODAY
-                    //     //         disabled = 'disabled';
-                    //     //     }
-                    //     // }else{
-                    //     //     disabled = '';
-                    //     // }
-
-                    //     // if(scheduleDetails[c].category > 0){ //1 or 2 Incoming  & Outgoing
-                    //     //     result_out_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
-                    //     // }
-
-                    //     // if(scheduleDetails[c].category == 2){ //1 Outgoing
-                    //     //     result_in_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'+scheduleDetails[c].schedule+'</option>';
-                    //     // }
-
-                    //     // =============== TODAY ===============
-                    //     if (txtStartDate == formattedDate) {
-                    //         // console.log('logs', formattedDate, txtStartDate, scheduleDetails[c].status_today, scheduleDetails[c].factory, scheduleDetails[c].schedule);
-
-                    //         if (scheduleDetails[c].status_today == 0) {
-                    //             // if (scheduleDetails[c].schedule !== '7:30AM'){
-                    //                 disabled = 'disabled';
-                    //                 console.log('result', disabled, scheduleDetails[c].schedule, scheduleDetails[c].factory);
-
-                    //             // }
-                    //         }else{
-                    //             disabled = '';
-                    //         }
-                    //     }
-
-                    //     // =========== SUCCEEDING DAYS ===========
-                    //     else if (txtStartDate > formattedDate) {
-                    //         // console.log('logs', formattedDate, txtStartDate, scheduleDetails[c].status_today, scheduleDetails[c].schedule);
-                    //         if (scheduleDetails[c].status_succeeding == 0) {
-                    //             // if (scheduleDetails[c].schedule === '7:30AM') {
-                    //                 disabled = 'disabled';
-                    //                 console.log('result', disabled, scheduleDetails[c].schedule, scheduleDetails[c].factory);
-                    //             // }
-                    //         }else{
-                    //             disabled = '';
-                    //         }
-                    //     }else{
-                    //         disabled = '';
-                    //     }
-
-                    //     // OUTGOING
-                    //     if (scheduleDetails[c].category > 0) {
-                    //         console.log('options 1 logs', disabled, scheduleDetails[c].schedule);
-
-                    //         result_out_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'
-                    //                                         +scheduleDetails[c].schedule+
-                    //                                 '</option>';
-                    //     }
-
-                    //     // INCOMING
-                    //     if (scheduleDetails[c].category == 2) {
-                    //         console.log('option 2 logs', disabled, scheduleDetails[c].schedule);
-
-                    //         result_in_schedule += '<option '+disabled+' value="'+scheduleDetails[c].schedule+'">'
-                    //                                     +scheduleDetails[c].schedule+
-                    //                               '</option>';
-                    //     }
-
-                    //     // let sched = scheduleDetails[c].schedule;
-                    //     // let isTodayLocked = (scheduleDetails[c].status_today == 0);
-                    //     // let isSucceedLocked = (scheduleDetails[c].status_succeeding == 0);
-
-                    //     // // Compute disabled PER LOOP — not global
-                    //     // let disabledAttr = "";
-
-                    //     // if (txtStartDate == formattedDate) {
-                    //     //     // TODAY
-                    //     //     if (isTodayLocked) disabledAttr = " disabled";
-                    //     // } else if (txtStartDate > formattedDate) {
-                    //     //     // SUCCEEDING DAYS
-                    //     //     if (isSucceedLocked) disabledAttr = " disabled";
-                    //     // }
-
-                    //     // // OUTGOING schedules (category 1 or 2)
-                    //     // if (scheduleDetails[c].category > 0) {
-                    //     //     result_out_schedule += `<option value="${sched}"${disabledAttr}>${sched}</option>`;
-                    //     // }
-
-                    //     // // INCOMING only (category 2)
-                    //     // if (scheduleDetails[c].category == 2) {
-                    //     //     result_in_schedule += `<option value="${sched}"${disabledAttr}>${sched}</option>`;
-                    //     // }
-                    // }
-
                     for (let c = 0; c < scheduleDetails.length; c++) {
 
                         let sched = scheduleDetails[c].schedule;
                         let disabledAttr = "";
 
-                        console.log(
-                        sched,
-                        "CAT:", scheduleDetails[c].category,
-                        "TODAY:", scheduleDetails[c].status_today,
-                        "SUCC:", scheduleDetails[c].status_succeeding
-                        );
-
                         // =============== TODAY =================
                         if (txtStartDate == formattedDate) {
-                        // if (date_start.getTime() === date_today.getTime()) {
-                            if (scheduleDetails[c].status_today == 0) {
+                            if (scheduleDetails[c].status_today == 0 || ($('#txtDepartmentSection').val() != 'CN' && $('#txtDepartmentSection').val() != 'ISS')) {
                                 disabledAttr = 'disabled';
-                                console.log('attribute', disabledAttr, sched);
                             }
                         }
 
                         // ========= SUCCEEDING DAYS =============
                         else if (txtStartDate > formattedDate) {
-                        // else if (date_start.getTime() > date_today.getTime()) {
-                            if (scheduleDetails[c].status_succeeding == 0) {
+                            if (scheduleDetails[c].status_succeeding == 0 || ($('#txtDepartmentSection').val() != 'CN' && $('#txtDepartmentSection').val() != 'ISS')) {
                                 disabledAttr = 'disabled';
-                                console.log('attribute', disabledAttr, sched);
                             }
                         }else {
                             // if allocation date is in the past → ALWAYS DISABLE
                             disabledAttr = "";
-                            console.log('attribute', disabledAttr, sched);
                         }
 
-                        // INCOMING & OUTGOING
+                        // INCOMING
                         if (scheduleDetails[c].category == 2) {
                             // result_in_schedule += `<option value="${sched}" ${disabledAttr}>${sched}</option>`;
-                            result_in_schedule += `<option value="${sched}">${sched}</option>`;
+                            result_in_schedule += `<option value="${sched}" ${disabledAttr}>${sched}</option>`;
                         }
 
                         // OUTGOING
-                        if (scheduleDetails[c].category > 0) {
+                        if (scheduleDetails[c].category == 1) {
                             result_out_schedule += `<option value="${sched}" ${disabledAttr}>${sched}</option>`;
                             // result_out_schedule += `<option value="${sched}" >${sched}</option>`;
                         }
@@ -706,12 +404,12 @@ $(document).ready(function(){
                     $('#txtAllocIncoming').html(result_in_schedule);
 
                     if (AllocIncomingVal != null) {
-                        console.log('AllocIncomingVal not NULL');
+                        // console.log('AllocIncomingVal not NULL');
                         $('#txtAllocIncoming').val(AllocIncomingVal).trigger('change');
                     }
 
                     if (AllocOutgoingVal != null) {
-                        console.log('txtAllocOutgoing not NULL');
+                        // console.log('txtAllocOutgoing not NULL');
                         $('#txtAllocOutgoing').val(AllocOutgoingVal).trigger('change');
                     }
                 }
@@ -1013,26 +711,36 @@ $(document).ready(function(){
         }
 
         // IF SELECTED TIME IS 7:30AM AND ENABLED IN CUTOFFTIME, DISABLE THE BUTTON
-        if(selectedValue == '7:30AM' && !$('#txtAllocOutgoing option[value="7:30AM"]').is(':disabled') ){
+        if(selectedValue == '7:30AM'){
             $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', true);
         }
-        // IF SELECTED TIME IS 7:30AM AND ALREADY DISABLED BY CUTOFFTIME, KEEP IT DISABLED
-        else if(selectedValue == '7:30AM' && $('#txtAllocOutgoing option[value="7:30AM"]').is(':disabled')){
-            $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', true);
-        }
+        // OLD CODE
+        // // IF SELECTED TIME IS 7:30AM AND ENABLED IN CUTOFFTIME, DISABLE THE BUTTON
+        // if(selectedValue == '7:30AM' && !$('#txtAllocOutgoing option[value="7:30AM"]').is(':disabled') ){
+        //     $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', true);
+        // }
+        // // IF SELECTED TIME IS 7:30AM AND ALREADY DISABLED BY CUTOFFTIME, KEEP IT DISABLED
+        // else if(selectedValue == '7:30AM' && $('#txtAllocOutgoing option[value="7:30AM"]').is(':disabled')){
+        //     $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', true);
+        // }
         // IF SELECTED TIME IS NOT 7:30AM, ENABLE THE BUTTON
         else{
             $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', false);
         }
 
         // IF SELECTED TIME IS 7:30PM AND ENABLED IN CUTOFFTIME, DISABLE THE BUTTON
-        if(selectedValue == '7:30PM' && !$('#txtAllocOutgoing option[value="7:30PM"]').is(':disabled')){
+        if(selectedValue == '7:30PM'){
             $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
         }
-        // IF SELECTED TIME IS 7:30PM AND ALREADY DISABLED BY CUTOFFTIME, KEEP IT DISABLED
-        else if(selectedValue == '7:30PM' && $('#txtAllocOutgoing option[value="7:30PM"]').is(':disabled')){
-            $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
-        }
+        // OLD CODE
+        // // IF SELECTED TIME IS 7:30PM AND ENABLED IN CUTOFFTIME, DISABLE THE BUTTON
+        // if(selectedValue == '7:30PM' && !$('#txtAllocOutgoing option[value="7:30PM"]').is(':disabled')){
+        //     $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
+        // }
+        // // IF SELECTED TIME IS 7:30PM AND ALREADY DISABLED BY CUTOFFTIME, KEEP IT DISABLED
+        // else if(selectedValue == '7:30PM' && $('#txtAllocOutgoing option[value="7:30PM"]').is(':disabled')){
+        //     $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
+        // }
         // IF SELECTED TIME IS NOT 7:30PM, ENABLE THE BUTTON
         else{
             $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', false);
@@ -1047,17 +755,19 @@ $(document).ready(function(){
             $('#na_in_option').prop('disabled', false);
         }
 
-        // if(selectedValue == '7:30AM'){
-        //     $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', true);
-        // }else{
-        //     $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', false);
-        // }
+        // IF SELECTED TIME IS 7:30AM, DISABLE SPECIFIED TIME
+        if(selectedValue == '7:30AM'){
+            $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', true);
+        }else{
+            $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', false);
+        }
 
-        // if(selectedValue == '7:30PM'){
-        //     $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', true);
-        // }else{
-        //     $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', false);
-        // }
+        // IF SELECTED TIME IS 7:30PM, DISABLE SPECIFIED TIME
+        if(selectedValue == '7:30PM'){
+            $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', true);
+        }else{
+            $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', false);
+        }
     });
 
     $('.selectAllocFactory').on('change', function() {
@@ -1108,7 +818,6 @@ $(document).ready(function(){
     $('#modalAddAllocation').on('hidden.bs.modal', function (e){
         let form = $(this).find('form');
         form[0].reset(); // reset normal fields
-        // console.log('test val', $('#formAddAllocation #txtIsViewMode').val());
 
         selectedIds.clear(); // removes all items
         // form.find('select').val('').trigger('change'); // reset
@@ -1157,9 +866,6 @@ $(document).ready(function(){
             $('.selectAllocFactory').prop('disabled', true);
             $('.selectAllocDepartment').prop('disabled', true);
             $('.selectAllocSection').prop('disabled', true);
-
-            // $('#formAddAllocation').find('input').prop('disabled', false)
-            // $('#txtTypeOfRequest, #txtAllocIncoming, #txtAllocOutgoing, #txtAllocFactory').prop('disabled', false);
 
             $('#modalAddAllocation').modal('show');
             let control_number = $(this).data('control_no');
@@ -1214,9 +920,6 @@ $(document).ready(function(){
                     let $container2 = $('#txtAllocFactory').data('select2').$container;
                         $container2.addClass('select2-readonly');
                     // Clark new code 12/01/2025
-
-                    // $('#txtAllocIncoming', formAddAllocation).val(allocDetails[0].alloc_incoming).trigger('change');
-                    // $('#txtAllocOutgoing', formAddAllocation).val(allocDetails[0].alloc_outgoing).trigger('change');
 
                     $('#txtStartDate', formAddAllocation).val(allocDetails[0].alloc_date_start);
                     $('#txtEndDate', formAddAllocation).val(allocDetails[0].alloc_date_end);
@@ -1278,7 +981,6 @@ $(document).ready(function(){
                 allocDetails.forEach(function(id) {
                     selectedIds.add(id.requestee_ml_id);
                 });
-                console.log('selectedIds', selectedIds)
                 filterDataTable(true, true); //this will draw the table;
                 getSchedulesForFiltering(allocDetails[0].alloc_incoming, allocDetails[0].alloc_outgoing)
             }
@@ -1290,7 +992,6 @@ $(document).ready(function(){
         $(this).closest('tr').remove();
         selectedIds.delete(id);
         removedIds.add(id);
-        // console.log('selectedIds', selectedIds)
         $('#tblMasterListToAlloc').find('.btnRemoveEmp').prop('disabled', selectedIds.size === 1);
     });
 
@@ -1316,7 +1017,6 @@ $(document).ready(function(){
                 $('#btnDeleteRequest').removeClass('btn-danger');
                 $('#btnDeleteRequest').addClass('btn-success');
                 $('#btnDeleteRequest').html('<i class="fa fa-arrow-rotate-right"></i> Activate Allocation Request');
-
             }
 
             $('#modalDeleteRequest').modal('show')
@@ -1326,9 +1026,7 @@ $(document).ready(function(){
     });
 
     $('#FrmChangeStatusAllocation').submit(function (e) {
-        console.log('submitted');
         e.preventDefault();
-
         $.ajax({
             type:"POST",
             url: "change_status_allocation",

@@ -33,14 +33,15 @@
                                     <button type="button" class="btn btn-primary mb-3" id="buttonAddCutoffTime" data-bs-toggle="modal" data-bs-target="#modalAddCutoffTime"><i class="fa fa-plus fa-md"></i> New Cutoff Time</button>
                                 </div>
                                 <div class="table-responsive">
-                                    <table id="tableCutoffTime" class="table table-bordered table-hover nowrap" style="width: 100%;">
+                                    <table id="tableCutoffTime" class="table table-sm table-bordered table-hover nowrap" style="width: 100%;">
                                         <thead>
                                             <tr>
-                                                <th>Action</th>
-                                                <th>Status</th>
                                                 <th>Factory</th>
                                                 <th>Schedule</th>
                                                 <th>Time</th>
+                                                <th>Today</th>
+                                                <th>Upcoming Days</th>
+                                                <!-- <th>Action</th> -->
                                             </tr>
                                         </thead>
                                     </table>
@@ -84,14 +85,30 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label>Schedule</label>
+                                        <div class="row">
+                                            <label>Schedule</label>
+                                            <div class="input-group input-group-sm mb-3">
+                                                <select class="form-control select2bs5" name="category" id="txtCategory">
+                                                    <option value="0" disabled selected>Select Schedule (IN/OUT)</option>
+                                                    <option value="1">Outgoing</option>
+                                                    <option value="2">Incoming</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label>Time</label>
                                         <div class="input-group input-group-sm mb-3">
                                             <select class="form-control select2bs5" name="schedule" id="txtSchedule">
-                                                <option value="0" disabled selected>Select Schedule</option>
-                                                <option value="3:30PM">OUTGOING 3:30PM</option>
-                                                <option value="4:30PM">OUTGOING 4:30PM</option>
-                                                <option value="7:30PM">OUTGOING 7:30PM/INCOMING 7:30PM</option>
-                                                <option value="7:30AM">SUCCEDING DAYS (INCOMING & OUTGOING 7:30AM)</option>
+                                                <option value="0" disabled selected>Select Time</option>
+                                                <option value="6:00AM">6:00AM</option>
+                                                <option value="7:30AM">7:30AM</option>
+                                                <option value="2:00PM">2:00PM</option>
+                                                <option value="3:30PM">3:30PM</option>
+                                                <option value="4:30PM">4:30PM</option>
+                                                <option value="7:30PM">7:30PM</option>
+                                                <option value="10:00PM">10:00PM</option>
                                             </select>
                                         </div>
                                     </div>
@@ -115,13 +132,13 @@
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="editCutoffTimeStatusTitle"><i class="fas fa-info-circle"></i> Lock Masterlist</h4>
+                    <h4 class="modal-title" id="editCutoffTimeStatusTitle"><i class="fas fa-info-circle"></i> Schedule change confirmation</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="post" id="formEditCutoffTimeStatus" autocomplete="off">
                     @csrf
-                    <div class="modal-body">
-                        <p id="paragraphEditCutoffTimeStatus"></p>
+                    <div class="modal-body text-center">
+                        <h4 id="paragraphEditCutoffTimeStatus"></h4>
                         <input type="hidden" name="cutoff_time_id" placeholder="Cutoff Time Id" id="textEditCutoffTimeStatusCutoffTimeId">
                         <input type="hidden" name="status" placeholder="Cutoff Time Status" id="textEditCutoffTimeStatus">
                         <input type="hidden" name="cutoff_time_type" placeholder="Cutoff Time Type" id="textEditCutoffTimeType">
@@ -162,19 +179,16 @@
                     url: "view_cutoff_time",
                 },
                 "columns":[
-                    { "data" : "action", orderable:false, searchable:false, width: "15%"},
-                    { "data" : "status", width: "20%"},
                     { "data" : "factory",
                         "defaultContent": 'N/A',
-                        "name": 'user_level',
                         "orderable": true,
                         "searchable": true,
                         "width": "15%",
                         "render": function (data, type, row) {
                             if(row.factory == 1){
-                                return "<div class='text-center'>Factory 1</div>";
+                                return "<center><span class='badge bg-primary px-3 py-2'><i class='fas fa-industry me-1'></i>Factory 1</span></center>";
                             }else{
-                                return "<div class='text-center'>Factory 3</div>";
+                                return "<center><span class='badge bg-secondary px-3 py-2'><i class='fas fa-industry me-1'></i>Factory 3</span></center>";
                             }
                         },
                     },
@@ -183,15 +197,25 @@
                         "width": "15%",
                         "render": function (data, type, row) {
                             if(row.category == 1){
-                                return "<div class='text-center'>OUTGOING</div>";
+                                return "<center><span class='badge bg-warning text-dark'><i class='fas fa-arrow-up'></i> Outgoing</span></center>";
                             }else if(row.category == 2){
-                                return "<div class='text-center'>INCOMING & OUTGOING</div>";
+                                return "<center><span class='badge bg-info'><i class='fas fa-arrow-down'></i> Incoming</span></center>";
                             }else{
                                 return "---";
                             }
                         },
                     },
-                    { "data" : "schedule" },
+                    { "data" : "schedule",
+                        "defaultContent": 'N/A',
+                        "width": "15%",
+                        "render": function (data, type, row) {
+                            return "<center><i class='far fa-clock text-secondary me-1'></i>" + row.schedule +"</center>";
+                        },
+                     },
+                    { "data" : "today_label", width: "20%"},
+                    { "data" : "succeeding_label", width: "20%"},
+                    // { "data" : "action", orderable:false, searchable:false, width: "15%"},
+                    // { "data" : "status", width: "20%"},
                     // Old code clark commented out 11/20/2025
                     // { "data" : "schedule",
                     //     "defaultContent": 'N/A',
@@ -239,10 +263,10 @@
                 $("#textEditCutoffTimeType").val(cutoffTimeType);
 
                 if(cutoffTimeStatus == 1){
-                    $("#paragraphEditCutoffTimeStatus").text('Are you sure to lock masterlist?');
+                    $("#paragraphEditCutoffTimeStatus").text('CLOSE This Schedule?');
                 }
                 else{
-                    $("#paragraphEditCutoffTimeStatus").text('Are you sure to unlock masterlist?');
+                    $("#paragraphEditCutoffTimeStatus").text('OPEN This Schedule?');
                 }
             });
 
