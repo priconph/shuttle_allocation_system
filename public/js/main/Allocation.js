@@ -372,15 +372,19 @@ $(document).ready(function(){
 
                         // =============== TODAY =================
                         if (txtStartDate == formattedDate) {
-                            if (scheduleDetails[c].status_today == 0 || ($('#txtDepartmentSection').val() != 'CN' && $('#txtDepartmentSection').val() != 'ISS')) {
+                            if (scheduleDetails[c].status_today == 0) {
                                 disabledAttr = 'disabled';
+                            }else if ($('#txtDepartmentSection').val() == 'CN' || $('#txtDepartmentSection').val() == 'ISS') {
+                                disabledAttr = '';
                             }
                         }
 
                         // ========= SUCCEEDING DAYS =============
                         else if (txtStartDate > formattedDate) {
-                            if (scheduleDetails[c].status_succeeding == 0 || ($('#txtDepartmentSection').val() != 'CN' && $('#txtDepartmentSection').val() != 'ISS')) {
+                            if (scheduleDetails[c].status_succeeding == 0) {
                                 disabledAttr = 'disabled';
+                            }else if ($('#txtDepartmentSection').val() == 'CN' || $('#txtDepartmentSection').val() == 'ISS') {
+                                disabledAttr = '';
                             }
                         }else {
                             // if allocation date is in the past → ALWAYS DISABLE
