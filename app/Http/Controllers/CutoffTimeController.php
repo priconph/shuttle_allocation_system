@@ -19,8 +19,15 @@ use App\Models\CutoffTime;
 
 class CutoffTimeController extends Controller
 {
-    public function viewCutoffTime(){
-        $cutoffTimeData = CutoffTime::where('is_deleted', 0)->get();
+    public function viewCutoffTime(Request $request){
+        $cutoffTimeData = CutoffTime::where('is_deleted', 0)
+                        ->when(!empty($request->Factory) && $request->Factory != 'ALL', function ($query) use ($request) {
+                                $query->where('factory', $request->Factory);
+                            })
+                        ->when(!empty($request->Category) && $request->Category != 'ALL', function ($query) use ($request) {
+                                $query->where('category', $request->Category);
+                            })
+                        ->get();
 
         return DataTables::of($cutoffTimeData)
             ->addColumn('cutoff_time', function($row){

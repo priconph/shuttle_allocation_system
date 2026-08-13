@@ -338,6 +338,11 @@ $(document).ready(function(){
         const date_start = new Date(txtStartDate);
         const date_today = new Date(formattedDate);
 
+        const section = $('#txtDepartmentSection').val();
+        const isCNorISS = (section === 'CN' || section === 'ISS');
+            
+        const restrictedSchedules = ['6:00AM', '2:00PM', '6:00PM', '10:00PM'];
+
         if(txtFactory == 'F1'){
             txtFactory = 1;
         }else if(txtFactory == 'F3'){
@@ -355,7 +360,7 @@ $(document).ready(function(){
             dataType: "json",
             success: function(response){
                 let scheduleDetails = response['scheduleDetails'];
-                let disabled = '';
+                // let disabled = '';
 
                 if(scheduleDetails != null){
 
@@ -370,26 +375,42 @@ $(document).ready(function(){
                         let sched = scheduleDetails[c].schedule;
                         let disabledAttr = "";
 
-                        // =============== TODAY =================
+                        // Determine disabled status based only on schedule status
                         if (txtStartDate == formattedDate) {
                             if (scheduleDetails[c].status_today == 0) {
-                                disabledAttr = 'disabled';
-                            }else if ($('#txtDepartmentSection').val() == 'CN' || $('#txtDepartmentSection').val() == 'ISS') {
-                                disabledAttr = '';
+                                disabledAttr = "disabled";
+                            }
+                        }else if (txtStartDate > formattedDate) {
+                            if (scheduleDetails[c].status_succeeding == 0) {
+                                disabledAttr = "disabled";
                             }
                         }
 
-                        // ========= SUCCEEDING DAYS =============
-                        else if (txtStartDate > formattedDate) {
-                            if (scheduleDetails[c].status_succeeding == 0) {
-                                disabledAttr = 'disabled';
-                            }else if ($('#txtDepartmentSection').val() == 'CN' || $('#txtDepartmentSection').val() == 'ISS') {
-                                disabledAttr = '';
-                            }
-                        }else {
-                            // if allocation date is in the past → ALWAYS DISABLE
-                            disabledAttr = "";
+                        // Hide restricted schedules for non-CN/ISS users
+                        if (!isCNorISS && restrictedSchedules.includes(sched)) {
+                            continue; // Skip this schedule completely
                         }
+
+                        // // =============== TODAY =================
+                        // if (txtStartDate == formattedDate) {
+                        //     if (scheduleDetails[c].status_today == 0) {
+                        //         disabledAttr = 'disabled';
+                        //     }else if ($('#txtDepartmentSection').val() == 'CN' || $('#txtDepartmentSection').val() == 'ISS') {
+                        //         disabledAttr = '';
+                        //     }
+                        // }
+
+                        // // ========= SUCCEEDING DAYS =============
+                        // else if (txtStartDate > formattedDate) {
+                        //     if (scheduleDetails[c].status_succeeding == 0) {
+                        //         disabledAttr = 'disabled';
+                        //     }else if ($('#txtDepartmentSection').val() == 'CN' || $('#txtDepartmentSection').val() == 'ISS') {
+                        //         disabledAttr = '';
+                        //     }
+                        // }else {
+                        //     // if allocation date is in the past → ALWAYS DISABLE
+                        //     disabledAttr = "";
+                        // }
 
                         // INCOMING
                         if (scheduleDetails[c].category == 2) {
@@ -399,8 +420,8 @@ $(document).ready(function(){
 
                         // OUTGOING
                         if (scheduleDetails[c].category == 1) {
-                            result_out_schedule += `<option value="${sched}" ${disabledAttr}>${sched}</option>`;
                             // result_out_schedule += `<option value="${sched}" >${sched}</option>`;
+                            result_out_schedule += `<option value="${sched}" ${disabledAttr}>${sched}</option>`;
                         }
                     }
 

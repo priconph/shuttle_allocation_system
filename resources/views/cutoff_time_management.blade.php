@@ -23,9 +23,43 @@
         <section class="content">
             <div class="container-fluid">
                 <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <label class="form-label">Filter Factory</label>
+                                        <div class="input-group input-group-sm mb-3">
+                                            <select class="form-control select2bs5" id="filterCutoffFactory">
+                                                <option value="0" disabled selected>Select Factory</option>
+                                                <option value="ALL">ALL</option>
+                                                <option value="1">Factory 1</option>
+                                                <option value="3">Factory 3</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-2">
+                                        <label class="form-label">Filter Schedule</label>
+                                        <div class="input-group input-group-sm mb-3">
+                                            <select class="form-control select2bs5" id="filterCutoffCategory">
+                                                <option value="0" disabled selected>Select Schedule</option>
+                                                <option value="ALL">ALL</option>
+                                                <option value="1">Outgoing</option>
+                                                <option value="2">Incoming</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-md-12">
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header d-none">
                                 <h3 class="card-title" style="margin-top: 8px;">Cutoff Time Management</h3>
                             </div>
                             <div class="card-body">
@@ -107,6 +141,7 @@
                                                 <option value="2:00PM">2:00PM</option>
                                                 <option value="3:30PM">3:30PM</option>
                                                 <option value="4:30PM">4:30PM</option>
+                                                <option value="6:00PM">6:00PM</option>
                                                 <option value="7:30PM">7:30PM</option>
                                                 <option value="10:00PM">10:00PM</option>
                                             </select>
@@ -177,6 +212,10 @@
                 },
                 "ajax" : {
                     url: "view_cutoff_time",
+                    data: function (param){
+                        param.Factory = $('#filterCutoffFactory').find(':selected').val();
+                        param.Category = $('#filterCutoffCategory').find(':selected').val();
+                    },
                 },
                 "columns":[
                     { "data" : "factory",
@@ -234,6 +273,16 @@
                     //     },
                     // },
                 ],
+            });
+
+            $('#filterCutoffFactory').change(function (e) {
+                e.preventDefault();
+                dataTablesCutoffTime.draw();
+            });
+
+            $('#filterCutoffCategory').change(function (e) {
+                e.preventDefault();
+                dataTablesCutoffTime.draw();
             });
 
             $("#formAddCutoffTime").submit(function(event){
