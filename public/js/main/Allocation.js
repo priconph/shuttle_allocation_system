@@ -415,13 +415,13 @@ $(document).ready(function(){
                         // INCOMING
                         if (scheduleDetails[c].category == 2) {
                             // result_in_schedule += `<option value="${sched}" ${disabledAttr}>${sched}</option>`;
-                            result_in_schedule += `<option value="${sched}" ${disabledAttr}>${sched}</option>`;
+                            result_in_schedule += `<option data-status="${disabledAttr}" value="${sched}" ${disabledAttr}>${sched}</option>`;
                         }
 
                         // OUTGOING
                         if (scheduleDetails[c].category == 1) {
                             // result_out_schedule += `<option value="${sched}" >${sched}</option>`;
-                            result_out_schedule += `<option value="${sched}" ${disabledAttr}>${sched}</option>`;
+                            result_out_schedule += `<option data-status="${disabledAttr}" value="${sched}" ${disabledAttr}>${sched}</option>`;
                         }
                     }
 
@@ -729,6 +729,8 @@ $(document).ready(function(){
 
     $('#txtAllocIncoming').on('change', function() {
         const selectedValue = $(this).val();
+        const optionStatus = $(this).data('status'); // Get the data-status attribute of the selected option
+
         if (selectedValue == 'N/A') {
             $('#na_out_option').prop('disabled', true);
         }else{
@@ -736,40 +738,36 @@ $(document).ready(function(){
         }
 
         // IF SELECTED TIME IS 7:30AM AND ENABLED IN CUTOFFTIME, DISABLE THE BUTTON
-        if(selectedValue == '7:30AM'){
+        if(selectedValue == '7:30AM' && $('#txtAllocOutgoing option[value="7:30AM"]').data('status') !== 'disabled'){
             $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', true);
         }
-        // OLD CODE
-        // // IF SELECTED TIME IS 7:30AM AND ENABLED IN CUTOFFTIME, DISABLE THE BUTTON
-        // if(selectedValue == '7:30AM' && !$('#txtAllocOutgoing option[value="7:30AM"]').is(':disabled') ){
-        //     $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', true);
-        // }
-        // // IF SELECTED TIME IS 7:30AM AND ALREADY DISABLED BY CUTOFFTIME, KEEP IT DISABLED
-        // else if(selectedValue == '7:30AM' && $('#txtAllocOutgoing option[value="7:30AM"]').is(':disabled')){
-        //     $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', true);
-        // }
+        // IF SELECTED TIME IS 7:30AM AND ALREADY DISABLED BY CUTOFFTIME, KEEP IT DISABLED
+        else if(selectedValue == '7:30AM' && $('#txtAllocOutgoing option[value="7:30AM"]').data('status') == 'disabled'){
+            $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', true);
+        }
         // IF SELECTED TIME IS NOT 7:30AM, ENABLE THE BUTTON
-        else{
+        else if(selectedValue != '7:30AM' && $('#txtAllocOutgoing option[value="7:30AM"]').data('status') !== 'disabled'){
             $('#txtAllocOutgoing').find('option[value="7:30AM"]').prop('disabled', false);
         }
-
+        
         // IF SELECTED TIME IS 7:30PM AND ENABLED IN CUTOFFTIME, DISABLE THE BUTTON
-        if(selectedValue == '7:30PM'){
+        // if(selectedValue == '7:30PM'){
+        //     $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
+        // }
+        // OLD CODE
+        // IF SELECTED TIME IS 7:30PM AND ENABLED IN CUTOFFTIME, DISABLE THE BUTTON
+        if(selectedValue == '7:30PM' && $('#txtAllocOutgoing option[value="7:30PM"]').data('status') !== 'disabled'){
             $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
         }
-        // OLD CODE
-        // // IF SELECTED TIME IS 7:30PM AND ENABLED IN CUTOFFTIME, DISABLE THE BUTTON
-        // if(selectedValue == '7:30PM' && !$('#txtAllocOutgoing option[value="7:30PM"]').is(':disabled')){
-        //     $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
-        // }
-        // // IF SELECTED TIME IS 7:30PM AND ALREADY DISABLED BY CUTOFFTIME, KEEP IT DISABLED
-        // else if(selectedValue == '7:30PM' && $('#txtAllocOutgoing option[value="7:30PM"]').is(':disabled')){
-        //     $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
-        // }
+        // IF SELECTED TIME IS 7:30PM AND ALREADY DISABLED BY CUTOFFTIME, KEEP IT DISABLED
+        else if(selectedValue == '7:30PM' && $('#txtAllocOutgoing option[value="7:30PM"]').data('status') == 'disabled'){
+            $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', true);
+        }
         // IF SELECTED TIME IS NOT 7:30PM, ENABLE THE BUTTON
-        else{
+        else if(selectedValue != '7:30PM' && $('#txtAllocOutgoing option[value="7:30PM"]').data('status') !== 'disabled'){
             $('#txtAllocOutgoing').find('option[value="7:30PM"]').prop('disabled', false);
         }
+    
     });
 
     $('#txtAllocOutgoing').on('change', function() {
@@ -780,20 +778,32 @@ $(document).ready(function(){
             $('#na_in_option').prop('disabled', false);
         }
 
-        // IF SELECTED TIME IS 7:30AM, DISABLE SPECIFIED TIME
-        if(selectedValue == '7:30AM'){
+        // IF SELECTED TIME IS 7:30AM AND ENABLED IN CUTOFFTIME, DISABLE THE BUTTON
+        if(selectedValue == '7:30AM' && $('#txtAllocIncoming option[value="7:30AM"]').data('status') !== 'disabled'){
             $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', true);
-        }else{
+        }
+        // IF SELECTED TIME IS 7:30AM AND ALREADY DISABLED BY CUTOFFTIME, KEEP IT DISABLED
+        else if(selectedValue == '7:30AM' && $('#txtAllocIncoming option[value="7:30AM"]').data('status') == 'disabled'){
+            $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', true);
+        }
+        // IF SELECTED TIME IS NOT 7:30AM, ENABLE THE BUTTON
+        else if(selectedValue != '7:30AM' && $('#txtAllocIncoming option[value="7:30AM"]').data('status') !== 'disabled'){
             $('#txtAllocIncoming').find('option[value="7:30AM"]').prop('disabled', false);
         }
 
-        // IF SELECTED TIME IS 7:30PM, DISABLE SPECIFIED TIME
-        if(selectedValue == '7:30PM'){
+        if(selectedValue == '7:30PM' && $('#txtAllocIncoming option[value="7:30PM"]').data('status') !== 'disabled'){
             $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', true);
-        }else{
+        }
+        // IF SELECTED TIME IS 7:30PM AND ALREADY DISABLED BY CUTOFFTIME, KEEP IT DISABLED
+        else if(selectedValue == '7:30PM' && $('#txtAllocIncoming option[value="7:30PM"]').data('status') == 'disabled'){
+            $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', true);
+        }
+        // IF SELECTED TIME IS NOT 7:30PM, ENABLE THE BUTTON
+        else if(selectedValue != '7:30PM' && $('#txtAllocIncoming option[value="7:30PM"]').data('status') !== 'disabled'){
             $('#txtAllocIncoming').find('option[value="7:30PM"]').prop('disabled', false);
         }
     });
+
 
     $('.selectAllocFactory').on('change', function() {
         const factoryVal = $(this).val();
